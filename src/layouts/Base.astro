@@ -19,7 +19,7 @@ const { title, description, jsonLd = [], ogImage = '/og-image.png' } = Astro.pro
 
 const canonical = new URL(Astro.url.pathname, site.url).href;
 const ogUrl = new URL(ogImage, site.url).href;
-const pageTitle = title === site.name ? `${site.name} — ${'Theoretical Physics'}` : `${title} · ${site.name}`;
+const pageTitle = title === site.name ? `${site.name} · Theoretical Physics` : `${title} · ${site.name}`;
 
 const navLinks = [
   { href: '/research/', label: 'Research' },
@@ -162,8 +162,8 @@ const isCurrent = (href: string) => currentPath === normalize(href);
     </footer>
 
     <script>
-      // Theme toggle — persists the explicit choice; initial value follows
-      // the stored preference, defaulting to light (the designed default).
+      // Theme toggle: persists the explicit choice. The initial value follows
+      // the stored preference and defaults to light (the designed default).
       const toggle = document.getElementById('theme-toggle');
       const root = document.documentElement;
       toggle?.addEventListener('click', () => {

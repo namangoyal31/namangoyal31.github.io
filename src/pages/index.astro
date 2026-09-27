@@ -28,40 +28,23 @@ const personSchema = {
 ---
 <Base
   title={site.name}
-  description="Naman Goyal — B.S. (Research) physics undergraduate at IISc Bengaluru working in theoretical high-energy physics and mathematical physics: electroweak vacuum stability, semiclassical vacuum decay, scattering amplitudes, and effective descriptions of gravitation."
+  description="Naman Goyal, B.S. (Research) physics undergraduate at IISc Bengaluru. Theoretical high-energy physics and mathematical physics: scattering amplitudes and the S-matrix bootstrap, electroweak vacuum stability, and effective descriptions of gravitation."
   jsonLd={[personSchema]}
 >
   <section class="hero">
-    <svg class="hero-grid motif" viewBox="0 0 720 560" fill="none" stroke="currentColor" aria-hidden="true">
-      <!-- true-vacuum well -->
-      <ellipse cx="498" cy="338" rx="34" ry="20" stroke-width="1" opacity="0.5" />
-      <ellipse cx="500" cy="340" rx="60" ry="37" stroke-width="1" opacity="0.4" />
-      <ellipse cx="503" cy="342" rx="88" ry="56" stroke-width="1" opacity="0.3" />
-      <ellipse cx="507" cy="345" rx="118" ry="76" stroke-width="1" opacity="0.22" />
-      <ellipse cx="512" cy="349" rx="150" ry="97" stroke-width="1" opacity="0.15" />
-      <!-- false-vacuum well -->
-      <ellipse cx="212" cy="196" rx="22" ry="13" stroke-width="1" opacity="0.5" />
-      <ellipse cx="212" cy="196" rx="42" ry="26" stroke-width="1" opacity="0.35" />
-      <ellipse cx="211" cy="195" rx="64" ry="40" stroke-width="1" opacity="0.25" />
-      <ellipse cx="210" cy="194" rx="88" ry="55" stroke-width="1" opacity="0.16" />
-      <!-- saddle contours -->
-      <path d="M282 160 C 340 150, 400 170, 448 210" stroke-width="1" opacity="0.28" />
-      <path d="M276 232 C 336 220, 398 232, 452 262" stroke-width="1" opacity="0.24" />
-      <path d="M310 268 C 360 258, 404 268, 440 288" stroke-width="1" opacity="0.18" />
-      <!-- bounce trajectory: false vacuum over the saddle into the true well -->
-      <path class="drift" d="M236 216 C 300 130, 402 132, 462 224 C 494 274, 502 300, 500 330" stroke-width="1.6" opacity="0.75" stroke-dasharray="6 7" />
-      <circle cx="236" cy="216" r="3" fill="currentColor" stroke="none" opacity="0.8" />
-    </svg>
+    <canvas class="hero-field" aria-hidden="true"></canvas>
     <div class="container">
       <div class="hero-inner">
         <p class="eyebrow">Theoretical Physics · {site.institution}</p>
         <h1>{site.name}</h1>
         <p class="affiliation">{site.role}, {site.institution}</p>
         <p class="lede">
-          I work in theoretical high-energy physics and mathematical physics, asking what quantum
-          field theory and symmetry principles allow — and forbid. So far, that has meant classical
-          tests of general relativity in pseudo-Newtonian form, precision studies of electroweak
-          vacuum stability, and, currently, scattering amplitudes and the S-matrix bootstrap.
+          I work in theoretical high-energy physics and mathematical physics. Most of my research
+          asks what quantum field theory and symmetry principles fix, and what they leave free:
+          how much of general relativity survives in Newtonian form, how precisely semiclassical
+          methods determine the stability of the Standard Model vacuum, and whether scattering
+          amplitudes are pinned down by analyticity, crossing symmetry, unitarity, and Regge
+          behavior.
         </p>
         <div class="cta-row">
           <a class="btn btn-solid" href="/research/">Research</a>
@@ -69,12 +52,18 @@ const personSchema = {
           <a class="btn btn-ghost" href={site.github} rel="me">GitHub</a>
         </div>
         <p class="now-line">
-          <strong>Now:</strong> S-matrix bootstrap at TIFR — following a preprint on classical tests
+          <strong>Now:</strong> S-matrix bootstrap at TIFR. Latest: a preprint on classical tests
           of GR, <a href="https://arxiv.org/abs/2602.20261">arXiv:2602.20261</a>.
         </p>
       </div>
     </div>
   </section>
+
+  <script>
+    import { mountAmpField } from '../lib/amp-field.js';
+    const canvas = document.querySelector('.hero-field');
+    if (canvas) mountAmpField(canvas);
+  </script>
 
   <section class="section" aria-labelledby="current-heading">
     <div class="container">
@@ -116,7 +105,7 @@ const personSchema = {
               </p>
               <h3><a href={p.links?.[0]?.href ?? `/research/#${p.id}`}>{p.shortTitle ?? p.title}</a></h3>
               <p class="meta">{p.mentors} · {p.place}</p>
-              <p set:html={renderRich(p.summary.split('—')[0].trim() + '.')} />
+              <p set:html={renderRich(p.summary.split('.')[0] + '.')} />
               <span class="card-link"><a href={`/research/#${p.id}`}>Read more →</a></span>
             </article>
           ))

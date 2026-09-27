@@ -15,7 +15,7 @@ const { items } = Astro.props;
         <span class="t-title">
           {item.href ? <a href={item.href}>{item.title}</a> : item.title}
         </span>
-        {item.note && <span class="t-note"> — {item.note}</span>}
+        {item.note && <span class="t-note">{item.note}</span>}
       </li>
     ))
   }

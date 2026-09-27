@@ -17,8 +17,8 @@ const softwareSchema = {
 };
 ---
 <Base
-  title="SMVac — electroweak vacuum stability"
-  description="SMVac: a C++/Python framework for precision studies of electroweak vacuum stability in the Standard Model — 3-loop RG evolution, NNLO matching, the one-loop Coleman–Weinberg potential, and semiclassical vacuum decay via an RG-improved Fubini–Lipatov calculation, with phase diagrams in the (Mh, Mt) plane."
+  title="SMVac · electroweak vacuum stability"
+  description="SMVac: a C++/Python framework for precision studies of electroweak vacuum stability in the Standard Model. 3-loop RG evolution, NNLO matching, the one-loop Coleman–Weinberg potential, and semiclassical vacuum decay via an RG-improved Fubini–Lipatov calculation, with phase diagrams in the (Mh, Mt) plane."
   jsonLd={[softwareSchema]}
 >
   <div class="container">
@@ -42,8 +42,8 @@ const softwareSchema = {
         knife's edge. At field values far beyond any collider, the effective Higgs potential turns
         over: the quartic coupling <Math tex={'\\lambda(\\mu)'} />, run up in energy, becomes negative
         at scales of order <Math tex={'10^{10}\\,\\mathrm{GeV}'} />. The electroweak vacuum in which
-        we live is then not the absolute minimum of the theory but a <em>metastable</em> one —
-        destined, in principle, to decay by quantum tunneling. Whether that decay can ever matter is
+        we live is then not the absolute minimum of the theory but a <em>metastable</em> one,
+        destined in principle to decay by quantum tunneling. Whether that decay can ever matter is
         controlled by the semiclassical bounce action <Math tex={'S'} />: the vacuum survives
         cosmological timescales provided <Math tex={'S'} /> is large enough. The measured Higgs and
         top masses place our universe uncomfortably close to the boundary where this guarantee fails.
@@ -71,8 +71,8 @@ const softwareSchema = {
         limit, where the potential is assumed purely quartic,
         <Math tex={'V \\approx \\tfrac{1}{4}\\lambda\\,\\phi^4'} /> with <em>constant</em>
         <Math tex={'\\lambda < 0'} /> at high scales. But near the metastability boundary the running
-        of the couplings is precisely what matters — the regime where the shortcut is most tempting
-        is exactly the regime where it is least reliable. SMVac quantifies this.
+        of the couplings is precisely what matters. The regime where the shortcut is most tempting
+        is exactly the regime where it is least reliable, and SMVac quantifies this.
       </p>
     </section>
 
@@ -102,8 +102,8 @@ const softwareSchema = {
 
       <h3>Renormalization group evolution</h3>
       <p>
-        The couplings <Math tex={'(g_1, g_2, g_3, y_t, \\lambda)'} /> — with
-        <Math tex={'y_b, y_\\tau'} /> subleading — are evolved with their three-loop beta functions
+        The couplings <Math tex={'(g_1, g_2, g_3, y_t, \\lambda)'} />, with
+        <Math tex={'y_b, y_\\tau'} /> subleading, are evolved with their three-loop beta functions
         by fixed-step RK4 integration in <Math tex={'t = 2\\ln\\mu'} />, from the matching scale
         <Math tex={'M_t'} /> to the Planck scale:
       </p>
@@ -137,8 +137,8 @@ const softwareSchema = {
         <h2 id="results-heading" style="margin-top: 0;">Results</h2>
         <p>
           Sweeps of roughly <Math tex={'10^{6}'} /> grid points across the
-          <Math tex={'(M_h, M_t)'} /> plane — parallelized with OpenMP and a 12-process Python
-          pipeline — produce the stability phase diagram with constant-action contours. The physical
+          <Math tex={'(M_h, M_t)'} /> plane, parallelized with OpenMP and a 12-process Python
+          pipeline, produce the stability phase diagram with constant-action contours. The physical
           point (star) sits in the metastable region, close to the boundary, in agreement with the
           literature.
         </p>
@@ -157,7 +157,7 @@ const softwareSchema = {
         width={1600}
         height={1297}
         label="Fig. 2"
-        caption="Close-up around the physical point: the absolute-stability boundary (green/yellow) runs just below (125.1, 173.1) GeV — the empirical reason the vacuum-stability problem is so sensitive to precision. Figure from the SMVac repository."
+        caption="Close-up around the physical point: the absolute-stability boundary (green/yellow) runs just below (125.1, 173.1) GeV, which is why the vacuum-stability problem is so sensitive to precision. Figure from the SMVac repository."
       />
     </section>
 
@@ -167,11 +167,11 @@ const softwareSchema = {
         <p>
           The RG-improved action can be benchmarked against the strict analytical conformal limit
           <Math tex={'S_{\\rm approx} = 8\\pi^2 / (3|\\lambda_{\\min}|)'} />. Deep in the metastable
-          region the two agree to about <strong>0.01%</strong> — the conformal limit holds when the
-          coupling is large and slowly varying. Near the metastability boundary, however, they
+          region the two agree to about <strong>0.01%</strong>, since the conformal limit holds when
+          the coupling is large and slowly varying. Near the metastability boundary, however, they
           disagree at the <strong>tens-of-percent</strong> level (e.g. 32.1% at
           <Math tex={'(M_h, M_t) = (134.75, 176.5)\\,\\mathrm{GeV}'} />), and the disagreement
-          misclassifies points right at the boundary — precisely the scientifically interesting
+          misclassifies points right at the boundary: precisely the scientifically interesting
           strip of the phase diagram.
         </p>
       </div>

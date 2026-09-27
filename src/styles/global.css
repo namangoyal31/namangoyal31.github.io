@@ -1,6 +1,6 @@
 /* ============================================================
-   Naman Goyal — research site
-   Design: "annotated manuscript" — warm paper ground, serif
+   Naman Goyal research site
+   Design: "annotated manuscript". Warm paper ground, serif
    typography, scholarly blue accent, hairline structure.
    ============================================================ */
 
@@ -355,20 +355,11 @@ hr {
   overflow: hidden;
 }
 
-.hero-grid {
+.hero-field {
   position: absolute;
-  top: -1.5rem;
-  right: 0;
-  width: min(54rem, 92vw);
-  height: auto;
+  inset: 0;
   pointer-events: none;
   z-index: 0;
-}
-
-@media (max-width: 860px) {
-  .hero-grid {
-    display: none;
-  }
 }
 
 .hero-inner {
@@ -456,29 +447,6 @@ hr {
 .now-line strong {
   color: var(--ink);
   font-weight: 560;
-}
-
-/* hero motif: potential contours + bounce path (decorative) */
-.motif {
-  color: var(--accent);
-  opacity: 0.55;
-}
-
-.motif .drift {
-  stroke-dasharray: 6 7;
-  animation: dash-drift 26s linear infinite;
-}
-
-@keyframes dash-drift {
-  to {
-    stroke-dashoffset: -260;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .motif .drift {
-    animation: none;
-  }
 }
 
 /* ---------- cards ---------- */
@@ -663,6 +631,7 @@ hr {
 }
 
 .timeline .t-note {
+  display: block;
   color: var(--muted);
   font-size: 0.95rem;
 }

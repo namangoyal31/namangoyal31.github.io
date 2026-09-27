@@ -15,7 +15,7 @@ export const site = {
   lastUpdated: 'September 2026',
 };
 
-/** Optional academic profiles — add a URL to have it appear in the footer/contact. */
+/** Optional academic profiles. Add a URL to have it appear in the footer/contact. */
 export const profiles: { label: string; url: string }[] = [
   // { label: 'Google Scholar', url: 'https://scholar.google.com/...' },
   // { label: 'ORCID', url: 'https://orcid.org/...' },
