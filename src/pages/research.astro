@@ -1,0 +1,107 @@
+---
+import Base from '../layouts/Base.astro';
+import Timeline from '../components/Timeline.astro';
+import { site } from '../data/site';
+import { projects } from '../data/projects';
+import { timeline } from '../data/timeline';
+import { renderRich } from '../lib/rich';
+
+const theoretical = projects.filter((p) => !p.experimental);
+const experimental = projects.filter((p) => p.experimental);
+
+const description =
+  'Research of Naman Goyal: scattering amplitudes and the S-matrix bootstrap (current), electroweak vacuum stability and the SMVac framework, pseudo-Newtonian tests of general relativity, and the representation theory of the Poincaré group.';
+---
+<Base
+  title="Research"
+  description={description}
+  jsonLd={[
+    {
+      '@context': 'https://schema.org',
+      '@type': 'ProfilePage',
+      mainEntity: { '@type': 'Person', name: site.name, url: site.url },
+    },
+  ]}
+>
+  <div class="container">
+    <header class="page-head">
+      <p class="eyebrow">Research</p>
+      <h1>What I work on</h1>
+      <p class="lede prose" style="margin-top: 1.2rem;">
+        The common thread in my work is the question of how far an effective description can be
+        pushed before fundamental principles constrain it: how much of general relativity survives
+        in Newtonian language, how precisely semiclassical methods pin down the stability of the
+        Standard Model vacuum, and whether the uniqueness of scattering amplitudes follows from
+        first principles alone. The methods are analytical first, computational where precision
+        demands it.
+      </p>
+    </header>
+
+    {
+      theoretical.map((p) => (
+        <section class="section" id={p.id} aria-labelledby={`${p.id}-heading`}>
+          <div class="section-head">
+            <h2 id={`${p.id}-heading`}>{p.title}</h2>
+            <p class="meta" style="margin: 0;">
+              <span class:list={['status-dot', p.status === 'current' && 'current']} aria-hidden="true" />
+              {p.status === 'current' ? 'Ongoing' : 'Completed'} · {p.period}
+            </p>
+          </div>
+          <p class="meta">
+            {p.mentors && <span>{p.mentors}</span>}
+            {p.place && <span>{p.mentors ? ' · ' : ''}{p.place}</span>}
+          </p>
+          <div class="prose" style="margin-top: 1rem;">
+            {p.body.map((para) => <p set:html={renderRich(para)} />)}
+          </div>
+          {p.links && p.links.length > 0 && (
+            <div class="pub-links">
+              {p.links.map((l) => (
+                <a class="chip" href={l.href}>{l.label}</a>
+              ))}
+            </div>
+          )}
+          <div class="tag-row" style="margin-top: 1.1rem;">
+            {p.tags.map((t) => <span class="tag">{t}</span>)}
+          </div>
+        </section>
+      ))
+    }
+
+    <section class="section" id="chronology" aria-labelledby="chronology-heading">
+      <div class="section-head">
+        <h2 id="chronology-heading">Chronology</h2>
+      </div>
+      <div class="prose">
+        <p class="meta" style="margin-bottom: 1.4rem;">
+          Research chronology, from the record above. Concurrent projects overlap by design — the
+          pseudo-Newtonian study and SMVac ran in parallel for two years.
+        </p>
+      </div>
+      <Timeline items={timeline} />
+    </section>
+
+    <section class="section" id="experimental" aria-labelledby="experimental-heading">
+      <div class="section-head">
+        <h2 id="experimental-heading">Experimental work</h2>
+      </div>
+      <div class="callout" style="margin-bottom: 1.6rem;">
+        <p style="margin: 0;">
+          <strong>Note.</strong> The following competition projects are experimental and are kept
+          separate from the theoretical research above.
+        </p>
+      </div>
+      {
+        experimental.map((p) => (
+          <section class="section-tight" id={p.id} aria-labelledby={`${p.id}-heading`}>
+            <h3 id={`${p.id}-heading`} style="margin-top: 0;">{p.title}</h3>
+            <p class="meta">{p.period} · {p.place}</p>
+            <div class="prose" style="margin-top: 0.8rem;">
+              {p.body.map((para) => <p set:html={renderRich(para)} />)}
+            </div>
+          </section>
+        ))
+      }
+    </section>
+  </div>
+</Base>

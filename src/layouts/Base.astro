@@ -1,0 +1,198 @@
+---
+import '@fontsource-variable/source-serif-4';
+import '@fontsource-variable/inter';
+import '@fontsource-variable/jetbrains-mono';
+import 'katex/dist/katex.min.css';
+import '../styles/global.css';
+import { site, profiles } from '../data/site';
+
+interface Props {
+  title: string;
+  description: string;
+  /** JSON-LD structured data object(s) for this page. */
+  jsonLd?: object[];
+  /** Relative path for og:image; omit if the page has no image. */
+  ogImage?: string;
+}
+
+const { title, description, jsonLd = [], ogImage = '/og-image.png' } = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, site.url).href;
+const ogUrl = new URL(ogImage, site.url).href;
+const pageTitle = title === site.name ? `${site.name} — ${'Theoretical Physics'}` : `${title} · ${site.name}`;
+
+const navLinks = [
+  { href: '/research/', label: 'Research' },
+  { href: '/smvac/', label: 'SMVac' },
+  { href: '/publications/', label: 'Publications' },
+  { href: '/cv/', label: 'CV' },
+  { href: '/about/', label: 'About' },
+];
+
+const normalize = (p: string) => (p.length > 1 ? p.replace(/\/$/, '') : p);
+const currentPath = normalize(Astro.url.pathname);
+const isCurrent = (href: string) => currentPath === normalize(href);
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta name="generator" content={Astro.generator} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    {ogImage && <meta property="og:image" content={ogUrl} />}
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    {ogImage && <meta name="twitter:image" content={ogUrl} />}
+
+    {
+      jsonLd.map((schema) => (
+        <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+      ))
+    }
+
+    <script is:inline>
+      // Set theme before paint to avoid a flash of the wrong scheme.
+      (function () {
+        var stored = null;
+        try {
+          stored = localStorage.getItem('theme');
+        } catch (e) {}
+        var theme = stored === 'dark' || stored === 'light' ? stored : 'light';
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header" id="site-header">
+      <div class="container">
+        <a class="site-title" href="/">{site.name}</a>
+        <div class="nav-wrap">
+          <nav aria-label="Main">
+            <ul class="nav-links" id="nav-links">
+              {
+                navLinks.map((link) => (
+                  <li>
+                    <a href={link.href} aria-current={isCurrent(link.href) ? 'true' : undefined}>
+                      {link.label}
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+          </nav>
+          <button class="icon-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="4.4"></circle>
+              <path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M19.1 4.9l-1.7 1.7M6.6 17.4l-1.7 1.7"></path>
+            </svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20.2 14.2A8.3 8.3 0 0 1 9.8 3.8a8.3 8.3 0 1 0 10.4 10.4Z"></path>
+            </svg>
+          </button>
+          <button class="icon-btn nav-toggle" id="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <path class="icon-bars" d="M4 7h16M4 12h16M4 17h16"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-grid">
+          <div>
+            <h4>{site.name}</h4>
+            <p>
+              {site.role}, {site.institution}.<br />
+              Theoretical high-energy physics and mathematical physics.
+            </p>
+            <p>
+              <a href={`mailto:${site.email}`}>{site.email}</a>
+            </p>
+          </div>
+          <div>
+            <h4>Navigate</h4>
+            <ul>
+              {
+                navLinks.map((link) => (
+                  <li>
+                    <a href={link.href}>{link.label}</a>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+          <div>
+            <h4>Elsewhere</h4>
+            <ul>
+              <li><a href={site.github} rel="me">GitHub · {site.githubUser}</a></li>
+              <li><a href="https://arxiv.org/abs/2602.20261">arXiv</a></li>
+              {profiles.map((p) => (
+                <li><a href={p.url} rel="me">{p.label}</a></li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <div class="colophon">
+          <span>© 2026 {site.name}</span>
+          <span>Last updated {site.lastUpdated}</span>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Theme toggle — persists the explicit choice; initial value follows
+      // the stored preference, defaulting to light (the designed default).
+      const toggle = document.getElementById('theme-toggle');
+      const root = document.documentElement;
+      toggle?.addEventListener('click', () => {
+        const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch {
+          /* private mode */
+        }
+      });
+
+      // Mobile navigation
+      const header = document.getElementById('site-header');
+      const navToggle = document.getElementById('nav-toggle');
+      const setMenu = (open: boolean) => {
+        header?.classList.toggle('nav-open', open);
+        navToggle?.setAttribute('aria-expanded', String(open));
+        navToggle?.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      };
+      navToggle?.addEventListener('click', () => {
+        setMenu(!header?.classList.contains('nav-open'));
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') setMenu(false);
+      });
+      document.getElementById('nav-links')?.addEventListener('click', (e) => {
+        if ((e.target as HTMLElement).closest('a')) setMenu(false);
+      });
+    </script>
+  </body>
+</html>

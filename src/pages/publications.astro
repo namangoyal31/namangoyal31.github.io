@@ -1,0 +1,58 @@
+---
+import Base from '../layouts/Base.astro';
+import PubCard from '../components/PubCard.astro';
+import { site } from '../data/site';
+import { publications } from '../data/publications';
+
+const pub = publications[0];
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ScholarlyArticle',
+  headline: pub.title,
+  author: pub.authors.map((a) => ({ '@type': 'Person', name: a.name })),
+  datePublished: pub.year,
+  identifier: pub.arxiv ? `arXiv:${pub.arxiv}` : undefined,
+  url: pub.arxiv ? `https://arxiv.org/abs/${pub.arxiv}` : site.url,
+  isAccessibleForFree: true,
+};
+---
+<Base title="Publications" description="Publications and preprints of Naman Goyal — tests of general relativity in pseudo-Newtonian approach (arXiv:2602.20261) — plus research code." jsonLd={[articleSchema]}>
+  <div class="container">
+    <header class="page-head">
+      <p class="eyebrow">Publications</p>
+      <h1>Publications</h1>
+      <p class="lede prose" style="margin-top: 1.2rem;">
+        A short, honest list: one preprint so far, from the pseudo-Newtonian gravity project.
+        Research software (SMVac) and project descriptions live under
+        <a href="/research/">Research</a>.
+      </p>
+    </header>
+
+    <section class="section" aria-labelledby="preprints-heading">
+      <div class="section-head">
+        <h2 id="preprints-heading">Preprints</h2>
+      </div>
+      {publications.map((p) => <PubCard pub={p} full />)}
+    </section>
+
+    <section class="section section-tight" aria-labelledby="software-heading">
+      <div class="section-head">
+        <h2 id="software-heading" style="font-size: 1.3rem;">Research software</h2>
+      </div>
+      <article class="card" style="max-width: 46rem;">
+        <p class="meta">
+          <span class="status-dot published" aria-hidden="true"></span>
+          Research code · 2026
+        </p>
+        <h3 style="margin-top: 0;"><a href={site.smvac}>SMVac — Precision Computation of Electroweak Vacuum Stability in the Standard Model</a></h3>
+        <p>
+          A modular C++/Python framework: 3-loop SM RG evolution, NNLO matching, the one-loop
+          Coleman–Weinberg potential, and semiclassical vacuum decay via an RG-improved
+          Fubini–Lipatov calculation, with phase diagrams in the Higgs–top mass plane.
+        </p>
+        <span class="card-link"><a href="/smvac/">Project page →</a></span>
+      </article>
+    </section>
+  </div>
+</Base>

@@ -1,0 +1,75 @@
+---
+import type { Publication } from '../data/publications';
+import { site } from '../data/site';
+import { renderRich } from '../lib/rich';
+
+interface Props {
+  pub: Publication;
+  /** Show the full abstract (publications page) vs summary (home teaser). */
+  full?: boolean;
+}
+
+const { pub, full = false } = Astro.props;
+const absUrl = pub.arxiv ? `https://arxiv.org/abs/${pub.arxiv}` : undefined;
+const pdfUrl = pub.arxiv ? `https://arxiv.org/pdf/${pub.arxiv}` : undefined;
+
+const bibtex = `@article{goyal2026pseudoNewtonian,
+  title   = {Tests of general relativity in pseudo-Newtonian approach},
+  author  = {Goyal, Naman and Mukhopadhyay, Banibrata and Meena, Ashish Kumar},
+  journal = {arXiv e-prints},
+  eprint  = {${pub.arxiv}},
+  archivePrefix = {arXiv},
+  primaryClass  = {${pub.arxivCategory}},
+  year    = {${pub.year}}
+}`;
+---
+<article class="pub-card" id={pub.id}>
+  <p class="meta">
+    <span class="status-dot published" aria-hidden="true"></span>
+    {pub.status === 'preprint' ? 'Preprint' : pub.venue ?? 'Published'} · {pub.year}
+  </p>
+  <h3>
+    {absUrl ? <a href={absUrl}>{pub.title}</a> : pub.title}
+  </h3>
+  <p class="authors meta">
+    {
+      pub.authors.map((a, i) => (
+        <>
+          {i > 0 && ', '}
+          {a.me ? <strong>{a.name}</strong> : a.name}
+        </>
+      ))
+    }
+  </p>
+  <p class="meta">{pub.area}</p>
+  {
+    full ? (
+      <>
+        <p class="pub-abstract">{pub.abstract}</p>
+        {pub.description && (
+          <div class="prose" style="margin-top: 1.4rem;">
+            {pub.description.map((para) => <p set:html={renderRich(para)} />)}
+          </div>
+        )}
+      </>
+    ) : (
+      <p class="pub-abstract">{pub.summary}</p>
+    )
+  }
+  {
+    absUrl && (
+      <div class="pub-links">
+        <a class="chip" href={absUrl}>arXiv:{pub.arxiv} · abstract</a>
+        {pdfUrl && <a class="chip" href={pdfUrl}>PDF</a>}
+      </div>
+    )
+  }
+  {
+    full && (
+      <details class="bibtex">
+        <summary>BibTeX</summary>
+        <pre>{bibtex}</pre>
+      </details>
+    )
+  }
+</article>

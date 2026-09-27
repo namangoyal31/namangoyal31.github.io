@@ -1,0 +1,70 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../data/site';
+
+const personSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.name,
+  url: site.url,
+  email: `mailto:${site.email}`,
+  affiliation: { '@type': 'CollegeOrUniversity', name: 'Indian Institute of Science' },
+  sameAs: [site.github],
+};
+---
+<Base title="About" description="About Naman Goyal — B.S. (Research) physics undergraduate at IISc Bengaluru working in theoretical high-energy physics and mathematical physics." jsonLd={[personSchema]}>
+  <div class="container">
+    <header class="page-head">
+      <p class="eyebrow">About</p>
+      <h1>{site.name}</h1>
+    </header>
+
+    <div class="about-grid section-tight">
+      <div class="prose">
+        <p>
+          I am an undergraduate student in the B.S. (Research) physics program at the Indian
+          Institute of Science, Bengaluru, working in theoretical high-energy physics and
+          mathematical physics. My interests center on the constraints that quantum field theory
+          and symmetry principles place on physical theories — and on what effective descriptions
+          can and cannot reproduce of the fundamental dynamics.
+        </p>
+        <p>
+          In practice this has meant three lines of work: classical tests of general relativity in
+          pseudo-Newtonian frameworks (with Prof. Banibrata Mukhopadhyay at IISc, published as a
+          preprint in 2026); precision studies of electroweak vacuum stability, for which I built
+          the <a href="/smvac/">SMVac</a> computational framework, together with the associated
+          cosmological questions of Higgs initial conditions during inflation (with Prof. Rick
+          Sandepan Gupta at TIFR); and, since May 2026, scattering amplitudes and the S-matrix
+          bootstrap at TIFR, asking whether the uniqueness of dual-resonance amplitudes can be
+          established from analyticity, crossing symmetry, unitarity, and Regge behavior alone.
+          A period of independent reading on Lorentz representations and the little group formalism
+          underlies the more structural side of these interests.
+        </p>
+        <p>
+          My methods combine analytical work with scientific computing — multi-loop renormalization
+          group evolution, semiclassical decay calculations, numerical optimization, and parallel
+          parameter scans. Alongside research, I have competed with the IISc team at the
+          International Physicists' Tournament (National Runner-up, 2023 and 2024) and at PLANCKS
+          (representing India, 11th place globally, 2024), and attended the Perimeter Institute
+          Undergraduate Summer School in June 2026.
+        </p>
+        <p>
+          <strong>Contact.</strong> The best way to reach me is by email at
+          <a href={`mailto:${site.email}`}>{site.email}</a>; my code lives on
+          <a href={site.github} rel="me"> GitHub</a>.
+        </p>
+      </div>
+
+      <aside>
+        {/* Reserved portrait slot.
+            To add a photo: replace this block with
+            <img class="portrait" src="/portrait.jpg" alt="Naman Goyal" width={480} height={600}
+                 style="border-radius:10px; border:1px solid var(--hairline);" />
+            and drop portrait.jpg into public/. */}
+        <div class="portrait-slot" role="img" aria-label="Portrait placeholder">
+          <span>NG</span>
+        </div>
+      </aside>
+    </div>
+  </div>
+</Base>

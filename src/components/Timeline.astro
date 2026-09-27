@@ -1,0 +1,22 @@
+---
+import type { TimelineItem } from '../data/timeline';
+
+interface Props {
+  items: TimelineItem[];
+}
+
+const { items } = Astro.props;
+---
+<ol class="timeline">
+  {
+    items.map((item) => (
+      <li class={item.happened === false ? undefined : 'happened'}>
+        <span class="t-date">{item.date}</span>
+        <span class="t-title">
+          {item.href ? <a href={item.href}>{item.title}</a> : item.title}
+        </span>
+        {item.note && <span class="t-note"> — {item.note}</span>}
+      </li>
+    ))
+  }
+</ol>

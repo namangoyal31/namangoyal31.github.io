@@ -1,0 +1,182 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../data/site';
+
+const research = [
+  {
+    when: 'May 2026 – Present',
+    title: 'Scattering Amplitudes and S-Matrix Bootstrap',
+    where: 'Prof. Rick Sandepan Gupta (TIFR) · TIFR, Mumbai',
+    note: 'Uniqueness of dual-resonance amplitudes from analyticity, crossing, unitarity, and Regge behavior; positivity constraints.',
+    href: '/research/#s-matrix-bootstrap',
+  },
+  {
+    when: 'May 2024 – May 2026',
+    title: 'Higgs Vacuum Stability and the Cosmological Hierarchy Problem [SMVac]',
+    where: 'Prof. Rick Sandepan Gupta (TIFR) · TIFR, Mumbai',
+    note: 'C++ framework: NNLO matching, 3-loop RG evolution, Coleman–Weinberg potential, RG-improved Fubini–Lipatov decay; Higgs–top mass-plane phase diagrams; Higgs as stochastic spectator during slow-roll inflation.',
+    href: '/smvac/',
+  },
+  {
+    when: 'Jan 2024 – May 2026',
+    title: 'Tests of General Relativity in Pseudo-Newtonian Framework',
+    where: 'Prof. Banibrata Mukhopadhyay (IISc) · IISc, Bengaluru',
+    note: 'Analytical precession/redshift/lensing in pseudo-Newtonian potentials vs Schwarzschild GR; Python framework for orbital observables. → arXiv:2602.20261.',
+    href: '/publications/',
+  },
+  {
+    when: 'May 2025 – Jun 2025',
+    title: 'Independent Reading: Lorentz Representations and Little Group Formalism',
+    where: 'Prof. Rick Sandepan Gupta (TIFR) · TIFR, Mumbai',
+    note: 'Poincaré representations; continuous spin representations (Schuster–Toro).',
+    href: '/research/#little-group',
+  },
+];
+
+const education = [
+  {
+    when: 'Aug 2023 – Exp. May 2027',
+    title: 'B.S. (Research) in Physics',
+    where: 'Indian Institute of Science, Bengaluru',
+    note: 'Cumulative GPA: 9.4 / 10.',
+  },
+  {
+    when: 'Apr 2020 – Apr 2023',
+    title: 'Higher Secondary Schooling',
+    where: 'Modern Vidya Niketan (MVN), Faridabad',
+    note: 'CBSE Class X: 97.8% · CBSE Class XII: 94.4%.',
+  },
+];
+
+const programs = [
+  { when: 'Jun 2026', title: 'Perimeter Institute Undergraduate Summer School (USS)', where: 'Perimeter Institute for Theoretical Physics, Waterloo, Canada' },
+  { when: 'Jun 2024', title: 'NIUS Physics Camp', where: 'Homi Bhabha Centre for Science Education (HBCSE–TIFR), Mumbai' },
+];
+
+const awards = [
+  { when: '2026', title: 'PLANCKS 2024 — International Physics Competition', note: 'Represented India at the IAPS PLANCKS finals (Dublin), 11th-place global finish; re-selected for 2025.' },
+  { when: '2024', title: 'NIUS Physics Scholar (Batch 21.1)', note: 'Selected by HBCSE–TIFR; national program admitting ~70 undergraduates annually.' },
+  { when: '2023–24', title: "Indian Physics Tournament (IPT)", note: 'IISc team, National Runner-up in 2023 and 2024.' },
+  { when: '2023', title: 'JEE 2023', note: 'AIR 33 in JEE Advanced (~180,000 candidates); AIR 281 in JEE Main (~1.1 million candidates).' },
+  { when: '2023', title: 'KVPY Scholar', note: 'AIR 171 (SA Stream); national fellowship for research careers in basic sciences.' },
+  { when: '2021–22', title: 'Indian Astronomy Olympiad (InAO)', note: 'Selected twice for the Orientation-cum-Selection Camp (OCSC).' },
+  { when: '2020–21', title: 'RMO & NSEP', note: 'Top 1% state ranking in RMO (2020, 2021) and NSEP (2020).' },
+];
+---
+<Base title="CV" description="Curriculum vitae of Naman Goyal — B.S. (Research) physics undergraduate at IISc Bengaluru: research experience, publication, education, awards, and technical skills.">
+  <div class="container">
+    <header class="page-head">
+      <p class="eyebrow">Curriculum vitae</p>
+      <div class="section-head" style="margin-top: 0.8rem;">
+        <h1 style="margin: 0;">CV</h1>
+        <a class="btn btn-solid" href={site.cvPath} download>Download PDF</a>
+      </div>
+      <p class="meta" style="margin-top: 1rem;">
+        A summary is below; the PDF is the authoritative, complete record.
+      </p>
+    </header>
+
+    <section class="cv-section" aria-labelledby="cv-research">
+      <h2 id="cv-research" style="margin-top: 2.2rem;">Research Experience</h2>
+      {
+        research.map((r) => (
+          <div class="cv-entry">
+            <span class="when">{r.when}</span>
+            <div class="what">
+              <span class="title">{r.href ? <a href={r.href}>{r.title}</a> : r.title}</span>
+              <div class="where">{r.where}</div>
+              <p>{r.note}</p>
+            </div>
+          </div>
+        ))
+      }
+    </section>
+
+    <section class="cv-section" aria-labelledby="cv-pub">
+      <h2 id="cv-pub">Publications</h2>
+      <div class="cv-entry">
+        <span class="when">2026</span>
+        <div class="what">
+          <span class="title">
+            N. Goyal, B. Mukhopadhyay, A. K. Meena — “Tests of general relativity in pseudo-Newtonian approach.”
+          </span>
+          <div class="where"><a href="https://arxiv.org/abs/2602.20261">arXiv:2602.20261</a> (preprint)</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cv-section" aria-labelledby="cv-edu">
+      <h2 id="cv-edu">Education</h2>
+      {
+        education.map((r) => (
+          <div class="cv-entry">
+            <span class="when">{r.when}</span>
+            <div class="what">
+              <span class="title">{r.title}</span>
+              <div class="where">{r.where}</div>
+              <p>{r.note}</p>
+            </div>
+          </div>
+        ))
+      }
+    </section>
+
+    <section class="cv-section" aria-labelledby="cv-programs">
+      <h2 id="cv-programs">Academic Programs</h2>
+      {
+        programs.map((r) => (
+          <div class="cv-entry">
+            <span class="when">{r.when}</span>
+            <div class="what">
+              <span class="title">{r.title}</span>
+              <div class="where">{r.where}</div>
+            </div>
+          </div>
+        ))
+      }
+    </section>
+
+    <section class="cv-section" aria-labelledby="cv-awards">
+      <h2 id="cv-awards">Awards & Honors</h2>
+      {
+        awards.map((r) => (
+          <div class="cv-entry">
+            <span class="when">{r.when}</span>
+            <div class="what">
+              <span class="title">{r.title}</span>
+              <p>{r.note}</p>
+            </div>
+          </div>
+        ))
+      }
+    </section>
+
+    <section class="cv-section" aria-labelledby="cv-skills">
+      <h2 id="cv-skills">Technical Skills</h2>
+      <div class="prose" style="font-size: 0.98rem;">
+        <p>
+          <strong>Programming.</strong> C++, Python.
+          <br />
+          <strong>Scientific computing.</strong> Adaptive ODE integration · multi-loop RGE evolution ·
+          numerical optimization · scientific visualization.
+          <br />
+          <strong>Libraries & software.</strong> NumPy, SciPy, Matplotlib, SymPy, Mathematica.
+          <br />
+          <strong>Development.</strong> Git, LaTeX.
+        </p>
+      </div>
+    </section>
+
+    <section class="cv-section" aria-labelledby="cv-course">
+      <h2 id="cv-course">Relevant Coursework</h2>
+      <details class="coursework">
+        <summary>Expand coursework</summary>
+        <ul>
+          <li><strong>Advanced theoretical physics:</strong> Quantum Field Theory I & II, Standard Model of Particle Physics, General Relativity, Advanced Mathematical Physics, Nuclear and Particle Physics.</li>
+          <li><strong>Core physics & astrophysics:</strong> Quantum Mechanics I & II, Classical Mechanics, Statistical Mechanics, Condensed Matter Physics, Fundamentals of Astrophysics, Electrodynamics, Thermal Physics.</li>
+          <li><strong>Mathematics:</strong> Linear Algebra and Analysis, Probability & Statistics, Mathematical Methods of Physics.</li>
+        </ul>
+      </details>
+    </section>
+  </div>
+</Base>
