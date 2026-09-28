@@ -61,6 +61,11 @@ export function mountAmpField(canvas) {
   let ink = [34, 38, 46];
   let accent = [242, 201, 76];
 
+  // Poles placed by the visitor (fractions of the canvas), capped at five.
+  // Each one is a singularity: every contour deforms around it.
+  const userPoles = [];
+  const ghost = { x: 0, y: 0, inside: false };
+
   function readTheme() {
     ink = hexToRgb(cssVar('--ink', '#eae8e1'));
     accent = hexToRgb(cssVar('--accent', '#f2c94c'));
@@ -82,8 +87,8 @@ export function mountAmpField(canvas) {
 
   function layout() {
     const mobile = W < 700;
-    const O = { x: W * (mobile ? 0.8 : 0.72), y: H * (mobile ? 0.55 : 0.5) };
-    const mu0 = mobile ? Math.min(W * 0.24, H * 0.16) : Math.min(W * 0.12, H * 0.2);
+    const O = { x: W * 0.68, y: H * 0.54 };
+    const mu0 = Math.min(W * 0.16, H * 0.22);
     // c_j grows toward the parabolic limit: e = c/(c + 2 mu_0) runs from 0.2
     // (compact) to 0.88 (nearly parabolic within the visible region).
     const cs = (mobile ? [0.5, 2, 8] : [0.5, 1.5, 4.5, 15]).map((m) => m * mu0);
@@ -106,8 +111,20 @@ export function mountAmpField(canvas) {
     const steps = 160;
     for (let i = 0; i <= steps; i++) {
       const phi = (i / steps) * TAU;
-      const x = cx + a * Math.cos(phi);
-      const y = O.y - b * Math.sin(phi);
+      let x = cx + a * Math.cos(phi);
+      let y = O.y - b * Math.sin(phi);
+      // placed poles are singularities: the contours bend away from each one
+      for (const up of userPoles) {
+        const px = up.fx * W;
+        const py = up.fy * H;
+        const dx = x - px;
+        const dy = y - py;
+        const d2 = dx * dx + dy * dy;
+        const push = 11 * Math.exp(-d2 / 6050);
+        const d = Math.max(1, Math.sqrt(d2));
+        x += (dx / d) * push;
+        y += (dy / d) * push;
+      }
       if (i === 0) ctx.moveTo(x, y);
       else ctx.lineTo(x, y);
     }
@@ -164,6 +181,31 @@ export function mountAmpField(canvas) {
       else ctx.lineTo(x, y);
     }
     ctx.stroke();
+
+    // visitor-placed poles: accent crosses with a small circle
+    for (const up of userPoles) {
+      const x = up.fx * W;
+      const y = up.fy * H;
+      ctx.strokeStyle = rgbaA(0.7);
+      ctx.beginPath();
+      ctx.arc(x, y, 3, 0, TAU);
+      ctx.moveTo(x - 6.5, y);
+      ctx.lineTo(x + 6.5, y);
+      ctx.moveTo(x, y - 6.5);
+      ctx.lineTo(x, y + 6.5);
+      ctx.stroke();
+    }
+
+    // affordance: a faint crosshair where the next pole would land
+    if (ghost.inside) {
+      ctx.strokeStyle = rgbaA(0.3);
+      ctx.beginPath();
+      ctx.moveTo(ghost.x - 5, ghost.y);
+      ctx.lineTo(ghost.x + 5, ghost.y);
+      ctx.moveTo(ghost.x, ghost.y - 5);
+      ctx.lineTo(ghost.x, ghost.y + 5);
+      ctx.stroke();
+    }
   }
 
   // --- lifecycle ------------------------------------------------------------
@@ -227,6 +269,32 @@ export function mountAmpField(canvas) {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     layout();
   }
+
+  // Interaction: click places a pole (five max), double-click or the reset
+  // control clears them, and the ghost crosshair marks the next placement.
+  canvas.addEventListener('pointerdown', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    userPoles.push({
+      fx: (e.clientX - rect.left) / rect.width,
+      fy: (e.clientY - rect.top) / rect.height,
+    });
+    if (userPoles.length > 5) userPoles.shift();
+  });
+  canvas.addEventListener('dblclick', () => {
+    userPoles.length = 0;
+  });
+  canvas.addEventListener('pointermove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    ghost.x = e.clientX - rect.left;
+    ghost.y = e.clientY - rect.top;
+    ghost.inside = true;
+  });
+  canvas.addEventListener('pointerleave', () => {
+    ghost.inside = false;
+  });
+  canvas.ampReset = () => {
+    userPoles.length = 0;
+  };
 
   resize();
   readTheme();

@@ -70,8 +70,18 @@ The only time dependence is a slow breathing of each c_j:
 which slides the left focus and reshapes the contour while the pins hold
 exactly (a_j, b_j, and the center are recomputed from c_j every frame, so
 t_j(0) = mu_0 and F_R = 0 are preserved identically). One sinusoid per
-ellipse with period T makes the loop seamless. There is no orbiting marker
-and no cursor interaction.
+ellipse with period T makes the loop seamless.
+
+## Interaction
+
+The figure is an instrument. Clicking (or tapping) inside the frame places a
+pole at that point - up to five, oldest removed first - and every contour
+deforms around each singularity: a Gaussian displacement (amplitude 11 px,
+sigma 55 px) pushes path points radially away from the pole, so the domains
+bend around it the way analytic contours bend around poles. The right focus
+and right extremity stay pinned. A faint crosshair marks where the next pole
+would land; double-clicking, or the reset control in the caption, clears all
+placed poles. Placed poles are session-only and never persisted.
 
 ## The atmosphere system
 

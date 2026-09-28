@@ -33,9 +33,8 @@ const personSchema = {
   jsonLd={[personSchema]}
 >
   <section class="hero">
-    <canvas class="hero-field" aria-hidden="true"></canvas>
-    <div class="container">
-      <div class="hero-inner">
+    <div class="container hero-layout">
+      <div class="hero-copy">
         <p class="eyebrow reveal" style="--reveal-delay: 0ms">Theoretical Physics · High Energy Theory</p>
         <h1 class="reveal" style="--reveal-delay: 70ms">{site.name}</h1>
         <p class="affiliation reveal" style="--reveal-delay: 140ms">
@@ -60,13 +59,33 @@ const personSchema = {
           <a href="https://arxiv.org/abs/2602.20261">arXiv:2602.20261</a>
         </p>
       </div>
+      <figure class="fig-plate reveal" style="--reveal-delay: 200ms">
+        <span class="pc tl" aria-hidden="true"></span>
+        <span class="pc tr" aria-hidden="true"></span>
+        <span class="pc bl" aria-hidden="true"></span>
+        <span class="pc br" aria-hidden="true"></span>
+        <div class="canvas-wrap">
+          <canvas class="hero-field" aria-label="Interactive analyticity domains: click to place poles in the complex t-plane"></canvas>
+        </div>
+        <figcaption class="fig-caption">
+          <span class="fig-label">Fig. 1</span> analyticity domains in the complex t-plane; the
+          right focus stays at t = 0 and the rightmost point at μ<sub>0</sub>. Click to place
+          poles: the contours deform around every singularity. Double-click to
+          <button id="pole-reset" type="button">reset</button>.
+        </figcaption>
+      </figure>
     </div>
   </section>
 
   <script>
     import { mountAmpField } from '../lib/amp-field.js';
     const canvas = document.querySelector('.hero-field');
-    if (canvas) mountAmpField(canvas);
+    if (canvas) {
+      mountAmpField(canvas);
+      document.getElementById('pole-reset')?.addEventListener('click', () => {
+        canvas.ampReset?.();
+      });
+    }
   </script>
 
   <section class="section" aria-labelledby="current-heading">
