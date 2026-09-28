@@ -61,9 +61,6 @@ export function mountAmpField(canvas) {
   let ink = [34, 38, 46];
   let accent = [242, 201, 76];
 
-  // familyShift: position within the family (0 = the drawn set, 1 = deeper
-  // into it, left focus further out). Dragging the figure sweeps this one
-  // genuine parameter of the family; the pins hold for every value.
 
   function readTheme() {
     ink = hexToRgb(cssVar('--ink', '#eae8e1'));
@@ -151,7 +148,7 @@ export function mountAmpField(canvas) {
 
     // The family of analyticity contours, breathing in c_j.
     for (const e of geom.family) {
-      const c = e.c0 * Math.pow(3, familyShift) * (1 + 0.054 * Math.sin(t * TAU + e.phase) + open);
+      const c = e.c0 * (1 + 0.054 * Math.sin(t * TAU + e.phase) + open);
       drawEllipse(c, e.alpha);
     }
 
@@ -185,7 +182,6 @@ export function mountAmpField(canvas) {
     const doc = document.documentElement;
     const max = Math.max(1, doc.scrollHeight - window.innerHeight);
     const progress = Math.min(1, Math.max(0, window.scrollY / max));
-    familyShift += (shiftTarget - familyShift) * 0.08;
     render(t, 0.12 * progress);
     // the figure recedes gently once its section has been read
     const heroH = canvas.parentElement.offsetHeight || 1;
@@ -234,41 +230,9 @@ export function mountAmpField(canvas) {
     layout();
   }
 
-  // Interaction: dragging horizontally sweeps the family parameter (the
-  // left-focus distance c_j, here scaled by up to 3x) - the actual quantity
-  // that generates the domains. Double-click returns to the drawn set.
-  let dragging = false;
-  let dragX = 0;
-  let dragStart = 0;
-  let familyShift = 0;
-  let shiftTarget = 0;
-  canvas.addEventListener('pointerdown', (e) => {
-    dragging = true;
-    dragX = e.clientX;
-    dragStart = shiftTarget;
-    canvas.setPointerCapture(e.pointerId);
-  });
-  canvas.addEventListener('pointermove', (e) => {
-    if (!dragging) return;
-    const rect = canvas.getBoundingClientRect();
-    shiftTarget = Math.max(0, Math.min(1, dragStart + (e.clientX - dragX) / (rect.width * 0.6)));
-  });
-  const endDrag = () => {
-    dragging = false;
-  };
-  canvas.addEventListener('pointerup', endDrag);
-  canvas.addEventListener('pointercancel', endDrag);
-  canvas.addEventListener('dblclick', () => {
-    shiftTarget = 0;
-  });
-  canvas.ampReset = () => {
-    shiftTarget = 0;
-  };
-
   resize();
   readTheme();
   if (staticPhase !== null) {
-    familyShift = shiftTarget = staticPhase;
     render(staticPhase, 0);
   } else {
     start();
