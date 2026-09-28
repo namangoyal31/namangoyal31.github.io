@@ -1,24 +1,35 @@
 /**
  * amp-field.js
  *
- * Homepage background: the analytic structure of a scattering amplitude in the
- * complexified Mandelstam plane, drawn as a quiet mathematical figure.
+ * Homepage background: the Lehmann/Martin analyticity geometry in the
+ * complex Mandelstam t-plane, drawn as a living research-paper figure.
  *
- * Elements (see docs/ANIMATION.md):
- *   - faint coordinate grid + real/imaginary axes
- *   - resonance poles (crossed-circle markers) with breathing halos
- *   - a short branch cut on the real axis near a threshold point
- *   - two nested analytic continuation contours encircling the poles,
- *     deforming smoothly and returning to their start (seamless loop)
- *   - faint Regge trajectories drifting across the plane
+ * The mathematics (verified in docs/ANIMATION.md):
  *
- * All time dependence is a sum of sin/cos terms with period T, so the loop is
- * exactly seamless. Pure Canvas 2D, no dependencies, no accumulation fills:
- * every frame is a clearRect followed by low-alpha strokes.
+ *   Lehmann ellipse in the z-plane (foci z = +-1):
+ *       z(phi) = cosh(eta) cos(phi) + i sinh(eta) sin(phi)
+ *
+ *   High-energy map to the Mandelstam plane:
+ *       t = 2 k^2 (z - 1)
+ *
+ *   Image ellipse (foci t = 0 and t = -4 k^2, center -2 k^2):
+ *       t(phi) = 2 k^2 [ cosh(eta) cos(phi) - 1 + i sinh(eta) sin(phi) ]
+ *
+ *   Physical region z in [-1, 1] maps to the real segment between the foci.
+ *
+ * The figure draws a small family of such ellipses (a domain of analyticity,
+ * eta increasing), the physical segment between the foci, both foci marked,
+ * and one small marker performing analytic continuation once around the
+ * middle ellipse per loop. Each ellipse also breathes by a few percent in
+ * eta, evoking the enlargement of the analyticity domain (Martin's argument)
+ * without inventing any formula. All time dependence is a single sinusoid of
+ * period T = 3.6 s, so the loop is exactly seamless.
+ *
+ * Single ink color, Canvas 2D, no dependencies. See docs/ANIMATION.md.
  */
 
-const TAU = Math.PI * 2;
 const LOOP_MS = 3600;
+const TAU = Math.PI * 2;
 
 function cssVar(name, fallback) {
   const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -29,235 +40,141 @@ function hexToRgb(hex) {
   let h = hex.replace('#', '').trim();
   if (h.length === 3) h = h.split('').map((c) => c + c).join('');
   const n = parseInt(h, 16);
-  if (Number.isNaN(n)) return [30, 78, 140];
+  if (Number.isNaN(n)) return [34, 38, 46];
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+
+function easeInOut(x) {
+  const c = Math.max(0, Math.min(1, x));
+  return c * c * (3 - 2 * c);
 }
 
 export function mountAmpField(canvas) {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
 
-  const staticMode =
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
-    new URLSearchParams(window.location.search).has('static');
+  const staticPhase = (() => {
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
+        !new URLSearchParams(window.location.search).has('static')) return null;
+    const p = parseFloat(new URLSearchParams(window.location.search).get('phase') ?? '0');
+    return Math.max(0, Math.min(1, p));
+  })();
 
   let W = 0;
   let H = 0;
-
-  // Palette (re-read on theme change).
-  let accent = [30, 78, 140];
   let ink = [34, 38, 46];
 
-  // Cursor probe: eased position + strength. The perturbation it causes is a
-  // few pixels at most, so the figure reads as complete without a cursor.
-  const probe = { x: -1e4, y: -1e4, tx: -1e4, ty: -1e4, s: 0, ts: 0, inside: false };
-
-  function resize() {
-    const rect = canvas.parentElement.getBoundingClientRect();
-    W = Math.max(320, rect.width);
-    H = Math.max(320, rect.height);
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-    canvas.width = Math.round(W * dpr);
-    canvas.height = Math.round(H * dpr);
-    canvas.style.width = W + 'px';
-    canvas.style.height = H + 'px';
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  }
-
-  // Complex-plane geometry. Origin sits slightly left of center so the
-  // composition breathes under the right-aligned hero motif area.
-  function origin() {
-    return { x: W * 0.42, y: H * 0.5 };
-  }
-
-  // Resonance poles (fractions of canvas size).
-  const POLES = [
-    { fx: 0.30, fy: 0.32 },
-    { fx: 0.55, fy: 0.66 },
-    { fx: 0.72, fy: 0.30 },
-  ];
-  const THRESHOLD = { fx: 0.62, fy: 0.5 }; // branch point on the real axis
-
-  function polePos(p) {
-    return { x: p.fx * W, y: p.fy * H };
-  }
-
-  // Cursor perturbation at a point: a gentle push away from the probe with
-  // Gaussian falloff, clamped to a few pixels.
-  function perturb(x, y, out) {
-    const dx = x - probe.x;
-    const dy = y - probe.y;
-    const d2 = dx * dx + dy * dy;
-    const g = probe.s * Math.exp(-d2 / (2 * 110 * 110));
-    const inv = 1 / Math.max(40, Math.sqrt(d2));
-    out.x = 4 * g * dx * inv;
-    out.y = 4 * g * dy * inv;
-    return out;
-  }
-
-  const tmp = { x: 0, y: 0 };
-
-  function drawGrid(t) {
-    const o = origin();
-    const g = Math.max(64, Math.min(104, W / 14));
-    ctx.strokeStyle = rgba(ink, 0.05);
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    for (let x = o.x % g; x < W; x += g) {
-      ctx.moveTo(Math.round(x) + 0.5, 0);
-      ctx.lineTo(Math.round(x) + 0.5, H);
-    }
-    for (let y = o.y % g; y < H; y += g) {
-      ctx.moveTo(0, Math.round(y) + 0.5);
-      ctx.lineTo(W, Math.round(y) + 0.5);
-    }
-    ctx.stroke();
-
-    // Real / imaginary axes through the origin.
-    ctx.strokeStyle = rgba(ink, 0.09);
-    ctx.beginPath();
-    ctx.moveTo(0, o.y + 0.5);
-    ctx.lineTo(W, o.y + 0.5);
-    ctx.moveTo(o.x + 0.5, 0);
-    ctx.lineTo(o.x + 0.5, H);
-    ctx.stroke();
-  }
-
-  // Faint curved Regge trajectories: nearly straight, slowly breathing lines.
-  function drawRegge(t) {
-    const o = origin();
-    ctx.strokeStyle = rgba(accent, 0.08);
-    ctx.lineWidth = 1;
-    const slopes = [0.32, 0.44, 0.56];
-    for (let i = 0; i < slopes.length; i++) {
-      const phase = t * TAU + i * 2.1;
-      const b = o.y - slopes[i] * (W * 0.42) + 8 * Math.sin(phase) - i * 46;
-      ctx.beginPath();
-      for (let x = -20; x <= W + 20; x += 24) {
-        const y = b - slopes[i] * x + (x * x) / (W * W) * 26 * Math.sin(phase * 0.7);
-        const [px, py] = perturbed(x, y, t, 2);
-        if (x === -20) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-      }
-      ctx.stroke();
-    }
-  }
-
-  // Apply a tiny cursor perturbation to a raw point.
-  function perturbed(x, y, t, max) {
-    perturb(x, y, tmp);
-    return [x + tmp.x * (max / 4), y + tmp.y * (max / 4)];
-  }
-
-  // The analytic continuation contour: a smooth closed curve encircling two
-  // poles. Radius r(theta, t) is a small Fourier sum in theta whose time terms
-  // all have period T, so the loop closes exactly.
-  function contourRadius(th) {
-    return 1 + 0.12 * Math.cos(2 * th - 0.6) + 0.06 * Math.cos(3 * th + 1.2);
-  }
-
-  function drawContour(t) {
-    const o = origin();
-    // Center drifts once around a tiny ellipse per loop.
-    const cx = o.x + W * 0.06 + 4 * Math.sin(t * TAU);
-    const cy = o.y - H * 0.06 + 3 * Math.sin(t * TAU + 1.1);
-    const R = Math.min(W, H) * 0.21;
-    const steps = 140;
-
-    ctx.strokeStyle = rgba(accent, 0.3);
-    ctx.lineWidth = 1.25;
-    drawOne(R);
-    ctx.strokeStyle = rgba(accent, 0.13);
-    ctx.lineWidth = 1;
-    drawOne(R * 1.3);
-
-    function drawOne(radius) {
-      ctx.beginPath();
-      for (let i = 0; i <= steps; i++) {
-        const th = (i / steps) * TAU;
-        const r = radius * contourRadius(th) *
-          (1 + 0.03 * Math.sin(3 * th + t * TAU) + 0.018 * Math.sin(5 * th - t * TAU - 1.3));
-        const x = cx + r * Math.cos(th);
-        const y = cy + r * 0.82 * Math.sin(th);
-        const [px, py] = perturbed(x, y, t, 4);
-        if (i === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-      }
-      ctx.closePath();
-      ctx.stroke();
-    }
-  }
-
-  function drawPoles(t) {
-    ctx.strokeStyle = rgba(ink, 0.38);
-    ctx.lineWidth = 1;
-    for (const p of POLES) {
-      const { x, y } = polePos(p);
-      const breathe = 1.5 * Math.sin(t * TAU + x);
-      const r = 4.5;
-      // halo
-      ctx.strokeStyle = rgba(accent, 0.09);
-      ctx.beginPath();
-      ctx.arc(x, y, 14 + breathe, 0, TAU);
-      ctx.stroke();
-      // marker
-      ctx.strokeStyle = rgba(ink, 0.38);
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, TAU);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(x - r * 0.68, y - r * 0.68);
-      ctx.lineTo(x + r * 0.68, y + r * 0.68);
-      ctx.moveTo(x + r * 0.68, y - r * 0.68);
-      ctx.lineTo(x - r * 0.68, y + r * 0.68);
-      ctx.stroke();
-    }
-    // threshold branch point on the real axis + short cut segment
-    const o = origin();
-    const bxp = THRESHOLD.fx * W;
-    ctx.strokeStyle = rgba(ink, 0.2);
-    ctx.setLineDash([5, 4]);
-    ctx.beginPath();
-    ctx.moveTo(bxp - 58, o.y + 0.5);
-    ctx.lineTo(bxp + 58, o.y + 0.5);
-    ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.fillStyle = rgba(ink, 0.45);
-    ctx.beginPath();
-    ctx.arc(bxp, o.y, 2.2, 0, TAU);
-    ctx.fill();
-  }
-
-  function rgba(rgb, a) {
-    return `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${a})`;
-  }
-
   function readTheme() {
-    accent = hexToRgb(cssVar('--accent', '#1e4e8c'));
     ink = hexToRgb(cssVar('--ink', '#22262e'));
   }
 
+  function rgba(a) {
+    return `rgba(${ink[0]},${ink[1]},${ink[2]},${a})`;
+  }
+
+  // Geometry of the analyticity domains, in pixels.
+  //
+  // t = 0 (the right focus) sits right of the hero text; t = -4k^2 lies to
+  // its left. S is the pixel length of 2 k^2, so the foci are S*2 apart and
+  // an ellipse of parameter eta has semi-axes S*cosh(eta) and S*sinh(eta).
+  // The family is ordered by eta: inner = partial-wave (Lehmann) domain,
+  // outer = enlarged analyticity domain (Martin's argument).
+  let geom = null;
+
+  function layout() {
+    const mobile = W < 700;
+    const fociRight = { x: W * (mobile ? 0.8 : 0.74), y: H * (mobile ? 0.66 : 0.58) };
+    const S = mobile ? Math.min(W * 0.22, H * 0.15) : Math.min(W * 0.1, H * 0.21);
+    const family = mobile
+      ? [
+          { eta: 0.7, alpha: 0.1, phase: 0.0 },
+          { eta: 1.3, alpha: 0.14, phase: 1.1 },
+        ]
+      : [
+          { eta: 0.65, alpha: 0.1, phase: 0.0 },
+          { eta: 0.95, alpha: 0.13, phase: 0.8 },
+          { eta: 1.3, alpha: 0.16, phase: 1.6 },
+        ];
+    geom = { fociRight, S, family, fociLeft: { x: fociRight.x - 2 * S, y: fociRight.y } };
+  }
+
+  // t-plane point of the ellipse with parameter eta at angle phi, around the
+  // ellipse center (-2k^2 in t; (fociRight.x - S, fociRight.y) in pixels).
+  function ellipsePoint(eta, phi) {
+    const c = geom.fociRight.x - geom.S;
+    const a = geom.S * Math.cosh(eta);
+    const b = geom.S * Math.sinh(eta);
+    return { x: c + a * Math.cos(phi), y: geom.fociRight.y - b * Math.sin(phi) };
+  }
+
+  function drawEllipse(eta, alpha) {
+    ctx.strokeStyle = rgba(alpha);
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    const steps = 160;
+    for (let i = 0; i <= steps; i++) {
+      const phi = (i / steps) * TAU;
+      const p = ellipsePoint(eta, phi);
+      if (i === 0) ctx.moveTo(p.x, p.y);
+      else ctx.lineTo(p.x, p.y);
+    }
+    ctx.closePath();
+    ctx.stroke();
+  }
+
   function render(t) {
-    // t is in loops (one full loop = 1.0); all motion uses t * TAU.
+    // t in [0, 1): one loop. All motion uses sin/cos(t * TAU).
     ctx.clearRect(0, 0, W, H);
-    drawGrid(t);
-    drawRegge(t);
-    drawContour(t);
-    drawPoles(t);
-  }
+    ctx.lineWidth = 1;
+    const { fociRight, fociLeft } = geom;
 
-  // --- pointer coupling (tiny, eased) --------------------------------------
+    // Real-t axis through both foci.
+    ctx.strokeStyle = rgba(0.07);
+    ctx.beginPath();
+    ctx.moveTo(0, fociRight.y + 0.5);
+    ctx.lineTo(W, fociRight.y + 0.5);
+    ctx.stroke();
 
-  function onMove(e) {
-    const rect = canvas.getBoundingClientRect();
-    probe.tx = e.clientX - rect.left;
-    probe.ty = e.clientY - rect.top;
-    probe.inside = true;
-    probe.ts = 1;
-  }
-  function onLeave() {
-    probe.inside = false;
-    probe.ts = 0;
+    // Physical region: the real segment between the foci, t in [-4k^2, 0].
+    ctx.strokeStyle = rgba(0.2);
+    ctx.beginPath();
+    ctx.moveTo(fociLeft.x + 0.5, fociRight.y);
+    ctx.lineTo(fociRight.x - 0.5, fociRight.y);
+    ctx.stroke();
+
+    // Foci markers: small precise ticks, slightly stronger than the lines.
+    ctx.strokeStyle = rgba(0.32);
+    for (const f of [fociRight, fociLeft]) {
+      ctx.beginPath();
+      ctx.moveTo(f.x + 0.5, f.y - 4);
+      ctx.lineTo(f.x + 0.5, f.y + 4);
+      ctx.stroke();
+    }
+
+    // The family of analyticity domains, each breathing by a few percent in
+    // eta with its own phase (the Martin-enlargement motif).
+    for (const e of geom.family) {
+      drawEllipse(e.eta * (1 + 0.035 * Math.sin(t * TAU + e.phase)), e.alpha);
+    }
+
+    // Analytic continuation marker: one traversal of the middle ellipse per
+    // loop, with a short fading trail along the just-covered arc.
+    const mid = geom.family.length > 1 ? geom.family[1] : geom.family[0];
+    const phi = t * TAU;
+    const trail = 0.85;
+    ctx.strokeStyle = rgba(0.16);
+    ctx.beginPath();
+    for (let i = 0; i <= 24; i++) {
+      const p = ellipsePoint(mid.eta, phi - trail + (i / 24) * trail);
+      if (i === 0) ctx.moveTo(p.x, p.y);
+      else ctx.lineTo(p.x, p.y);
+    }
+    ctx.stroke();
+    const head = ellipsePoint(mid.eta, phi);
+    ctx.strokeStyle = rgba(0.4);
+    ctx.beginPath();
+    ctx.arc(head.x, head.y, 2.4, 0, TAU);
+    ctx.stroke();
   }
 
   // --- lifecycle ------------------------------------------------------------
@@ -270,16 +187,13 @@ export function mountAmpField(canvas) {
   function frame(now) {
     if (!running) return;
     if (!t0) t0 = now;
-    const t = ((now - t0) % LOOP_MS) / LOOP_MS; // loops; seamless by construction
-    probe.x += (probe.tx - probe.x) * 0.06;
-    probe.y += (probe.ty - probe.y) * 0.06;
-    probe.s += (probe.ts - probe.s) * 0.05;
+    const t = ((now - t0) % LOOP_MS) / LOOP_MS;
     render(t);
     raf = requestAnimationFrame(frame);
   }
 
   function start() {
-    if (running || staticMode) return;
+    if (running || staticPhase !== null) return;
     running = true;
     raf = requestAnimationFrame(frame);
   }
@@ -300,25 +214,35 @@ export function mountAmpField(canvas) {
     else if (inView) start();
   });
 
-  window.addEventListener('pointermove', onMove, { passive: true });
-  document.addEventListener('pointerleave', onLeave);
-
   const themeObserver = new MutationObserver(() => {
     readTheme();
-    if (staticMode) render(0.25);
+    if (staticPhase !== null) render(staticPhase);
   });
   themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
   const ro = new ResizeObserver(() => {
     resize();
-    if (staticMode) render(0.25);
+    if (staticPhase !== null) render(staticPhase);
   });
   ro.observe(canvas.parentElement);
 
+  function resize() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    W = Math.max(320, rect.width);
+    H = Math.max(320, rect.height);
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    layout();
+  }
+
   resize();
   readTheme();
-  if (staticMode) {
-    render(0.25);
+  if (staticPhase !== null) {
+    render(staticPhase);
   } else {
     start();
   }
