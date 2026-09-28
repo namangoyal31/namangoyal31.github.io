@@ -23,7 +23,8 @@ See [PROJECT.md](PROJECT.md) for the full tree. The short version:
 
 - page content and structure: `src/pages/*.astro`
 - shared layout/SEO: `src/layouts/Base.astro`
-- all colors/typography: `src/styles/global.css` (custom properties at the top)
+- all colors/typography: `src/styles/global.css` (custom properties at the top;
+  the site is dark-only, accent = yellow)
 - content data: `src/data/*.ts`
 - homepage visual: `src/lib/amp-field.js`
 

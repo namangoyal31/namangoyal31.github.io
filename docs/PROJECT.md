@@ -57,10 +57,9 @@ on the next build.
   template math. No math library ships to the browser; only KaTeX fonts/CSS.
 - **Fonts.** Source Serif 4 (text), Inter (UI labels), JetBrains Mono (code), all
   self-hosted via Fontsource imports in `Base.astro`.
-- **Theming.** CSS custom properties on `:root` and `[data-theme='dark']`. A tiny
-  inline script in `Base.astro` sets `data-theme` before first paint from
-  `localStorage` (default light). The homepage canvas re-reads the palette when the
-  attribute changes.
+- **Theming.** The site is dark-only by design: CSS custom properties on
+  `:root` describe the near-black ground and the single yellow accent. There is
+  no theme toggle. The homepage canvas reads its colors from the same tokens.
 - **SEO.** Per-page title/description props, canonical URLs derived from `site` in
   `astro.config.mjs`, Open Graph/Twitter tags, JSON-LD (Person, ProfilePage,
   ScholarlyArticle, SoftwareSourceCode), sitemap via `@astrojs/sitemap`, `robots.txt`.

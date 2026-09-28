@@ -35,9 +35,12 @@ const personSchema = {
     <canvas class="hero-field" aria-hidden="true"></canvas>
     <div class="container">
       <div class="hero-inner">
-        <p class="eyebrow">Theoretical Physics · {site.institution}</p>
+        <p class="eyebrow">Theoretical Physics · High Energy Theory</p>
         <h1>{site.name}</h1>
-        <p class="affiliation">{site.role}, {site.institution}</p>
+        <p class="affiliation">
+          {site.role}, {site.institution}. Currently at TIFR, Mumbai, on scattering amplitudes
+          and the S-matrix bootstrap.
+        </p>
         <p class="lede">
           I work in theoretical high-energy physics and mathematical physics. Most of my research
           asks what quantum field theory and symmetry principles fix, and what they leave free:
@@ -52,8 +55,8 @@ const personSchema = {
           <a class="btn btn-ghost" href={site.github} rel="me">GitHub</a>
         </div>
         <p class="now-line">
-          <strong>Now:</strong> S-matrix bootstrap at TIFR. Latest: a preprint on classical tests
-          of GR, <a href="https://arxiv.org/abs/2602.20261">arXiv:2602.20261</a>.
+          <strong>now</strong> · S-matrix bootstrap at TIFR · preprint on classical tests of GR,
+          <a href="https://arxiv.org/abs/2602.20261">arXiv:2602.20261</a>
         </p>
       </div>
     </div>
@@ -68,57 +71,65 @@ const personSchema = {
   <section class="section" aria-labelledby="current-heading">
     <div class="container">
       <div class="section-head">
+        <span class="secno">§ 01</span>
         <h2 id="current-heading">Current research</h2>
-        <a class="smallcaps" href="/research/">All research →</a>
       </div>
-      <div class="card-grid">
+      <ul class="row-list">
         {
           current.map((p) => (
-            <article class="card">
-              <p class="meta">
-                <span class="status-dot current" aria-hidden="true"></span>
-                Ongoing · {p.period}
-              </p>
-              <h3><a href={`/research/#${p.id}`}>{p.title}</a></h3>
-              <p class="meta">{p.mentors} · {p.place}</p>
-              <p set:html={renderRich(p.summary)} />
-              <span class="card-link"><a href={`/research/#${p.id}`}>Read more →</a></span>
-            </article>
+            <li>
+              <span class="row-no">01</span>
+              <div>
+                <p class="meta">
+                  <span class="status-dot current" aria-hidden="true"></span>
+                  ongoing · {p.period} · {p.mentors} · {p.place}
+                </p>
+                <p class="row-title"><a href={`/research/#${p.id}`}>{p.title}</a></p>
+                <p class="row-excerpt" set:html={renderRich(p.summary)} />
+                <span class="row-link"><a href={`/research/#${p.id}`}>read more →</a></span>
+              </div>
+            </li>
           ))
         }
-      </div>
+      </ul>
     </div>
   </section>
 
   <section class="section section-tight" aria-labelledby="selected-heading">
     <div class="container">
       <div class="section-head">
+        <span class="secno">§ 02</span>
         <h2 id="selected-heading">Selected research</h2>
+        <span style="flex:1"></span>
+        <a class="smallcaps" href="/research/">all research →</a>
       </div>
-      <div class="card-grid">
+      <ul class="row-list">
         {
-          selected.map((p) => (
-            <article class="card">
-              <p class="meta">
-                <span class:list={['status-dot', p.status === 'completed' && 'published']} aria-hidden="true"></span>
-                {p.period}
-              </p>
-              <h3><a href={p.links?.[0]?.href ?? `/research/#${p.id}`}>{p.shortTitle ?? p.title}</a></h3>
-              <p class="meta">{p.mentors} · {p.place}</p>
-              <p set:html={renderRich(p.summary.split('.')[0] + '.')} />
-              <span class="card-link"><a href={`/research/#${p.id}`}>Read more →</a></span>
-            </article>
+          selected.map((p, i) => (
+            <li>
+              <span class="row-no">{String(i + 1).padStart(2, '0')}</span>
+              <div>
+                <p class="row-meta meta">
+                  {p.period} · {p.mentors} · {p.place}
+                </p>
+                <p class="row-title"><a href={`/research/#${p.id}`}>{p.shortTitle ?? p.title}</a></p>
+                <p class="row-excerpt" set:html={renderRich(p.summary.split('.')[0] + '.')} />
+                <span class="row-link"><a href={`/research/#${p.id}`}>read more →</a></span>
+              </div>
+            </li>
           ))
         }
-      </div>
+      </ul>
     </div>
   </section>
 
   <section class="section section-tight" aria-labelledby="timeline-heading">
     <div class="container">
       <div class="section-head">
+        <span class="secno">§ 03</span>
         <h2 id="timeline-heading">Chronology</h2>
-        <a class="smallcaps" href="/research/#chronology">Full timeline →</a>
+        <span style="flex:1"></span>
+        <a class="smallcaps" href="/research/#chronology">full timeline →</a>
       </div>
       <Timeline items={[...timeline].reverse().slice(0, 5).reverse()} />
     </div>
@@ -127,8 +138,10 @@ const personSchema = {
   <section class="section section-tight" aria-labelledby="pub-heading">
     <div class="container">
       <div class="section-head">
+        <span class="secno">§ 04</span>
         <h2 id="pub-heading">Publication</h2>
-        <a class="smallcaps" href="/publications/">Publications →</a>
+        <span style="flex:1"></span>
+        <a class="smallcaps" href="/publications/">publications →</a>
       </div>
       <PubCard pub={pub} />
     </div>

@@ -37,9 +37,10 @@ const description =
     </header>
 
     {
-      theoretical.map((p) => (
+      theoretical.map((p, i) => (
         <section class="section" id={p.id} aria-labelledby={`${p.id}-heading`}>
           <div class="section-head">
+            <span class="secno">§ {String(i + 1).padStart(2, '0')}</span>
             <h2 id={`${p.id}-heading`}>{p.title}</h2>
             <p class="meta" style="margin: 0;">
               <span class:list={['status-dot', p.status === 'current' && 'current']} aria-hidden="true" />
@@ -69,6 +70,7 @@ const description =
 
     <section class="section" id="chronology" aria-labelledby="chronology-heading">
       <div class="section-head">
+        <span class="secno">§ 05</span>
         <h2 id="chronology-heading">Chronology</h2>
       </div>
       <div class="prose">
@@ -82,6 +84,7 @@ const description =
 
     <section class="section" id="experimental" aria-labelledby="experimental-heading">
       <div class="section-head">
+        <span class="secno">§ 06</span>
         <h2 id="experimental-heading">Experimental work</h2>
       </div>
       <div class="callout" style="margin-bottom: 1.6rem;">

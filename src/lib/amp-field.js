@@ -42,15 +42,8 @@ function hexToRgb(hex) {
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
 }
 
-// Restrained academic palette for the contour family, one hue per ellipse
-// (blue, cyan, violet, teal from the innermost outward). Light mode uses
-// deep versions at higher opacity so the thin strokes read on the paper
-// ground; dark mode slightly luminous ones at low opacity. The axes stay
-// neutral ink.
-const PALETTES = {
-  light: ['#2f538c', '#22677a', '#55449b', '#2b7261'],
-  dark: ['#86a8d8', '#7fc4cf', '#a493c9', '#6fb3a6'],
-};
+// The contour family is drawn in the site accent (a single warm yellow)
+// with descending opacity: one deliberate accent, no rainbow.
 
 export function mountAmpField(canvas) {
   const ctx = canvas.getContext('2d');
@@ -66,22 +59,19 @@ export function mountAmpField(canvas) {
   let W = 0;
   let H = 0;
   let ink = [34, 38, 46];
-  let ellipseColors = [];
-  let dark = false;
+  let accent = [242, 201, 76];
 
   function readTheme() {
-    ink = hexToRgb(cssVar('--ink', '#22262e'));
-    dark = document.documentElement.getAttribute('data-theme') === 'dark';
-    const pal = dark ? PALETTES.dark : PALETTES.light;
-    ellipseColors = pal.map(hexToRgb);
+    ink = hexToRgb(cssVar('--ink', '#eae8e1'));
+    accent = hexToRgb(cssVar('--accent', '#f2c94c'));
   }
 
   function rgba(a) {
     return `rgba(${ink[0]},${ink[1]},${ink[2]},${a})`;
   }
 
-  function rgbaC(rgb, a) {
-    return `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${a})`;
+  function rgbaA(a) {
+    return `rgba(${accent[0]},${accent[1]},${accent[2]},${a})`;
   }
 
   // Layout: the origin (right focus, t = 0) sits right of the hero text;
@@ -97,29 +87,20 @@ export function mountAmpField(canvas) {
     // c_j grows toward the parabolic limit: e = c/(c + 2 mu_0) runs from 0.2
     // (compact) to 0.88 (nearly parabolic within the visible region).
     const cs = (mobile ? [0.5, 2, 8] : [0.5, 1.5, 4.5, 15]).map((m) => m * mu0);
-    // Innermost contour slightly more visible; larger ones progressively
-    // softer. Light mode runs at higher opacity (the paper ground is near
-    // white), dark mode at low opacity with luminous hues.
-    const alphaLight = mobile ? [0.55, 0.52, 0.5] : [0.5, 0.47, 0.45, 0.43];
-    const alphaDark = mobile ? [0.24, 0.22, 0.21] : [0.2, 0.19, 0.18, 0.17];
-    const family = cs.map((c0, i) => ({
-      c0,
-      phase: i * 0.9,
-      alphaLight: alphaLight[i],
-      alphaDark: alphaDark[i],
-      color: i,
-    }));
+    // Innermost contour most visible; larger ones progressively softer.
+    const alphas = mobile ? [0.5, 0.42, 0.36] : [0.5, 0.42, 0.36, 0.3];
+    const family = cs.map((c0, i) => ({ c0, phase: i * 0.9, alpha: alphas[i] }));
     geom = { O, mu0, family };
   }
 
   // Draw one member of the family. c is the (possibly breathing) left-focus
   // distance in pixels; the right focus and right extremity stay pinned.
-  function drawEllipse(c, color, alpha) {
+  function drawEllipse(c, alpha) {
     const { O, mu0 } = geom;
     const a = mu0 + c / 2;
     const b = Math.sqrt(mu0 * (mu0 + c));
     const cx = O.x - c / 2;
-    ctx.strokeStyle = rgbaC(color, alpha);
+    ctx.strokeStyle = rgbaA(alpha);
     ctx.lineWidth = 1;
     ctx.beginPath();
     const steps = 160;
@@ -150,7 +131,7 @@ export function mountAmpField(canvas) {
     ctx.stroke();
 
     // Origin marker: a small open circle at t = 0.
-    ctx.strokeStyle = rgba(0.35);
+    ctx.strokeStyle = rgbaA(0.5);
     ctx.beginPath();
     ctx.arc(O.x, O.y, 2.4, 0, TAU);
     ctx.stroke();
@@ -163,10 +144,10 @@ export function mountAmpField(canvas) {
     ctx.stroke();
 
     // The family of analyticity contours, breathing in c_j.
-    geom.family.forEach((e, i) => {
+    for (const e of geom.family) {
       const c = e.c0 * (1 + 0.054 * Math.sin(t * TAU + e.phase));
-      drawEllipse(c, ellipseColors[i % ellipseColors.length], dark ? e.alphaDark : e.alphaLight);
-    });
+      drawEllipse(c, e.alpha);
+    }
 
     // The c -> infinity limit of the family: the parabola with focus t = 0
     // and vertex t = mu_0 (drawn as the faintest reference curve). It crosses
@@ -219,12 +200,6 @@ export function mountAmpField(canvas) {
     if (document.hidden) stop();
     else if (inView) start();
   });
-
-  const themeObserver = new MutationObserver(() => {
-    readTheme();
-    if (staticPhase !== null) render(staticPhase);
-  });
-  themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
   const ro = new ResizeObserver(() => {
     resize();

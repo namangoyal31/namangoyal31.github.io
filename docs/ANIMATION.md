@@ -56,13 +56,10 @@ own c_j with the two pinned invariants.
 
 ## Color
 
-The contour family carries one muted hue per ellipse (innermost outward:
-blue, cyan, violet, teal), defined in the `PALETTES` table. Light mode uses
-darker/more saturated versions so the thin lines stay visible on the paper
-ground; dark mode uses slightly luminous versions of the same hues. The
-innermost contour is the most visible and the larger ones progressively
-softer (alphas 0.16 down to 0.13 in light mode). The axes, origin marker,
-mu_0 tick, and the limiting parabola stay neutral ink.
+The contour family is drawn in the site accent, a single warm yellow
+(`--accent`), with opacity descending from the innermost contour outward
+(0.5 to 0.3 on desktop). The axes, mu_0 tick, and the limiting parabola stay
+neutral ink. The site is dark-only by design; there is no light variant.
 
 ## Motion
 
@@ -98,9 +95,9 @@ All in `src/lib/amp-field.js`:
 - `layout()`: origin position, mu_0 (pixel distance to the pinned right
   extremity), the list of c_j multipliers, per-ellipse phases and alphas, and
   the compact three-ellipse mobile variant below 700 px width.
-- Alpha values in `render()`: axes `0.07`, origin marker `0.35`, mu_0 tick
-  `0.2`, limiting parabola `0.06`. Ellipse alphas live in `layout()`
-  (`0.16` down to `0.13` on desktop, innermost most visible).
+- Alpha values in `render()`: axes `0.07`, origin marker `0.5` (accent),
+  mu_0 tick `0.2`, limiting parabola `0.06`. Ellipse alphas live in
+  `layout()` (0.5 down to 0.3 on desktop, innermost most visible).
 - Breathing amplitude: the `0.054` factor in `render()`.
 - `c` multipliers in `layout()`: 0.5, 1.5, 4.5, 15 (in units of mu_0), which
   set the progression toward the parabolic limit.
