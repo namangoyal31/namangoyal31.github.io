@@ -162,7 +162,10 @@ const isCurrent = (href: string) => currentPath === normalize(href);
       });
 
       // Controlled reveals: sections enter once, staggered by markup order.
+      // Elements already inside the first viewport reveal immediately; only
+      // below-fold content depends on the observer.
       const revealables = document.querySelectorAll('.reveal');
+      const vh = window.innerHeight;
       if ('IntersectionObserver' in window) {
         const io = new IntersectionObserver((entries) => {
           for (const entry of entries) {
@@ -172,7 +175,10 @@ const isCurrent = (href: string) => currentPath === normalize(href);
             }
           }
         }, { threshold: 0.12 });
-        revealables.forEach((el) => io.observe(el));
+        revealables.forEach((el) => {
+          if (el.getBoundingClientRect().top < vh * 0.92) el.classList.add('revealed');
+          else io.observe(el);
+        });
       } else {
         revealables.forEach((el) => el.classList.add('revealed'));
       }
