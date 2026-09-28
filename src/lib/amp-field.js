@@ -42,6 +42,15 @@ function hexToRgb(hex) {
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
 }
 
+// Restrained academic palette for the contour family, one hue per ellipse
+// (blue, cyan, violet, teal from the innermost outward). Light mode uses
+// darker/more saturated versions; dark mode slightly luminous ones. The
+// axes stay neutral ink.
+const PALETTES = {
+  light: ['#3a5f94', '#3d7f8f', '#6b5a9e', '#3e7d6f'],
+  dark: ['#86a8d8', '#7fc4cf', '#a493c9', '#6fb3a6'],
+};
+
 export function mountAmpField(canvas) {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
@@ -56,13 +65,22 @@ export function mountAmpField(canvas) {
   let W = 0;
   let H = 0;
   let ink = [34, 38, 46];
+  let ellipseColors = [];
 
   function readTheme() {
     ink = hexToRgb(cssVar('--ink', '#22262e'));
+    const pal = document.documentElement.getAttribute('data-theme') === 'dark'
+      ? PALETTES.dark
+      : PALETTES.light;
+    ellipseColors = pal.map(hexToRgb);
   }
 
   function rgba(a) {
     return `rgba(${ink[0]},${ink[1]},${ink[2]},${a})`;
+  }
+
+  function rgbaC(rgb, a) {
+    return `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${a})`;
   }
 
   // Layout: the origin (right focus, t = 0) sits right of the hero text;
@@ -78,18 +96,20 @@ export function mountAmpField(canvas) {
     // c_j grows toward the parabolic limit: e = c/(c + 2 mu_0) runs from 0.2
     // (compact) to 0.88 (nearly parabolic within the visible region).
     const cs = (mobile ? [0.5, 2, 8] : [0.5, 1.5, 4.5, 15]).map((m) => m * mu0);
-    const family = cs.map((c0, i) => ({ c0, phase: i * 0.9, alpha: 0.1 + 0.02 * i }));
+    // Innermost contour slightly more visible; larger ones progressively softer.
+    const alphas = mobile ? [0.2, 0.18, 0.17] : [0.16, 0.15, 0.14, 0.13];
+    const family = cs.map((c0, i) => ({ c0, phase: i * 0.9, alpha: alphas[i], color: i }));
     geom = { O, mu0, family };
   }
 
   // Draw one member of the family. c is the (possibly breathing) left-focus
   // distance in pixels; the right focus and right extremity stay pinned.
-  function drawEllipse(c, alpha) {
+  function drawEllipse(c, color, alpha) {
     const { O, mu0 } = geom;
     const a = mu0 + c / 2;
     const b = Math.sqrt(mu0 * (mu0 + c));
     const cx = O.x - c / 2;
-    ctx.strokeStyle = rgba(alpha);
+    ctx.strokeStyle = rgbaC(color, alpha);
     ctx.lineWidth = 1;
     ctx.beginPath();
     const steps = 160;
@@ -133,10 +153,10 @@ export function mountAmpField(canvas) {
     ctx.stroke();
 
     // The family of analyticity contours, breathing in c_j.
-    for (const e of geom.family) {
-      const c = e.c0 * (1 + 0.04 * Math.sin(t * TAU + e.phase));
-      drawEllipse(c, e.alpha);
-    }
+    geom.family.forEach((e, i) => {
+      const c = e.c0 * (1 + 0.054 * Math.sin(t * TAU + e.phase));
+      drawEllipse(c, ellipseColors[i % ellipseColors.length], e.alpha);
+    });
 
     // The c -> infinity limit of the family: the parabola with focus t = 0
     // and vertex t = mu_0 (drawn as the faintest reference curve). It crosses
