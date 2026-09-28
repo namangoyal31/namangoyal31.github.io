@@ -74,14 +74,17 @@ ellipse with period T makes the loop seamless.
 
 ## Interaction
 
-The figure is an instrument. Clicking (or tapping) inside the frame places a
-pole at that point - up to five, oldest removed first - and every contour
-deforms around each singularity: a Gaussian displacement (amplitude 11 px,
-sigma 55 px) pushes path points radially away from the pole, so the domains
-bend around it the way analytic contours bend around poles. The right focus
-and right extremity stay pinned. A faint crosshair marks where the next pole
-would land; double-clicking, or the reset control in the caption, clears all
-placed poles. Placed poles are session-only and never persisted.
+Dragging the figure horizontally sweeps the family parameter: the left-focus
+distance c_j is scaled continuously (up to 3x at full drag), which moves every
+contour through the family toward the parabolic limit while the right focus
+(t = 0) and the right extremity (t = mu_0) stay pinned. c_j is the genuine
+parameter of the family, so the interaction changes only a quantity the
+mathematics actually contains. Double-clicking returns to the drawn set.
+The sweep is session-only.
+
+Governing rule for this site: interactions may change only parameters and
+relationships that exist in the underlying mathematics - presentation is
+free, invented physics is not.
 
 ## The atmosphere system
 

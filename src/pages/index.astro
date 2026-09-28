@@ -65,13 +65,13 @@ const personSchema = {
         <span class="pc bl" aria-hidden="true"></span>
         <span class="pc br" aria-hidden="true"></span>
         <div class="canvas-wrap">
-          <canvas class="hero-field" aria-label="Interactive analyticity domains: click to place poles in the complex t-plane"></canvas>
+          <canvas class="hero-field" aria-label="Family of analyticity domains in the complex t-plane: drag to move through the family"></canvas>
         </div>
         <figcaption class="fig-caption">
-          <span class="fig-label">Fig. 1</span> analyticity domains in the complex t-plane; the
-          right focus stays at t = 0 and the rightmost point at μ<sub>0</sub>. Click to place
-          poles: the contours deform around every singularity. Double-click to
-          <button id="pole-reset" type="button">reset</button>.
+          <span class="fig-label">Fig. 1</span> a family of analyticity domains in the complex
+          t-plane; every contour shares the right focus t = 0 and the rightmost point at
+          μ<sub>0</sub>. Drag to move through the family as the left focus recedes; double-click
+          resets.
         </figcaption>
       </figure>
     </div>
@@ -82,9 +82,6 @@ const personSchema = {
     const canvas = document.querySelector('.hero-field');
     if (canvas) {
       mountAmpField(canvas);
-      document.getElementById('pole-reset')?.addEventListener('click', () => {
-        canvas.ampReset?.();
-      });
     }
   </script>
 

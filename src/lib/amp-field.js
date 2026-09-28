@@ -61,10 +61,9 @@ export function mountAmpField(canvas) {
   let ink = [34, 38, 46];
   let accent = [242, 201, 76];
 
-  // Poles placed by the visitor (fractions of the canvas), capped at five.
-  // Each one is a singularity: every contour deforms around it.
-  const userPoles = [];
-  const ghost = { x: 0, y: 0, inside: false };
+  // familyShift: position within the family (0 = the drawn set, 1 = deeper
+  // into it, left focus further out). Dragging the figure sweeps this one
+  // genuine parameter of the family; the pins hold for every value.
 
   function readTheme() {
     ink = hexToRgb(cssVar('--ink', '#eae8e1'));
@@ -113,18 +112,6 @@ export function mountAmpField(canvas) {
       const phi = (i / steps) * TAU;
       let x = cx + a * Math.cos(phi);
       let y = O.y - b * Math.sin(phi);
-      // placed poles are singularities: the contours bend away from each one
-      for (const up of userPoles) {
-        const px = up.fx * W;
-        const py = up.fy * H;
-        const dx = x - px;
-        const dy = y - py;
-        const d2 = dx * dx + dy * dy;
-        const push = 11 * Math.exp(-d2 / 6050);
-        const d = Math.max(1, Math.sqrt(d2));
-        x += (dx / d) * push;
-        y += (dy / d) * push;
-      }
       if (i === 0) ctx.moveTo(x, y);
       else ctx.lineTo(x, y);
     }
@@ -164,7 +151,7 @@ export function mountAmpField(canvas) {
 
     // The family of analyticity contours, breathing in c_j.
     for (const e of geom.family) {
-      const c = e.c0 * (1 + 0.054 * Math.sin(t * TAU + e.phase) + open);
+      const c = e.c0 * Math.pow(3, familyShift) * (1 + 0.054 * Math.sin(t * TAU + e.phase) + open);
       drawEllipse(c, e.alpha);
     }
 
@@ -182,30 +169,6 @@ export function mountAmpField(canvas) {
     }
     ctx.stroke();
 
-    // visitor-placed poles: accent crosses with a small circle
-    for (const up of userPoles) {
-      const x = up.fx * W;
-      const y = up.fy * H;
-      ctx.strokeStyle = rgbaA(0.7);
-      ctx.beginPath();
-      ctx.arc(x, y, 3, 0, TAU);
-      ctx.moveTo(x - 6.5, y);
-      ctx.lineTo(x + 6.5, y);
-      ctx.moveTo(x, y - 6.5);
-      ctx.lineTo(x, y + 6.5);
-      ctx.stroke();
-    }
-
-    // affordance: a faint crosshair where the next pole would land
-    if (ghost.inside) {
-      ctx.strokeStyle = rgbaA(0.3);
-      ctx.beginPath();
-      ctx.moveTo(ghost.x - 5, ghost.y);
-      ctx.lineTo(ghost.x + 5, ghost.y);
-      ctx.moveTo(ghost.x, ghost.y - 5);
-      ctx.lineTo(ghost.x, ghost.y + 5);
-      ctx.stroke();
-    }
   }
 
   // --- lifecycle ------------------------------------------------------------
@@ -222,6 +185,7 @@ export function mountAmpField(canvas) {
     const doc = document.documentElement;
     const max = Math.max(1, doc.scrollHeight - window.innerHeight);
     const progress = Math.min(1, Math.max(0, window.scrollY / max));
+    familyShift += (shiftTarget - familyShift) * 0.08;
     render(t, 0.12 * progress);
     // the figure recedes gently once its section has been read
     const heroH = canvas.parentElement.offsetHeight || 1;
@@ -270,35 +234,41 @@ export function mountAmpField(canvas) {
     layout();
   }
 
-  // Interaction: click places a pole (five max), double-click or the reset
-  // control clears them, and the ghost crosshair marks the next placement.
+  // Interaction: dragging horizontally sweeps the family parameter (the
+  // left-focus distance c_j, here scaled by up to 3x) - the actual quantity
+  // that generates the domains. Double-click returns to the drawn set.
+  let dragging = false;
+  let dragX = 0;
+  let dragStart = 0;
+  let familyShift = 0;
+  let shiftTarget = 0;
   canvas.addEventListener('pointerdown', (e) => {
-    const rect = canvas.getBoundingClientRect();
-    userPoles.push({
-      fx: (e.clientX - rect.left) / rect.width,
-      fy: (e.clientY - rect.top) / rect.height,
-    });
-    if (userPoles.length > 5) userPoles.shift();
-  });
-  canvas.addEventListener('dblclick', () => {
-    userPoles.length = 0;
+    dragging = true;
+    dragX = e.clientX;
+    dragStart = shiftTarget;
+    canvas.setPointerCapture(e.pointerId);
   });
   canvas.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
     const rect = canvas.getBoundingClientRect();
-    ghost.x = e.clientX - rect.left;
-    ghost.y = e.clientY - rect.top;
-    ghost.inside = true;
+    shiftTarget = Math.max(0, Math.min(1, dragStart + (e.clientX - dragX) / (rect.width * 0.6)));
   });
-  canvas.addEventListener('pointerleave', () => {
-    ghost.inside = false;
+  const endDrag = () => {
+    dragging = false;
+  };
+  canvas.addEventListener('pointerup', endDrag);
+  canvas.addEventListener('pointercancel', endDrag);
+  canvas.addEventListener('dblclick', () => {
+    shiftTarget = 0;
   });
   canvas.ampReset = () => {
-    userPoles.length = 0;
+    shiftTarget = 0;
   };
 
   resize();
   readTheme();
   if (staticPhase !== null) {
+    familyShift = shiftTarget = staticPhase;
     render(staticPhase, 0);
   } else {
     start();
