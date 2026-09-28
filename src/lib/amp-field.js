@@ -1,29 +1,27 @@
 /**
  * amp-field.js
  *
- * Homepage background: the Lehmann/Martin analyticity geometry in the
- * complex Mandelstam t-plane, drawn as a living research-paper figure.
+ * Homepage background: a family of analyticity contours in the complex
+ * Mandelstam t-plane, drawn as a living research-paper figure.
  *
- * The mathematics (verified in docs/ANIMATION.md):
+ * Geometry (pinned invariants, see docs/ANIMATION.md):
  *
- *   Lehmann ellipse in the z-plane (foci z = +-1):
- *       z(phi) = cosh(eta) cos(phi) + i sinh(eta) sin(phi)
+ *   Every ellipse has its RIGHT FOCUS at t = 0 and its RIGHTMOST EXTREMITY
+ *   at t = mu_0 > 0. With the left focus at t = -c_j, the ellipse is
  *
- *   High-energy map to the Mandelstam plane:
- *       t = 2 k^2 (z - 1)
+ *       t_j(phi) = -c_j/2
+ *                  + (mu_0 + c_j/2) cos(phi)
+ *                  + i sqrt(mu_0 (mu_0 + c_j)) sin(phi)
  *
- *   Image ellipse (foci t = 0 and t = -4 k^2, center -2 k^2):
- *       t(phi) = 2 k^2 [ cosh(eta) cos(phi) - 1 + i sinh(eta) sin(phi) ]
+ *   so a_j = mu_0 + c_j/2, b_j = sqrt(mu_0 (mu_0 + c_j)), center = -c_j/2,
+ *   focal distance = c_j/2, and t_j(0) = mu_0 for EVERY member. Varying c_j
+ *   generates the family; the pins never move.
  *
- *   Physical region z in [-1, 1] maps to the real segment between the foci.
- *
- * The figure draws a small family of such ellipses (a domain of analyticity,
- * eta increasing), the physical segment between the foci, both foci marked,
- * and one small marker performing analytic continuation once around the
- * middle ellipse per loop. Each ellipse also breathes by a few percent in
- * eta, evoking the enlargement of the analyticity domain (Martin's argument)
- * without inventing any formula. All time dependence is a single sinusoid of
- * period T = 3.6 s, so the loop is exactly seamless.
+ * Motion: each ellipse breathes slowly in c_j (the only time dependence),
+ * which slides the left focus and reshapes the contour while both pinned
+ * invariants hold exactly. One sinusoid per ellipse with period T = 3.6 s
+ * makes the loop seamless. There is no cursor interaction and no orbiting
+ * marker; the geometry itself is the visual.
  *
  * Single ink color, Canvas 2D, no dependencies. See docs/ANIMATION.md.
  */
@@ -42,11 +40,6 @@ function hexToRgb(hex) {
   const n = parseInt(h, 16);
   if (Number.isNaN(n)) return [34, 38, 46];
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
-}
-
-function easeInOut(x) {
-  const c = Math.max(0, Math.min(1, x));
-  return c * c * (3 - 2 * c);
 }
 
 export function mountAmpField(canvas) {
@@ -72,51 +65,38 @@ export function mountAmpField(canvas) {
     return `rgba(${ink[0]},${ink[1]},${ink[2]},${a})`;
   }
 
-  // Geometry of the analyticity domains, in pixels.
-  //
-  // t = 0 (the right focus) sits right of the hero text; t = -4k^2 lies to
-  // its left. S is the pixel length of 2 k^2, so the foci are S*2 apart and
-  // an ellipse of parameter eta has semi-axes S*cosh(eta) and S*sinh(eta).
-  // The family is ordered by eta: inner = partial-wave (Lehmann) domain,
-  // outer = enlarged analyticity domain (Martin's argument).
+  // Layout: the origin (right focus, t = 0) sits right of the hero text;
+  // mu_0 is the pixel distance from the origin to the common right
+  // extremity; the family is a set of left-focus distances c_j, increasing,
+  // so the ellipses grow leftward while sharing the pinned right side.
   let geom = null;
 
   function layout() {
     const mobile = W < 700;
-    const fociRight = { x: W * (mobile ? 0.8 : 0.74), y: H * (mobile ? 0.66 : 0.58) };
-    const S = mobile ? Math.min(W * 0.22, H * 0.15) : Math.min(W * 0.1, H * 0.21);
-    const family = mobile
-      ? [
-          { eta: 0.7, alpha: 0.1, phase: 0.0 },
-          { eta: 1.3, alpha: 0.14, phase: 1.1 },
-        ]
-      : [
-          { eta: 0.65, alpha: 0.1, phase: 0.0 },
-          { eta: 0.95, alpha: 0.13, phase: 0.8 },
-          { eta: 1.3, alpha: 0.16, phase: 1.6 },
-        ];
-    geom = { fociRight, S, family, fociLeft: { x: fociRight.x - 2 * S, y: fociRight.y } };
+    const O = { x: W * (mobile ? 0.78 : 0.72), y: H * (mobile ? 0.55 : 0.5) };
+    const mu0 = mobile ? Math.min(W * 0.24, H * 0.16) : Math.min(W * 0.12, H * 0.2);
+    const cs = (mobile ? [0.4, 1.0, 1.8] : [0.4, 0.9, 1.55, 2.3]).map((m) => m * mu0);
+    const family = cs.map((c0, i) => ({ c0, phase: i * 0.9, alpha: 0.1 + 0.02 * i }));
+    geom = { O, mu0, family };
   }
 
-  // t-plane point of the ellipse with parameter eta at angle phi, around the
-  // ellipse center (-2k^2 in t; (fociRight.x - S, fociRight.y) in pixels).
-  function ellipsePoint(eta, phi) {
-    const c = geom.fociRight.x - geom.S;
-    const a = geom.S * Math.cosh(eta);
-    const b = geom.S * Math.sinh(eta);
-    return { x: c + a * Math.cos(phi), y: geom.fociRight.y - b * Math.sin(phi) };
-  }
-
-  function drawEllipse(eta, alpha) {
+  // Draw one member of the family. c is the (possibly breathing) left-focus
+  // distance in pixels; the right focus and right extremity stay pinned.
+  function drawEllipse(c, alpha) {
+    const { O, mu0 } = geom;
+    const a = mu0 + c / 2;
+    const b = Math.sqrt(mu0 * (mu0 + c));
+    const cx = O.x - c / 2;
     ctx.strokeStyle = rgba(alpha);
     ctx.lineWidth = 1;
     ctx.beginPath();
     const steps = 160;
     for (let i = 0; i <= steps; i++) {
       const phi = (i / steps) * TAU;
-      const p = ellipsePoint(eta, phi);
-      if (i === 0) ctx.moveTo(p.x, p.y);
-      else ctx.lineTo(p.x, p.y);
+      const x = cx + a * Math.cos(phi);
+      const y = O.y - b * Math.sin(phi);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
     }
     ctx.closePath();
     ctx.stroke();
@@ -126,55 +106,35 @@ export function mountAmpField(canvas) {
     // t in [0, 1): one loop. All motion uses sin/cos(t * TAU).
     ctx.clearRect(0, 0, W, H);
     ctx.lineWidth = 1;
-    const { fociRight, fociLeft } = geom;
+    const { O, mu0 } = geom;
 
-    // Real-t axis through both foci.
+    // Complex-plane axes through the origin t = 0.
     ctx.strokeStyle = rgba(0.07);
     ctx.beginPath();
-    ctx.moveTo(0, fociRight.y + 0.5);
-    ctx.lineTo(W, fociRight.y + 0.5);
+    ctx.moveTo(0, O.y + 0.5);
+    ctx.lineTo(W, O.y + 0.5);
+    ctx.moveTo(O.x + 0.5, 0);
+    ctx.lineTo(O.x + 0.5, H);
     ctx.stroke();
 
-    // Physical region: the real segment between the foci, t in [-4k^2, 0].
+    // Origin marker: a small open circle at t = 0.
+    ctx.strokeStyle = rgba(0.35);
+    ctx.beginPath();
+    ctx.arc(O.x, O.y, 2.4, 0, TAU);
+    ctx.stroke();
+
+    // Right-extremity tick at t = mu_0 (the pinned edge of every domain).
     ctx.strokeStyle = rgba(0.2);
     ctx.beginPath();
-    ctx.moveTo(fociLeft.x + 0.5, fociRight.y);
-    ctx.lineTo(fociRight.x - 0.5, fociRight.y);
+    ctx.moveTo(O.x + mu0 + 0.5, O.y - 4);
+    ctx.lineTo(O.x + mu0 + 0.5, O.y + 4);
     ctx.stroke();
 
-    // Foci markers: small precise ticks, slightly stronger than the lines.
-    ctx.strokeStyle = rgba(0.32);
-    for (const f of [fociRight, fociLeft]) {
-      ctx.beginPath();
-      ctx.moveTo(f.x + 0.5, f.y - 4);
-      ctx.lineTo(f.x + 0.5, f.y + 4);
-      ctx.stroke();
-    }
-
-    // The family of analyticity domains, each breathing by a few percent in
-    // eta with its own phase (the Martin-enlargement motif).
+    // The family of analyticity contours, breathing in c_j.
     for (const e of geom.family) {
-      drawEllipse(e.eta * (1 + 0.035 * Math.sin(t * TAU + e.phase)), e.alpha);
+      const c = e.c0 * (1 + 0.04 * Math.sin(t * TAU + e.phase));
+      drawEllipse(c, e.alpha);
     }
-
-    // Analytic continuation marker: one traversal of the middle ellipse per
-    // loop, with a short fading trail along the just-covered arc.
-    const mid = geom.family.length > 1 ? geom.family[1] : geom.family[0];
-    const phi = t * TAU;
-    const trail = 0.85;
-    ctx.strokeStyle = rgba(0.16);
-    ctx.beginPath();
-    for (let i = 0; i <= 24; i++) {
-      const p = ellipsePoint(mid.eta, phi - trail + (i / 24) * trail);
-      if (i === 0) ctx.moveTo(p.x, p.y);
-      else ctx.lineTo(p.x, p.y);
-    }
-    ctx.stroke();
-    const head = ellipsePoint(mid.eta, phi);
-    ctx.strokeStyle = rgba(0.4);
-    ctx.beginPath();
-    ctx.arc(head.x, head.y, 2.4, 0, TAU);
-    ctx.stroke();
   }
 
   // --- lifecycle ------------------------------------------------------------
