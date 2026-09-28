@@ -73,9 +73,11 @@ export function mountAmpField(canvas) {
 
   function layout() {
     const mobile = W < 700;
-    const O = { x: W * (mobile ? 0.78 : 0.72), y: H * (mobile ? 0.55 : 0.5) };
+    const O = { x: W * (mobile ? 0.8 : 0.72), y: H * (mobile ? 0.55 : 0.5) };
     const mu0 = mobile ? Math.min(W * 0.24, H * 0.16) : Math.min(W * 0.12, H * 0.2);
-    const cs = (mobile ? [0.4, 1.0, 1.8] : [0.4, 0.9, 1.55, 2.3]).map((m) => m * mu0);
+    // c_j grows toward the parabolic limit: e = c/(c + 2 mu_0) runs from 0.2
+    // (compact) to 0.88 (nearly parabolic within the visible region).
+    const cs = (mobile ? [0.5, 2, 8] : [0.5, 1.5, 4.5, 15]).map((m) => m * mu0);
     const family = cs.map((c0, i) => ({ c0, phase: i * 0.9, alpha: 0.1 + 0.02 * i }));
     geom = { O, mu0, family };
   }
@@ -135,6 +137,20 @@ export function mountAmpField(canvas) {
       const c = e.c0 * (1 + 0.04 * Math.sin(t * TAU + e.phase));
       drawEllipse(c, e.alpha);
     }
+
+    // The c -> infinity limit of the family: the parabola with focus t = 0
+    // and vertex t = mu_0 (drawn as the faintest reference curve). It crosses
+    // the imaginary axis at +-2 mu_0, opening leftward.
+    ctx.strokeStyle = rgba(0.06);
+    ctx.beginPath();
+    const yMax = Math.sqrt(4 * mu0 * (mu0 + O.x + 60));
+    for (let dy = -yMax; dy <= yMax; dy += 6) {
+      const x = O.x + mu0 - (dy * dy) / (4 * mu0);
+      const y = O.y + dy;
+      if (dy === -yMax) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
   }
 
   // --- lifecycle ------------------------------------------------------------
