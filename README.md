@@ -6,7 +6,10 @@ Indian Institute of Science, Bengaluru. Live at **https://namangoyal31.github.io
 Static site, built with [Astro](https://astro.build) 5. No client framework: the only
 JavaScript is the homepage canvas visual (`src/lib/amp-field.js`) and the mobile menu.
 The design is a dark "living preprint" identity: near-black ground, one warm yellow
-accent, serif display type with monospace marginalia, sections numbered like a paper. Math renders to HTML+MathML at build time via KaTeX. Fonts are
+accent, serif display type with monospace marginalia, sections numbered like a paper.
+A quiet atmosphere system runs through it: fine grain, faint complex-plane grid
+(press G to reveal it), analyticity-divider figures between sections, and a
+scroll-linked animation in which the analyticity domain opens as you read. Math renders to HTML+MathML at build time via KaTeX. Fonts are
 self-hosted. Hosting is GitHub Pages, free, redeployed automatically on every push to
 `main`.
 

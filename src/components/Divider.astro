@@ -1,0 +1,88 @@
+---
+/**
+ * Analyticity divider: the section rule as a small mathematical figure.
+ * A hairline runs across the container and a yellow contour detours around
+ * a few pole ticks; on entering the viewport the contour draws itself
+ * left to right. One line language, reused between major sections.
+ * Reduced motion renders it complete and static.
+ */
+interface Props {
+  /** Pole positions as horizontal fractions of the container width. */
+  poles?: number[];
+}
+
+const { poles = [0.3, 0.55, 0.8] } = Astro.props;
+---
+<div class="amp-divider" data-poles={JSON.stringify(poles)} aria-hidden="true">
+  <svg width="100%" height="44" viewBox="0 0 100 44" preserveAspectRatio="none"></svg>
+</div>
+
+<script>
+  // One initializer for every divider on the page (Astro dedupes this module).
+  const NS = 'http://www.w3.org/2000/svg';
+
+  function build(divider: Element) {
+    const svg = divider.querySelector('svg');
+    if (!svg) return;
+    const w = divider.clientWidth || 600;
+    const poles = JSON.parse(divider.getAttribute('data-poles') ?? '[]') as number[];
+    svg.setAttribute('viewBox', `0 0 ${w} 44`);
+
+    const mk = (tag: string, cls: string, d: string, draw = false) => {
+      const el = document.createElementNS(NS, 'path');
+      el.setAttribute('d', d);
+      el.setAttribute('class', cls + (draw ? ' d-draw' : ''));
+      if (draw) el.setAttribute('pathLength', '1');
+      svg.appendChild(el);
+      return el;
+    };
+
+    // base hairline
+    mk('path', 'd-base', `M 0 30 L ${w} 30`, true);
+
+    // contour detouring over each pole
+    let d = 'M 0 30';
+    for (const f of poles) {
+      const x = f * w;
+      d += ` L ${x - 12} 30 C ${x - 4} 30, ${x - 4} 17, ${x} 17 C ${x + 4} 17, ${x + 4} 30, ${x + 12} 30`;
+    }
+    d += ` L ${w} 30`;
+    mk('path', 'd-contour', d, true);
+
+    // pole ticks
+    for (const f of poles) {
+      const x = f * w;
+      mk('path', 'd-pole', `M ${x} 23 L ${x} 37`);
+    }
+  }
+
+  function initAll() {
+    document.querySelectorAll('.amp-divider').forEach((divider) => {
+      if (divider.getAttribute('data-init')) return;
+      divider.setAttribute('data-init', '1');
+      build(divider);
+      const io = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            divider.classList.add('drawn');
+            io.disconnect();
+          }
+        }
+      }, { threshold: 0.4 });
+      io.observe(divider);
+      let w = divider.clientWidth;
+      const ro = new ResizeObserver(() => {
+        if (Math.abs(divider.clientWidth - w) > 8) {
+          w = divider.clientWidth;
+          divider.querySelectorAll('path').forEach((p) => p.remove());
+          divider.classList.remove('drawn');
+          build(divider);
+          io.observe(divider);
+        }
+      });
+      ro.observe(divider);
+    });
+  }
+
+  initAll();
+</script>

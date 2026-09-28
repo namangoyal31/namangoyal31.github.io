@@ -73,6 +73,29 @@ t_j(0) = mu_0 and F_R = 0 are preserved identically). One sinusoid per
 ellipse with period T makes the loop seamless. There is no orbiting marker
 and no cursor interaction.
 
+## The atmosphere system
+
+The animation is one layer of a single visual system that spans the site:
+
+- **Atmosphere** (`.atmosphere`, fixed behind all content): fine static grain
+  (a tiled SVG noise plate at 5% opacity), two soft luminance pools that give
+  the black spatial depth, and a near-invisible complex-plane grid. Pressing
+  **G** (outside a text field) raises the grid to an accent-tinted overlay;
+  pressing it again fades it back. No JS is needed for the grain itself.
+- **Dividers** (`src/components/Divider.astro`): the rule between major
+  sections is a small analyticity figure - a hairline with a yellow contour
+  that detours around pole ticks. On entering the viewport the contour draws
+  itself left to right (SVG pathLength dash transition), then the poles fade
+  in. Variants pass different pole fractions.
+- **Scroll-linked domain**: the hero contour family opens slightly with page
+  scroll (c_j gains up to +12%), so exploring the site literally enlarges the
+  analyticity domain. Both pinned invariants still hold; the figure also
+  fades gently as the hero leaves the viewport.
+- **Reveals**: section heads, rows, and figures enter once with a 14px rise,
+  staggered by explicit `--reveal-delay` values. Progressive enhancement:
+  content is hidden only when the `js` class is present, and all of it is
+  disabled under `prefers-reduced-motion`.
+
 ## Technology
 
 Plain Canvas 2D, no libraries, no assets. Source: `src/lib/amp-field.js`,

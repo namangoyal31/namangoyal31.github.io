@@ -115,8 +115,10 @@ export function mountAmpField(canvas) {
     ctx.stroke();
   }
 
-  function render(t) {
+  function render(t, open) {
     // t in [0, 1): one loop. All motion uses sin/cos(t * TAU).
+    // open: 0..1 with page scroll; the analyticity domain enlarges as the
+    // visitor reads. Both pins still hold because a, b, center derive from c.
     ctx.clearRect(0, 0, W, H);
     ctx.lineWidth = 1;
     const { O, mu0 } = geom;
@@ -145,7 +147,7 @@ export function mountAmpField(canvas) {
 
     // The family of analyticity contours, breathing in c_j.
     for (const e of geom.family) {
-      const c = e.c0 * (1 + 0.054 * Math.sin(t * TAU + e.phase));
+      const c = e.c0 * (1 + 0.054 * Math.sin(t * TAU + e.phase) + open);
       drawEllipse(c, e.alpha);
     }
 
@@ -175,7 +177,13 @@ export function mountAmpField(canvas) {
     if (!running) return;
     if (!t0) t0 = now;
     const t = ((now - t0) % LOOP_MS) / LOOP_MS;
-    render(t);
+    const doc = document.documentElement;
+    const max = Math.max(1, doc.scrollHeight - window.innerHeight);
+    const progress = Math.min(1, Math.max(0, window.scrollY / max));
+    render(t, 0.12 * progress);
+    // the figure recedes gently once its section has been read
+    const heroH = canvas.parentElement.offsetHeight || 1;
+    canvas.style.opacity = String(Math.max(0, Math.min(1, 1 - window.scrollY / (heroH * 0.9))));
     raf = requestAnimationFrame(frame);
   }
 
@@ -223,7 +231,7 @@ export function mountAmpField(canvas) {
   resize();
   readTheme();
   if (staticPhase !== null) {
-    render(staticPhase);
+    render(staticPhase, 0);
   } else {
     start();
   }

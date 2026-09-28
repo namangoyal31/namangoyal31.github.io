@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import Divider from '../components/Divider.astro';
 import Timeline from '../components/Timeline.astro';
 import PubCard from '../components/PubCard.astro';
 import { site } from '../data/site';
@@ -35,13 +36,13 @@ const personSchema = {
     <canvas class="hero-field" aria-hidden="true"></canvas>
     <div class="container">
       <div class="hero-inner">
-        <p class="eyebrow">Theoretical Physics · High Energy Theory</p>
-        <h1>{site.name}</h1>
-        <p class="affiliation">
+        <p class="eyebrow reveal" style="--reveal-delay: 0ms">Theoretical Physics · High Energy Theory</p>
+        <h1 class="reveal" style="--reveal-delay: 70ms">{site.name}</h1>
+        <p class="affiliation reveal" style="--reveal-delay: 140ms">
           {site.role}, {site.institution}. Currently at TIFR, Mumbai, on scattering amplitudes
           and the S-matrix bootstrap.
         </p>
-        <p class="lede">
+        <p class="lede reveal" style="--reveal-delay: 210ms">
           I work in theoretical high-energy physics and mathematical physics. Most of my research
           asks what quantum field theory and symmetry principles fix, and what they leave free:
           how much of general relativity survives in Newtonian form, how precisely semiclassical
@@ -49,12 +50,12 @@ const personSchema = {
           amplitudes are pinned down by analyticity, crossing symmetry, unitarity, and Regge
           behavior.
         </p>
-        <div class="cta-row">
+        <div class="cta-row reveal" style="--reveal-delay: 280ms">
           <a class="btn btn-solid" href="/research/">Research</a>
           <a class="btn btn-ghost" href={site.cvPath}>CV (PDF)</a>
           <a class="btn btn-ghost" href={site.github} rel="me">GitHub</a>
         </div>
-        <p class="now-line">
+        <p class="now-line reveal" style="--reveal-delay: 350ms">
           <strong>now</strong> · S-matrix bootstrap at TIFR · preprint on classical tests of GR,
           <a href="https://arxiv.org/abs/2602.20261">arXiv:2602.20261</a>
         </p>
@@ -70,11 +71,11 @@ const personSchema = {
 
   <section class="section" aria-labelledby="current-heading">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head reveal">
         <span class="secno">§ 01</span>
         <h2 id="current-heading">Current research</h2>
       </div>
-      <ul class="row-list">
+      <ul class="row-list reveal" style="--reveal-delay: 120ms">
         {
           current.map((p) => (
             <li>
@@ -97,13 +98,14 @@ const personSchema = {
 
   <section class="section section-tight" aria-labelledby="selected-heading">
     <div class="container">
-      <div class="section-head">
+      <Divider poles={[0.22, 0.5, 0.78]} />
+      <div class="section-head reveal">
         <span class="secno">§ 02</span>
         <h2 id="selected-heading">Selected research</h2>
         <span style="flex:1"></span>
         <a class="smallcaps" href="/research/">all research →</a>
       </div>
-      <ul class="row-list">
+      <ul class="row-list reveal" style="--reveal-delay: 120ms">
         {
           selected.map((p, i) => (
             <li>
@@ -125,25 +127,31 @@ const personSchema = {
 
   <section class="section section-tight" aria-labelledby="timeline-heading">
     <div class="container">
-      <div class="section-head">
+      <Divider poles={[0.18, 0.38, 0.6, 0.84]} />
+      <div class="section-head reveal">
         <span class="secno">§ 03</span>
         <h2 id="timeline-heading">Chronology</h2>
         <span style="flex:1"></span>
         <a class="smallcaps" href="/research/#chronology">full timeline →</a>
       </div>
-      <Timeline items={[...timeline].reverse().slice(0, 5).reverse()} />
+      <div class="reveal" style="--reveal-delay: 120ms">
+        <Timeline items={[...timeline].reverse().slice(0, 5).reverse()} />
+      </div>
     </div>
   </section>
 
   <section class="section section-tight" aria-labelledby="pub-heading">
     <div class="container">
-      <div class="section-head">
+      <Divider poles={[0.3, 0.7]} />
+      <div class="section-head reveal">
         <span class="secno">§ 04</span>
         <h2 id="pub-heading">Publication</h2>
         <span style="flex:1"></span>
         <a class="smallcaps" href="/publications/">publications →</a>
       </div>
-      <PubCard pub={pub} />
+      <div class="reveal" style="--reveal-delay: 120ms">
+        <PubCard pub={pub} />
+      </div>
     </div>
   </section>
 </Base>
