@@ -253,22 +253,49 @@ hr {
   opacity: 0.05;
 }
 
-/* the underlying complex-plane grid: near-invisible by default */
+/* the underlying complex-plane grid: a permanent two-scale coordinate
+   structure - fine minor lines, slightly stronger major lines every fifth
+   cell. Visible if you look for it, never competing with the type. */
 .atmosphere-grid {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(234, 232, 225, 0.016) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(234, 232, 225, 0.016) 1px, transparent 1px);
-  background-size: 220px 220px;
-  transition: opacity 400ms ease;
+    linear-gradient(rgba(234, 232, 225, 0.042) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(234, 232, 225, 0.042) 1px, transparent 1px),
+    linear-gradient(rgba(234, 232, 225, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(234, 232, 225, 0.02) 1px, transparent 1px);
+  background-size:
+    480px 480px,
+    480px 480px,
+    96px 96px,
+    96px 96px;
 }
 
-body.show-grid .atmosphere-grid {
-  opacity: 1;
+/* G-mode: the same coordinate system, accent-tinted and stronger, with a
+   fine secondary layer - crossfaded in over the permanent grid. */
+.atmosphere-grid-accent {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 450ms ease;
   background-image:
-    linear-gradient(rgba(242, 201, 76, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(242, 201, 76, 0.05) 1px, transparent 1px);
+    linear-gradient(rgba(242, 201, 76, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(242, 201, 76, 0.1) 1px, transparent 1px),
+    linear-gradient(rgba(242, 201, 76, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(242, 201, 76, 0.045) 1px, transparent 1px),
+    linear-gradient(rgba(242, 201, 76, 0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(242, 201, 76, 0.022) 1px, transparent 1px);
+  background-size:
+    480px 480px,
+    480px 480px,
+    96px 96px,
+    96px 96px,
+    48px 48px,
+    48px 48px;
+}
+
+body.show-grid .atmosphere-grid-accent {
+  opacity: 1;
 }
 
 main,

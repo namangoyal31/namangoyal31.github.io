@@ -79,9 +79,13 @@ The animation is one layer of a single visual system that spans the site:
 
 - **Atmosphere** (`.atmosphere`, fixed behind all content): fine static grain
   (a tiled SVG noise plate at 5% opacity), two soft luminance pools that give
-  the black spatial depth, and a near-invisible complex-plane grid. Pressing
-  **G** (outside a text field) raises the grid to an accent-tinted overlay;
-  pressing it again fades it back. No JS is needed for the grain itself.
+  the black spatial depth, and a permanent two-scale complex-plane grid -
+  minor lines every 96 px at ~2% opacity, major lines every 480 px slightly
+  stronger - so the ground reads as a coordinate structure. Pressing **G**
+  (outside a text field) crossfades an accent-tinted layer over the same
+  grid: stronger lines, plus a fine 48 px secondary layer. The permanent
+  grid stays underneath; G only intensifies it. No JS is needed for the
+  grain or the default grid.
 - **Dividers** (`src/components/Divider.astro`): the rule between major
   sections is a small analyticity figure - a hairline with a yellow contour
   that detours around pole ticks. On entering the viewport the contour draws
