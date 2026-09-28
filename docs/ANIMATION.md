@@ -78,19 +78,20 @@ and no cursor interaction.
 The animation is one layer of a single visual system that spans the site:
 
 - **Atmosphere** (`.atmosphere`, fixed behind all content): fine static grain
-  (a tiled SVG noise plate at 5% opacity), two soft luminance pools that give
-  the black spatial depth, and a permanent two-scale complex-plane grid -
-  minor lines every 96 px at ~2% opacity, major lines every 480 px slightly
-  stronger - so the ground reads as a coordinate structure. Pressing **G**
-  (outside a text field) crossfades an accent-tinted layer over the same
-  grid: stronger lines, plus a fine 48 px secondary layer. The permanent
-  grid stays underneath; G only intensifies it. No JS is needed for the
-  grain or the default grid.
+  (a tiled SVG noise plate at 5% opacity, unchanged), a permanent uniform
+  complex-plane grid (one consistent weight, lines every 96 px at 3%
+  opacity - a single coordinate system, no primary/secondary squares), and
+  cursor-proximity illumination: a broad, heavily diffused luminance pool
+  (peak ~4.5%) that follows the pointer with a slow lerp, so the plane is
+  barely brighter where the cursor is. Touch devices and reduced motion
+  keep a static pool. Pressing **G** (outside a text field) crossfades an
+  accent-tinted, stronger version of the same uniform grid.
 - **Dividers** (`src/components/Divider.astro`): the rule between major
-  sections is a small analyticity figure - a hairline with a yellow contour
-  that detours around pole ticks. On entering the viewport the contour draws
-  itself left to right (SVG pathLength dash transition), then the poles fade
-  in. Variants pass different pole fractions.
+  sections is one straight, continuous line drawn in the site accent, with
+  gray pole ticks crossing it. On entering the viewport the rule draws
+  itself left to right (SVG pathLength dash transition), then the ticks
+  fade in. No detours: hierarchy comes from typography, not the rule's
+  shape. Variants pass different pole fractions.
 - **Scroll-linked domain**: the hero contour family opens slightly with page
   scroll (c_j gains up to +12%), so exploring the site literally enlarges the
   analyticity domain. Both pinned invariants still hold; the figure also

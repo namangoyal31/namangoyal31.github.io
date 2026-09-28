@@ -233,15 +233,34 @@ hr {
   pointer-events: none;
 }
 
-/* luminance pools: the black has spatial depth */
-.atmosphere::before {
-  content: '';
+/* cursor-proximity illumination: the analytic plane is barely brighter
+   around the pointer. Broad, heavily diffused, low amplitude; it lives in
+   the atmosphere layer only, behind all content. Static (no JS movement)
+   for touch devices and reduced motion. */
+.atmosphere-glow {
   position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(1100px 700px at 72% 12%, rgba(242, 201, 76, 0.04), transparent 65%),
-    radial-gradient(900px 640px at 12% 78%, rgba(234, 232, 225, 0.028), transparent 60%),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.015), transparent 30%, transparent 78%, rgba(0, 0, 0, 0.3));
+  left: -850px;
+  top: -600px;
+  width: 1700px;
+  height: 1200px;
+  background: radial-gradient(
+    closest-side,
+    rgba(242, 201, 76, 0.045),
+    rgba(234, 232, 225, 0.018) 45%,
+    transparent 72%
+  );
+  transform: translate3d(72vw, 38vh, 0);
+  z-index: 1;
+  will-change: transform;
+}
+
+@media (hover: none) {
+  .atmosphere-glow {
+    left: 50%;
+    top: 30%;
+    transform: translate(-50%, -50%);
+    opacity: 0.7;
+  }
 }
 
 /* fine grain: a tiny tiled noise plate, static, felt before it is seen */
@@ -253,45 +272,30 @@ hr {
   opacity: 0.05;
 }
 
-/* the underlying complex-plane grid: a permanent two-scale coordinate
-   structure - fine minor lines, slightly stronger major lines every fifth
-   cell. Visible if you look for it, never competing with the type. */
+/* the underlying complex-plane grid: one consistent visual weight for
+   every ordinary line - a single coordinate system, not graph paper with
+   primary and secondary squares. Visible if you look for it, gone when
+   reading. */
 .atmosphere-grid {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(234, 232, 225, 0.042) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(234, 232, 225, 0.042) 1px, transparent 1px),
-    linear-gradient(rgba(234, 232, 225, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(234, 232, 225, 0.02) 1px, transparent 1px);
-  background-size:
-    480px 480px,
-    480px 480px,
-    96px 96px,
-    96px 96px;
+    linear-gradient(rgba(234, 232, 225, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(234, 232, 225, 0.03) 1px, transparent 1px);
+  background-size: 96px 96px;
 }
 
-/* G-mode: the same coordinate system, accent-tinted and stronger, with a
-   fine secondary layer - crossfaded in over the permanent grid. */
+/* G-mode: the same grid, accent-tinted and stronger - crossfaded in over
+   the permanent one. */
 .atmosphere-grid-accent {
   position: absolute;
   inset: 0;
   opacity: 0;
   transition: opacity 450ms ease;
   background-image:
-    linear-gradient(rgba(242, 201, 76, 0.1) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(242, 201, 76, 0.1) 1px, transparent 1px),
-    linear-gradient(rgba(242, 201, 76, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(242, 201, 76, 0.045) 1px, transparent 1px),
-    linear-gradient(rgba(242, 201, 76, 0.022) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(242, 201, 76, 0.022) 1px, transparent 1px);
-  background-size:
-    480px 480px,
-    480px 480px,
-    96px 96px,
-    96px 96px,
-    48px 48px,
-    48px 48px;
+    linear-gradient(rgba(242, 201, 76, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(242, 201, 76, 0.06) 1px, transparent 1px);
+  background-size: 96px 96px;
 }
 
 body.show-grid .atmosphere-grid-accent {

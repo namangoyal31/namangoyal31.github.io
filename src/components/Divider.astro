@@ -1,10 +1,11 @@
 ---
 /**
  * Analyticity divider: the section rule as a small mathematical figure.
- * A hairline runs across the container and a yellow contour detours around
- * a few pole ticks; on entering the viewport the contour draws itself
- * left to right. One line language, reused between major sections.
- * Reduced motion renders it complete and static.
+ * One straight, continuous rule is drawn across the container in the site
+ * accent, with gray pole ticks crossing it; on entering the viewport the
+ * rule draws itself left to right. No detours: hierarchy comes from
+ * typography, not from the rule's shape. Reduced motion renders it
+ * complete and static.
  */
 interface Props {
   /** Pole positions as horizontal fractions of the container width. */
@@ -40,14 +41,8 @@ const { poles = [0.3, 0.55, 0.8] } = Astro.props;
     // base hairline
     mk('path', 'd-base', `M 0 30 L ${w} 30`, true);
 
-    // contour detouring over each pole
-    let d = 'M 0 30';
-    for (const f of poles) {
-      const x = f * w;
-      d += ` L ${x - 12} 30 C ${x - 4} 30, ${x - 4} 17, ${x} 17 C ${x + 4} 17, ${x + 4} 30, ${x + 12} 30`;
-    }
-    d += ` L ${w} 30`;
-    mk('path', 'd-contour', d, true);
+    // the accent rule itself: one straight, continuous line
+    mk('path', 'd-contour', `M 0 30 L ${w} 30`, true);
 
     // pole ticks
     for (const f of poles) {

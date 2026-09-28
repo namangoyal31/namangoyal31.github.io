@@ -66,7 +66,7 @@ const isCurrent = (href: string) => currentPath === normalize(href);
     }
   </head>
   <body>
-    <div class="atmosphere" aria-hidden="true"><div class="atmosphere-grid"></div><div class="atmosphere-grid-accent"></div></div>
+    <div class="atmosphere" aria-hidden="true"><div class="atmosphere-grid"></div><div class="atmosphere-grid-accent"></div><div class="atmosphere-glow"></div></div>
     <a class="skip-link" href="#main">Skip to content</a>
 
     <header class="site-header" id="site-header">
@@ -177,13 +177,43 @@ const isCurrent = (href: string) => currentPath === normalize(href);
         revealables.forEach((el) => el.classList.add('revealed'));
       }
 
-      // Easter egg: G toggles the underlying complex-plane grid.
+      // Easter egg: G intensifies the underlying complex-plane grid.
       document.addEventListener('keydown', (e) => {
         if (e.key.toLowerCase() !== 'g' || e.metaKey || e.ctrlKey || e.altKey) return;
         const target = e.target as HTMLElement;
         if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) return;
         document.body.classList.toggle('show-grid');
       });
+
+      // Cursor-proximity illumination: the analytic plane brightens very
+      // slightly around the pointer. Lerp in rAF (self-stopping); skipped
+      // for touch devices and reduced motion.
+      const glow = document.querySelector('.atmosphere-glow');
+      const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+      const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (glow && finePointer && !calm) {
+        let tx = innerWidth * 0.72, ty = innerHeight * 0.38;
+        let x = tx, y = ty, raf = 0, running = false;
+        const step = () => {
+          x += (tx - x) * 0.045;
+          y += (ty - y) * 0.045;
+          glow.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
+          if (Math.abs(tx - x) + Math.abs(ty - y) > 0.4) raf = requestAnimationFrame(step);
+          else running = false;
+        };
+        const kick = () => {
+          if (!running) {
+            running = true;
+            raf = requestAnimationFrame(step);
+          }
+        };
+        window.addEventListener('pointermove', (e) => {
+          tx = e.clientX;
+          ty = e.clientY;
+          kick();
+        }, { passive: true });
+        kick();
+      }
     </script>
   </body>
 </html>
