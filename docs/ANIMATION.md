@@ -70,17 +70,13 @@ The only time dependence is a slow breathing of each c_j:
 which slides the left focus and reshapes the contour while the pins hold
 exactly (a_j, b_j, and the center are recomputed from c_j every frame, so
 t_j(0) = mu_0 and F_R = 0 are preserved identically). One sinusoid per
-ellipse with period T makes the loop seamless.
+ellipse with period T makes the loop repeat without a visible jump.
 
 ## Interaction
 
-Dragging the figure horizontally sweeps the family parameter: the left-focus
-distance c_j is scaled continuously (up to 3x at full drag), which moves every
-contour through the family toward the parabolic limit while the right focus
-(t = 0) and the right extremity (t = mu_0) stay pinned. c_j is the genuine
-parameter of the family, so the interaction changes only a quantity the
-mathematics actually contains. Double-clicking returns to the drawn set.
-The sweep is session-only.
+None. The figure is a background element: it has no pointer interaction and no reset
+state. The family breathes on its own loop and opens slightly with scroll; visitors watch
+it, they do not operate it.
 
 Governing rule for this site: interactions may change only parameters and
 relationships that exist in the underlying mathematics - presentation is
@@ -118,8 +114,7 @@ The animation is one layer of a single visual system that spans the site:
 
 Plain Canvas 2D, no libraries, no assets. Source: `src/lib/amp-field.js`,
 mounted by a small `<script>` at the bottom of `src/pages/index.astro`. Each
-frame is a `clearRect` plus a few low-alpha strokes. Single ink color read
-from the `--ink` design token; re-palettes automatically on theme change.
+Colors are read from the `--ink` and `--accent` design tokens; the site is dark-only.
 
 ## Static preview and reduced motion
 
@@ -142,7 +137,6 @@ All in `src/lib/amp-field.js`:
 - Breathing amplitude: the `0.054` factor in `render()`.
 - `c` multipliers in `layout()`: 0.5, 1.5, 4.5, 15 (in units of mu_0), which
   set the progression toward the parabolic limit.
-- Contour hues: the `PALETTES` table (light and dark variants per ellipse).
 
 ## Performance
 

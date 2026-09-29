@@ -20,7 +20,8 @@
  * Motion: each ellipse breathes slowly in c_j (the only time dependence),
  * which slides the left focus and reshapes the contour while both pinned
  * invariants hold exactly. One sinusoid per ellipse with period T = 3.6 s
- * makes the loop seamless. There is no cursor interaction and no orbiting
+ * makes the loop repeat without a visible jump. There is no cursor
+ * interaction and no orbiting
  * marker; the geometry itself is the visual.
  *
  * Single ink color, Canvas 2D, no dependencies. See docs/ANIMATION.md.
@@ -213,7 +214,7 @@ export function mountAmpField(canvas) {
 
   const ro = new ResizeObserver(() => {
     resize();
-    if (staticPhase !== null) render(staticPhase);
+    if (staticPhase !== null) render(staticPhase, 0);
   });
   ro.observe(canvas.parentElement);
 

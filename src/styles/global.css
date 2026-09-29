@@ -564,22 +564,6 @@ main,
   will-change: opacity;
 }
 
-
-.hero-layout {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
-  gap: clamp(2rem, 4vw, 3.5rem);
-  align-items: center;
-}
-
-@media (max-width: 1023px) {
-  .hero-layout {
-    grid-template-columns: 1fr;
-  }
-}
-
 .hero-inner {
   position: relative;
   z-index: 1;
@@ -590,7 +574,289 @@ main,
   font-size: clamp(2.6rem, 6vw, 4.4rem);
 }
 
-/* Fig. 1: the analyticity instrument, framed like a paper figure */
+.hero h1 {
+  margin-bottom: 0.22em;
+}
+
+.hero .affiliation {
+  font-family: 'Source Serif 4 Variable', Georgia, serif;
+  font-style: italic;
+  font-size: 1.02rem;
+  color: var(--muted);
+  margin-bottom: 1.8rem;
+}
+
+.hero .lede {
+  max-width: 39rem;
+  margin-bottom: 2.1rem;
+}
+
+.cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  align-items: center;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: 'JetBrains Mono Variable', monospace;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  padding: 0.66rem 1.15rem;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-solid {
+  background: var(--accent);
+  color: #0b0c0f;
+}
+
+.btn-solid:hover {
+  background: var(--accent-strong);
+  color: #0b0c0f;
+}
+
+.btn-ghost {
+  border-color: var(--hairline-strong);
+  color: var(--ink);
+  background: transparent;
+}
+
+.btn-ghost:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.now-line {
+  margin-top: 2rem;
+  font-family: 'JetBrains Mono Variable', monospace;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.now-line strong {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* ---------- editorial research rows (home) ---------- */
+
+.row-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.row-list li {
+  border-top: 1px solid var(--hairline);
+  padding: 1.4rem 0 1.5rem;
+  display: grid;
+  grid-template-columns: 3.4rem 1fr;
+  gap: 0.4rem 1.2rem;
+}
+
+.row-list li:last-child {
+  border-bottom: 1px solid var(--hairline);
+}
+
+.row-no {
+  font-family: 'JetBrains Mono Variable', monospace;
+  font-size: 0.78rem;
+  color: var(--faint);
+  padding-top: 0.35rem;
+  transition: color 160ms ease;
+}
+
+.row-list li:hover .row-no {
+  color: var(--accent);
+}
+
+.row-title {
+  font-size: 1.22rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.row-title a {
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.row-title a:hover {
+  color: var(--accent-strong);
+}
+
+.row-meta {
+  margin: 0.15rem 0 0.45rem;
+}
+
+.row-excerpt {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.97rem;
+  max-width: 44rem;
+}
+
+.row-link {
+  font-family: 'JetBrains Mono Variable', monospace;
+  font-size: 0.76rem;
+  margin-top: 0.6rem;
+  display: inline-block;
+}
+
+.row-link a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.row-link a:hover {
+  color: var(--accent-strong);
+  text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .row-list li {
+    grid-template-columns: 1fr;
+    gap: 0.3rem;
+  }
+
+  .row-no::after {
+    content: ' /';
+    color: var(--hairline-strong);
+  }
+}
+
+/* ---------- cards (software, publications aside) ---------- */
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: 1.1rem;
+}
+
+.card {
+  background: var(--bg-raised);
+  border: 1px solid var(--hairline);
+  border-radius: 4px;
+  padding: 1.35rem 1.4rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.card:hover {
+  border-color: var(--hairline-strong);
+}
+
+.card h3 {
+  margin: 0;
+  font-size: 1.14rem;
+}
+
+.card h3 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.card h3 a:hover {
+  color: var(--accent-strong);
+}
+
+.card .meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.9rem;
+}
+
+.card p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.card .card-link {
+  margin-top: auto;
+  padding-top: 0.5rem;
+  font-family: 'JetBrains Mono Variable', monospace;
+  font-size: 0.76rem;
+}
+
+.card .card-link a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 50%;
+  background: var(--faint);
+  margin-right: 0.45em;
+  vertical-align: 0.08em;
+}
+
+.status-dot.current {
+  background: var(--accent);
+}
+
+.status-dot.published {
+  background: var(--ink);
+}
+
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tag {
+  font-family: 'JetBrains Mono Variable', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  border: 1px solid var(--hairline-strong);
+  border-radius: 2px;
+  padding: 0.14rem 0.55rem;
+}
+
+/* ---------- figures: light plates on the dark page ---------- */
+
+.figure-panel {
+  margin: 1.6rem 0;
+  background: var(--figure-bg);
+  border: 1px solid var(--hairline);
+  border-radius: 4px;
+  padding: 1rem;
+}
+
+.figure-panel img {
+  width: 100%;
+  height: auto;
+  border-radius: 2px;
+}
+
+.figure-panel figcaption {
+  font-family: 'JetBrains Mono Variable', monospace;
+  font-size: 0.78rem;
+  color: #4c4c47;
+  line-height: 1.6;
+  padding: 0.75rem 0.35rem 0.1rem;
+}
+
+.figure-panel figcaption .fig-label {
+  color: #8a6d1f;
+  font-weight: 600;
+}
+
 /* ---------- timeline ---------- */
 
 .timeline {
