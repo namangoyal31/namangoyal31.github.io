@@ -33,16 +33,32 @@
   --ink: #20242c;
   --muted: #5b5f6a;
   --faint: #8b8b84;
-  --accent: #8a680e;
-  --accent-strong: #6f510b;
-  --accent-wash: rgba(138, 104, 14, 0.12);
+  --accent: #c9a227;
+  --accent-strong: #a9861c;
+  --accent-wash: rgba(201, 162, 39, 0.13);
   --hairline: #e2ddcd;
   --hairline-strong: #cdc7b4;
   --code-bg: #efecdf;
   --figure-bg: #ffffff;
-  --mark: rgba(138, 104, 14, 0.14);
-  --accent-contrast: #fdfcf7;
+  --mark: rgba(214, 178, 74, 0.3);
+  --accent-contrast: #201a08;
   color-scheme: light;
+}
+
+/* Light-mode emphasis follows print convention: text accents are ink, and
+   the gold lives in the graphics - contour lines, dividers, underlines,
+   markers, and the primary button. This keeps yellow out of small text,
+   where it turns muddy. */
+[data-theme='light'] .eyebrow,
+[data-theme='light'] .secno,
+[data-theme='light'] .timeline .t-date,
+[data-theme='light'] .row-link a,
+[data-theme='light'] .fig-caption .fig-label,
+[data-theme='light'] .footer-grid h4,
+[data-theme='light'] .now-line strong,
+[data-theme='light'] .cv-entry .what .where,
+[data-theme='light'] .nav-links a[aria-current='true'] {
+  color: var(--ink);
 }
 
 /* ---------- base ---------- */
@@ -450,15 +466,15 @@ main,
 
 [data-theme='light'] .atmosphere-grid-accent {
   background-image:
-    linear-gradient(rgba(138, 104, 14, 0.1) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(138, 104, 14, 0.1) 1px, transparent 1px);
+    linear-gradient(rgba(201, 162, 39, 0.14) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201, 162, 39, 0.14) 1px, transparent 1px);
 }
 
 [data-theme='light'] .atmosphere-glow {
   background: radial-gradient(
     closest-side,
-    rgba(166, 124, 16, 0.055),
-    rgba(32, 36, 44, 0.014) 45%,
+    rgba(201, 162, 39, 0.06),
+    rgba(32, 36, 44, 0.012) 45%,
     transparent 72%
   );
 }
