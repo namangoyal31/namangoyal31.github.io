@@ -59,7 +59,9 @@ own c_j with the two pinned invariants.
 The contour family is drawn in the site accent, a single warm yellow
 (`--accent`), with opacity descending from the innermost contour outward
 (0.5 to 0.3 on desktop). The axes, mu_0 tick, and the limiting parabola stay
-neutral ink. The site is dark-only by design; there is no light variant.
+neutral ink. The palette follows the site theme: deep ochre contours on the
+light paper variant, warm yellow on the dark default; the canvas re-reads
+the tokens whenever the theme attribute changes.
 
 ## Motion
 

@@ -212,6 +212,14 @@ export function mountAmpField(canvas) {
     else if (inView) start();
   });
 
+  // Re-read the palette when the theme attribute changes; the next frame
+  // (or a static re-render) picks up the new colors.
+  const themeObserver = new MutationObserver(() => {
+    readTheme();
+    if (staticPhase !== null) render(staticPhase, 0);
+  });
+  themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
   const ro = new ResizeObserver(() => {
     resize();
     if (staticPhase !== null) render(staticPhase, 0);

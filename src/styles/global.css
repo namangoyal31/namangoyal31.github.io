@@ -19,7 +19,30 @@
   --code-bg: #12151b;
   --figure-bg: #f6f4ef; /* scientific plates keep a light ground, like book plates */
   --mark: rgba(242, 201, 76, 0.18);
+  --accent-contrast: #0b0c0f;
   color-scheme: dark;
+}
+
+/* Light variant: the same living-preprint identity on warm paper. The
+   accent deepens to an ochre so it stays readable on the light ground;
+   every component below is token-driven and adapts automatically. */
+[data-theme='light'] {
+  --bg: #f7f5ef;
+  --bg-raised: #fffdf8;
+  --bg-soft: #f0ede3;
+  --ink: #20242c;
+  --muted: #5b5f6a;
+  --faint: #8b8b84;
+  --accent: #8a680e;
+  --accent-strong: #6f510b;
+  --accent-wash: rgba(138, 104, 14, 0.12);
+  --hairline: #e2ddcd;
+  --hairline-strong: #cdc7b4;
+  --code-bg: #efecdf;
+  --figure-bg: #ffffff;
+  --mark: rgba(138, 104, 14, 0.14);
+  --accent-contrast: #fdfcf7;
+  color-scheme: light;
 }
 
 /* ---------- base ---------- */
@@ -130,7 +153,7 @@ hr {
   left: -9999px;
   top: 0;
   background: var(--accent);
-  color: #0b0c0f;
+  color: var(--accent-contrast);
   padding: 0.55rem 1rem;
   font-family: 'JetBrains Mono Variable', monospace;
   font-size: 0.82rem;
@@ -412,6 +435,47 @@ main,
   }
 }
 
+/* atmosphere in light mode: dark specks on paper, darker grid lines,
+   a deeper amber glow - same layers, re-toned for the paper ground */
+[data-theme='light'] .atmosphere::after {
+  filter: invert(1);
+  opacity: 0.035;
+}
+
+[data-theme='light'] .atmosphere-grid {
+  background-image:
+    linear-gradient(rgba(32, 36, 44, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(32, 36, 44, 0.05) 1px, transparent 1px);
+}
+
+[data-theme='light'] .atmosphere-grid-accent {
+  background-image:
+    linear-gradient(rgba(138, 104, 14, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(138, 104, 14, 0.1) 1px, transparent 1px);
+}
+
+[data-theme='light'] .atmosphere-glow {
+  background: radial-gradient(
+    closest-side,
+    rgba(166, 124, 16, 0.055),
+    rgba(32, 36, 44, 0.014) 45%,
+    transparent 72%
+  );
+}
+
+/* theme toggle icon: sun in dark mode, moon in light mode */
+.icon-moon {
+  display: none;
+}
+
+[data-theme='light'] .icon-sun {
+  display: none;
+}
+
+[data-theme='light'] .icon-moon {
+  display: block;
+}
+
 /* ---------- header / nav ---------- */
 
 .site-header {
@@ -615,12 +679,12 @@ main,
 
 .btn-solid {
   background: var(--accent);
-  color: #0b0c0f;
+  color: var(--accent-contrast);
 }
 
 .btn-solid:hover {
   background: var(--accent-strong);
-  color: #0b0c0f;
+  color: var(--accent-contrast);
 }
 
 .btn-ghost {

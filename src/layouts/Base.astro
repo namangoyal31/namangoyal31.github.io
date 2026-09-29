@@ -44,6 +44,15 @@ const isCurrent = (href: string) => currentPath === normalize(href);
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <meta name="generator" content={Astro.generator} />
+    <script is:inline>
+      // Restore the chosen theme before first paint. Dark is the default;
+      // only an explicit light choice adds the attribute.
+      try {
+        if (localStorage.getItem('theme') === 'light') {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      } catch (e) {}
+    </script>
     <script is:inline>document.documentElement.classList.add('js');</script>
 
     <meta property="og:type" content="website" />
@@ -86,6 +95,15 @@ const isCurrent = (href: string) => currentPath === normalize(href);
               }
             </ul>
           </nav>
+          <button class="icon-btn" id="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="4.4"></circle>
+              <path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M19.1 4.9l-1.7 1.7M6.6 17.4l-1.7 1.7"></path>
+            </svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20.2 14.2A8.3 8.3 0 0 1 9.8 3.8a8.3 8.3 0 1 0 10.4 10.4Z"></path>
+            </svg>
+          </button>
           <button class="icon-btn nav-toggle" id="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
               <path class="icon-bars" d="M4 7h16M4 12h16M4 17h16"></path>
@@ -189,6 +207,18 @@ const isCurrent = (href: string) => currentPath === normalize(href);
         const target = e.target as HTMLElement;
         if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) return;
         document.body.classList.toggle('show-grid');
+      });
+
+      // Theme toggle: dark is the identity default; light is the paper
+      // variant of the same system. The choice persists.
+      const themeToggle = document.getElementById('theme-toggle');
+      themeToggle?.addEventListener('click', () => {
+        const light = document.documentElement.getAttribute('data-theme') === 'light';
+        if (light) document.documentElement.removeAttribute('data-theme');
+        else document.documentElement.setAttribute('data-theme', 'light');
+        try {
+          localStorage.setItem('theme', light ? 'dark' : 'light');
+        } catch (e) {}
       });
 
       // Cursor-proximity illumination: the analytic plane brightens very
