@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>OG card generator — namangoyal31.github.io</title>
+<style>
+  /* Dev tool: renders one 1200x630 social card per page of the site.
+     Usage: serve the repository root, open
+       /scripts/og-cards.html?card=home   (home|research|smvac|publications|cv|about)
+     and screenshot the viewport at exactly 1200x630 into public/og/<name>.png. */
+  body { margin: 0; background: #0b0c0f; }
+  .card { position: relative; width: 1200px; height: 630px; overflow: hidden; background: #0b0c0f; }
+  .card canvas { position: absolute; inset: 0; }
+  .card .grid { position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(234,232,225,0.03) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(234,232,225,0.03) 1px, transparent 1px);
+    background-size: 96px 96px; }
+  .card .grain { position: absolute; inset: 0; opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .card .copy { position: absolute; inset: 0; padding: 150px 90px; z-index: 2; }
+  .card .eyebrow { font: 500 20px/1 'JetBrains Mono', ui-monospace, monospace; letter-spacing: 5px;
+    text-transform: uppercase; color: #f2c94c; margin: 0 0 34px; }
+  .card .title { font-family: Georgia, 'Times New Roman', serif; font-weight: 600; color: #eae8e1;
+    font-size: 92px; line-height: 1.05; letter-spacing: -1px; margin: 0 0 30px; }
+  .card .line { font-family: Georgia, 'Times New Roman', serif; color: #a3a29a;
+    font-size: 29px; line-height: 1.5; max-width: 880px; margin: 0; }
+  .card .bottom { position: absolute; left: 90px; bottom: 64px;
+    font: 400 19px/1 'JetBrains Mono', ui-monospace, monospace; color: #8b8b84; }
+  .card .bottom b { color: #eae8e1; font-weight: 400; }
+  .card .rule { position: absolute; left: 90px; right: 90px; top: 118px; height: 1px; background: #37393f; }
+</style>
+</head>
+<body>
+<div class="card" id="card">
+  <canvas id="amp" width="1200" height="630"></canvas>
+  <div class="grid"></div>
+  <div class="grain"></div>
+  <div class="rule"></div>
+  <div class="copy">
+    <p class="eyebrow" id="eyebrow"></p>
+    <p class="title" id="title"></p>
+    <p class="line" id="line"></p>
+  </div>
+  <p class="bottom"><b>Naman Goyal</b> · namangoyal31.github.io</p>
+</div>
+
+<script>
+const TAU = Math.PI * 2;
+const ACC = [242, 201, 76];
+const INK = [234, 232, 225];
+const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+
+const CARDS = {
+  home: {
+    eyebrow: 'THEORETICAL PHYSICS · HIGH ENERGY THEORY',
+    title: 'Naman Goyal',
+    line: 'Theoretical high-energy physics and mathematical physics — Indian Institute of Science, Bengaluru · TIFR, Mumbai.',
+  },
+  research: {
+    eyebrow: 'RESEARCH',
+    title: 'What I work on',
+    line: 'Scattering amplitudes and the S-matrix bootstrap, electroweak vacuum stability, and effective descriptions of gravitation.',
+  },
+  smvac: {
+    eyebrow: 'RESEARCH SOFTWARE',
+    title: 'SMVac',
+    line: 'Precision computation of electroweak vacuum stability in the Standard Model.',
+  },
+  publications: {
+    eyebrow: 'PUBLICATIONS',
+    title: 'Publications',
+    line: 'Tests of general relativity in pseudo-Newtonian approach — arXiv:2602.20261 [gr-qc].',
+  },
+  cv: {
+    eyebrow: 'CURRICULUM VITAE',
+    title: 'CV',
+    line: 'B.S. (Research) in Physics, IISc Bengaluru — research experience, awards, and coursework.',
+  },
+  about: {
+    eyebrow: 'ABOUT',
+    title: 'About',
+    line: 'Who I am, what I work on, and how to reach me.',
+  },
+};
+
+const name = new URLSearchParams(location.search).get('card') || 'home';
+const card = CARDS[name] || CARDS.home;
+document.getElementById('eyebrow').textContent = card.eyebrow;
+document.getElementById('title').textContent = card.title;
+document.getElementById('line').textContent = card.line;
+document.title = 'og/' + name;
+
+// contour fragment: the pinned-focus analyticity family, anchored right
+const cv = document.getElementById('amp');
+const ctx = cv.getContext('2d');
+const W = 1200, H = 630;
+const fx = W * 0.86, fy = H * 0.52;
+const mu0 = 300;
+const cs = [0.5, 1.5, 4.5, 15].map(m => m * mu0);
+cs.forEach((c, j) => {
+  const a = mu0 + c / 2, b = Math.sqrt(mu0 * (mu0 + c)), cx = fx - c / 2;
+  ctx.strokeStyle = rgba(ACC, 0.5 - j * 0.07);
+  ctx.beginPath();
+  for (let i = 0; i <= 220; i++) {
+    const p = (i / 220) * TAU;
+    const x = cx + a * Math.cos(p), y = fy - b * Math.sin(p);
+    i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+  }
+  ctx.closePath(); ctx.stroke();
+});
+ctx.strokeStyle = rgba(INK, 0.14);
+ctx.beginPath(); ctx.moveTo(fx - 2 * mu0, fy); ctx.lineTo(fx, fy); ctx.stroke();
+ctx.strokeStyle = rgba(INK, 0.2);
+[[fx, fy], [fx - 2 * mu0, fy]].forEach(([x, y]) => {
+  ctx.beginPath(); ctx.moveTo(x, y - 8); ctx.lineTo(x, y + 8); ctx.stroke();
+});
+// fade the figure into darkness toward the left/bottom
+const g = ctx.createRadialGradient(fx - mu0 * 0.3, fy, 120, fx - mu0 * 0.3, fy, 1150);
+g.addColorStop(0, 'rgba(11,12,15,0)');
+g.addColorStop(1, 'rgba(11,12,15,0.92)');
+ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+</script>
+</body>
+</html>

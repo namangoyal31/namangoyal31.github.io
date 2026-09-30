@@ -479,8 +479,9 @@ main,
   );
 }
 
-/* theme toggle icon: sun in dark mode, moon in light mode */
-.icon-moon {
+/* theme toggle icon: sun (dark), moon (light), half-circle (auto) */
+.icon-moon,
+.icon-auto {
   display: none;
 }
 
@@ -490,6 +491,32 @@ main,
 
 [data-theme='light'] .icon-moon {
   display: block;
+}
+
+[data-theme-mode='auto'] .icon-sun,
+[data-theme-mode='auto'] .icon-moon {
+  display: none;
+}
+
+[data-theme-mode='auto'] .icon-auto {
+  display: block;
+}
+
+/* copy-to-clipboard chip under the BibTeX block */
+.copy-btn {
+  font-family: 'JetBrains Mono Variable', monospace;
+  font-size: 0.76rem;
+  padding: 0.42rem 0.8rem;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 3px;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.copy-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 /* ---------- header / nav ---------- */
@@ -1364,4 +1391,75 @@ details.coursework ul {
 
 .page-head .meta {
   margin-bottom: 0.8rem;
+}
+
+
+/* ---------- print: the web pages print as clean documents ---------- */
+
+@media print {
+  .atmosphere,
+  .hero-field,
+  .site-header,
+  .site-footer,
+  .amp-divider,
+  .cta-row,
+  .pub-links,
+  #theme-toggle,
+  .skip-link {
+    display: none !important;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #111 !important;
+    font-size: 11pt;
+  }
+
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  h1, h2, h3, p, li, .meta, .eyebrow, .secno, .timeline .t-note {
+    color: #111 !important;
+  }
+
+  a {
+    color: #111 !important;
+    text-decoration: none;
+  }
+
+  .eyebrow, .secno, .meta, .smallcaps, .timeline .t-date {
+    color: #444 !important;
+  }
+
+  .cv-entry, .section-head, .timeline li, .row-list li, .pub-card, .card {
+    border-color: #ddd !important;
+  }
+
+  .section, .section-tight {
+    padding-block: 1rem;
+  }
+
+  .cv-section {
+    margin-bottom: 1rem;
+  }
+
+  .cv-entry {
+    padding-block: 0.35rem;
+  }
+
+  .page-head {
+    padding-block: 0;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+    margin-top: 1.2em;
+  }
 }

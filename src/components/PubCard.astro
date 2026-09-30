@@ -68,8 +68,38 @@ const bibtex = `@article{goyal2026pseudoNewtonian,
     full && (
       <details class="bibtex">
         <summary>BibTeX</summary>
-        <pre>{bibtex}</pre>
+        <pre id={`bibtex-${pub.id}`}>{bibtex}</pre>
       </details>
+      <button class="copy-btn" type="button" data-copy={`bibtex-${pub.id}`}>Copy BibTeX</button>
     )
   }
 </article>
+
+<script>
+  document.querySelectorAll('.copy-btn').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const pre = document.getElementById(btn.getAttribute('data-copy') ?? '');
+      if (!pre) return;
+      let ok = false;
+      try {
+        await navigator.clipboard.writeText(pre.textContent ?? '');
+        ok = true;
+      } catch (e) {
+        // clipboard API unavailable (permissions / older engines): fall
+        // back to the classic selected-text copy
+        const ta = document.createElement('textarea');
+        ta.value = pre.textContent ?? '';
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { ok = document.execCommand('copy'); } catch (e2) { ok = false; }
+        ta.remove();
+      }
+      btn.textContent = ok ? 'Copied' : 'Select and copy manually';
+      setTimeout(() => {
+        btn.textContent = 'Copy BibTeX';
+      }, 1600);
+    });
+  });
+</script>

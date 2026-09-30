@@ -60,6 +60,9 @@ with what the repository's code and docs actually support.
 
 - `public/figures/`: scientific figures, served as-is. Keep original axes/labels;
   regenerate from the SMVac pipeline rather than editing the PNGs.
-- `public/og-image.png`: 1200×630 social preview (a screenshot of the dark hero;
-  regenerate after major redesigns).
+- `public/og/`: per-page 1200×630 social cards (home, research, smvac,
+  publications, cv, about), generated from `scripts/og-cards.html`:
+  serve the repo root, open the page with `?card=<name>` at a 1200×630
+  viewport, and screenshot to `public/og/<name>.png`.
+- `public/og-image.png`: legacy shared preview (kept as the default fallback).
 - `public/favicon.svg`: monogram mark.
