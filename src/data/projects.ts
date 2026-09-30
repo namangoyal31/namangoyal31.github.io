@@ -31,12 +31,12 @@ export const projects: Project[] = [
     status: 'current',
     mentors: 'Prof. Rick Sandepan Gupta (TIFR)',
     place: 'TIFR, Mumbai',
-    tags: ['Scattering amplitudes', 'Analyticity', 'Crossing symmetry', 'Unitarity', 'Regge behavior'],
+    tags: ['Scattering amplitudes', 'Analyticity', 'Crossing symmetry', 'Unitarity', 'Regge behavior', 'Polynomial boundedness'],
     summary:
-      'Investigating whether the uniqueness of dual-resonance scattering amplitudes can be established directly from analyticity, crossing symmetry, unitarity, and Regge behavior, without auxiliary assumptions on their zero distribution. In parallel, I study the analytic properties of amplitudes through positivity constraints, drawing on modern developments in the S-matrix bootstrap.',
+      'Investigating whether the uniqueness of dual-resonance scattering amplitudes can be established directly from analyticity, crossing symmetry, unitarity, and Regge behavior, without auxiliary assumptions on their zero distribution. In parallel, I study polynomial boundedness, positivity constraints, and the analytic structure of amplitudes in the complexified Mandelstam plane, drawing on modern developments in the S-matrix bootstrap.',
     body: [
       'My current work, at TIFR with Prof. Rick Sandepan Gupta, concerns an old question: what fixes scattering amplitudes? The dual-resonance (Veneziano-type) amplitudes are uniquely simple objects, but is that uniqueness derivable or assumed? Concretely, can it be established directly from the physical principles of analyticity, crossing symmetry, unitarity, and Regge behavior, without auxiliary assumptions about the distribution of zeros of the amplitude?',
-      'In parallel, I am studying the analytic properties of scattering amplitudes through analyticity, crossing, unitarity, Regge behavior, and positivity constraints, drawing on modern developments in the S-matrix bootstrap program. The project is ongoing; this description will grow as results do.',
+      'In parallel, I am studying polynomial boundedness, positivity constraints, and the analytic structure of scattering amplitudes in the complexified Mandelstam plane, drawing on modern developments in the S-matrix bootstrap program. The project is ongoing; this description will grow as results do.',
     ],
     links: [],
   },
