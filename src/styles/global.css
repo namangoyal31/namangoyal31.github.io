@@ -20,6 +20,7 @@
   --figure-bg: #12141a; /* figure container follows the theme; the image itself is untouched */
   --mark: rgba(242, 201, 76, 0.18);
   --accent-contrast: #0b0c0f;
+  --accent-rgb: 242, 201, 76;
   color-scheme: dark;
 }
 
@@ -42,6 +43,7 @@
   --figure-bg: #ffffff;
   --mark: rgba(214, 178, 74, 0.3);
   --accent-contrast: #201a08;
+  --accent-rgb: 138, 104, 14;
   color-scheme: light;
 }
 
@@ -278,28 +280,25 @@ hr {
    for touch devices and reduced motion. */
 .atmosphere-glow {
   position: absolute;
-  left: -850px;
-  top: -600px;
-  width: 1700px;
-  height: 1200px;
+  left: 0;
+  top: 0;
+  width: 2400px;
+  height: 2400px;
+  margin-left: -1200px;
+  margin-top: -1200px;
   background: radial-gradient(
-    closest-side,
-    rgba(242, 201, 76, 0.045),
-    rgba(234, 232, 225, 0.018) 45%,
-    transparent 72%
+    circle at center,
+    rgba(var(--accent-rgb), 0.085) 0%,
+    rgba(var(--accent-rgb), 0.06) 24%,
+    rgba(var(--accent-rgb), 0.034) 44%,
+    rgba(var(--accent-rgb), 0.016) 62%,
+    rgba(var(--accent-rgb), 0.006) 80%,
+    rgba(var(--accent-rgb), 0) 100%
   );
   transform: translate3d(50vw, 50vh, 0);
   z-index: 1;
   will-change: transform;
-}
-
-@media (hover: none) {
-  .atmosphere-glow {
-    left: 50%;
-    top: 30%;
-    transform: translate(-50%, -50%);
-    opacity: 0.7;
-  }
+  pointer-events: none;
 }
 
 /* fine grain: a tiny tiled noise plate, static, felt before it is seen */
@@ -471,12 +470,7 @@ main,
 }
 
 [data-theme='light'] .atmosphere-glow {
-  background: radial-gradient(
-    closest-side,
-    rgba(201, 162, 39, 0.06),
-    rgba(32, 36, 44, 0.012) 45%,
-    transparent 72%
-  );
+  opacity: 0.55;
 }
 
 /* theme toggle icon: sun in dark mode, moon in light mode */

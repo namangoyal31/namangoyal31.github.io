@@ -89,14 +89,15 @@ free, invented physics is not.
 The animation is one layer of a single visual system that spans the site:
 
 - **Atmosphere** (`.atmosphere`, fixed behind all content): fine static grain
-  (a tiled SVG noise plate at 5% opacity, unchanged), a permanent uniform
+  (a tiled SVG noise plate at 5% opacity), a permanent uniform
   complex-plane grid (one consistent weight, lines every 96 px at 3%
   opacity - a single coordinate system, no primary/secondary squares), and
-  cursor-proximity illumination: a broad, heavily diffused luminance pool
-  (peak ~4.5%) that follows the pointer with a slow lerp, so the plane is
-  barely brighter where the cursor is. Touch devices and reduced motion
-  keep a static pool. Pressing **G** (outside a text field) crossfades an
-  accent-tinted, stronger version of the same uniform grid.
+  cursor-proximity illumination: a large, soft, multi-stop radial cloud of
+  accent light (2400 px plate, Gaussian-like falloff, peak ~8.5% in dark
+  mode, softened to ~55% of that in light mode) that drifts after the
+  pointer with a slow lerp. Touch devices and reduced motion keep a
+  static, centered pool. Pressing **G** (outside a text field) crossfades
+  an accent-tinted, stronger version of the same uniform grid.
 - **Dividers** (`src/components/Divider.astro`): the rule between major
   sections is one straight, continuous line drawn in the site accent, with
   gray pole ticks crossing it. On entering the viewport the rule draws
