@@ -1282,19 +1282,15 @@ details.coursework ul {
   }
 }
 
-.portrait-slot {
-  aspect-ratio: 4 / 5;
+.about-portrait {
+  width: 100%;
   max-width: 15rem;
-  border: 1.5px dashed var(--hairline-strong);
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: center 30%;
   border-radius: 4px;
-  background: var(--bg-soft);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Source Serif 4 Variable', Georgia, serif;
-  font-size: 2.6rem;
-  font-weight: 600;
-  color: var(--faint);
+  border: 1px solid var(--hairline-strong);
+  display: block;
 }
 
 /* ---------- footer ---------- */

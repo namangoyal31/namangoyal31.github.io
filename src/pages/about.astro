@@ -57,14 +57,14 @@ const personSchema = {
       </div>
 
       <aside>
-        {/* Reserved portrait slot.
-            To add a photo: replace this block with
-            <img class="portrait" src="/portrait.jpg" alt="Naman Goyal" width={480} height={600}
-                 style="border-radius:10px; border:1px solid var(--hairline);" />
-            and drop portrait.jpg into public/. */}
-        <div class="portrait-slot" role="img" aria-label="Portrait placeholder">
-          <span>NG</span>
-        </div>
+        <img
+          class="about-portrait"
+          src="/portrait.jpg"
+          alt="Portrait of Naman Goyal"
+          width="750"
+          height="1000"
+          loading="lazy"
+        />
       </aside>
     </div>
   </div>
