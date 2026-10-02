@@ -27,12 +27,12 @@ const softwareSchema = {
       <p class="eyebrow">Research software · C++ / Python</p>
       <h1>SMVac</h1>
       <p class="lede" style="max-width: 42rem;">
-        Precision computation of electroweak vacuum stability in the Standard Model.
+        A numerical study of electroweak vacuum stability in the Standard Model.
       </p>
       <p class="meta">
         <strong style="color: var(--ink); font-weight: 600;">Naman Goyal</strong> · May 2024 – May 2026 ·
         Mentored by Prof. Rick Sandepan Gupta (TIFR) ·
-        <a href={site.smvac}>github.com/namangoyal31/SMVac</a>
+        <a href={site.smvac} target="_blank" rel="noopener noreferrer">github.com/namangoyal31/SMVac</a>
       </p>
     </header>
 
@@ -53,8 +53,11 @@ const softwareSchema = {
         SMVac is the computational framework I developed to study this problem quantitatively. It
         combines precision renormalization group evolution with the semiclassical
         Fubini–Lipatov (conformal) ansatz: rather than assuming a constant quartic coupling, the
-        code numerically integrates the full running, one-loop effective potential over the
-        analytical conformal field profile, yielding an <strong>RG-improved decay action</strong>.
+        code evaluates the bounce action on the analytical conformal field profile with the full
+        running, one-loop effective potential, yielding an <strong>RG-improved decay
+        action</strong>. The bounce equation itself is never integrated: the profile family is
+        fixed and only its scale is optimized, so the reported action is a variational estimate,
+        and the most robust output is the stability boundary, which does not depend on the ansatz.
       </p>
     </section>
 
@@ -82,12 +85,12 @@ const softwareSchema = {
       <p>The computational pipeline, as implemented in the repository:</p>
       <ol class="pipeline">
         <li>Input <Math tex={'(M_h, M_t)'} /> and <Math tex={'\\alpha_s(M_Z)'} /></li>
-        <li>NNLO matching at the top scale <Math tex={'M_t'} /></li>
+        <li>NNLO matching at the top scale <Math tex={'M_t'} /> (Buttazzo et al. 2013, linearized)</li>
         <li>3-loop RG evolution to the Planck scale (RK4)</li>
         <li>Locate <Math tex={'\\lambda_{\\min}'} /> and the instability scale <Math tex={'\\mu_{\\rm inst}'} /></li>
         <li>RG-improved Fubini–Lipatov action over the conformal profile</li>
         <li>Optimize the profile scale <Math tex={'R'} /> (Golden Section Search)</li>
-        <li>Compare <Math tex={'S'} /> with the universe-age threshold</li>
+        <li>Classify via the Coleman criterion <Math tex={'\\Gamma/V \\sim t_U^{-4}'} /></li>
         <li>Repeat over an <Math tex={'(M_h, M_t)'} /> grid → phase diagram</li>
       </ol>
 
@@ -137,28 +140,38 @@ const softwareSchema = {
       <div class="prose">
         <h2 id="results-heading" style="margin-top: 0;"><span class="secno">§ 04</span> Results</h2>
         <p>
-          Sweeps of roughly <Math tex={'10^{6}'} /> grid points across the
-          <Math tex={'(M_h, M_t)'} /> plane, parallelized with OpenMP and a 12-process Python
-          pipeline, produce the stability phase diagram with constant-action contours. The physical
-          point (star) sits in the metastable region, close to the boundary, in agreement with the
-          literature.
+          Production datasets are evaluated point by point with no interpolation: the full
+          <Math tex={'(M_h, M_t)'} /> plane at <Math tex={'0.5\\,\\mathrm{GeV}'} /> resolution
+          (501 × 501 points), the phenomenologically relevant window at
+          <Math tex={'0.1\\,\\mathrm{GeV}'} />, and a boundary strip at
+          <Math tex={'0.05\\,\\mathrm{GeV}'} />. At the benchmark point
+          <Math tex={'(125.1, 173.1)\\,\\mathrm{GeV}'} /> the vacuum is <em>metastable</em>:
+          <Math tex={'\\lambda_{\\rm eff}'} /> crosses zero at
+          <Math tex={'\\mu_1 \\simeq 6.2 \\times 10^{10}\\,\\mathrm{GeV}'} /> and the optimized
+          ansatz action is <Math tex={'S_* = 2103.10'} /> against a threshold of
+          <Math tex={'483'} />, in agreement with the consensus that the SM lifetime exceeds the
+          age of the universe. The absolute-stability boundary sits at
+          <Math tex={'M_h^{\\rm crit} = 129.2\\,\\mathrm{GeV}'} /> for
+          <Math tex={'M_t = 173.1\\,\\mathrm{GeV}'} />, within
+          <Math tex={'0.6\\,\\mathrm{GeV}'} /> of the published NNLO value, enforced as a band
+          check in the test suite.
         </p>
       </div>
       <Figure
-        src="/figures/smvac-phase-diagram.png"
-        alt="Phase diagram of the Standard Model vacuum across the Higgs–top mass plane with constant-action contours. Stable region in green, metastable in yellow, unstable in red, non-perturbative in black; the experimental point (125.1, 173.1) GeV is marked with a star inside the metastable region."
+        src="/figures/fig-full-phase-diagram.png"
+        alt="Phase diagram of the Standard Model vacuum across the Higgs-top mass plane. Green marks absolute stability, yellow metastability, red instability, and black the non-perturbative region; grey contours show constant RG-improved action, and the star marks the experimental point (125.1, 173.1) GeV inside the metastable region."
         width={1600}
-        height={1302}
+        height={1384}
         label="Fig. 1"
-        caption="Phase diagram of the Standard Model vacuum across the (M_h, M_t) plane with constant-action contours of the RG-improved Fubini–Lipatov action. The experimental point (M_h, M_t) = (125.1, 173.1) GeV (star) lies in the metastable region, near the stability boundary. Figure from the SMVac repository."
+        caption="Stability of the SM vacuum across the full (M_h, M_t) plane (RG-improved Fubini-Lipatov estimator, 0.5 GeV resolution). The star marks the experimental point (125.1, 173.1) GeV, which lies in the metastable region near the stability boundary; the black dots along that boundary are the documented ansatz-breakdown artifact, not physical instabilities. Grey contours: constant RG-improved action. Figure from SMVac-Research."
       />
       <Figure
-        src="/figures/smvac-near-experimental-point.png"
-        alt="Close-up of the stability phase diagram near the experimental point: the boundary between stable (green) and metastable (yellow) regions runs just below the starred experimental point at (125.1, 173.1) GeV."
+        src="/figures/fig-phenomenological-zoom.png"
+        alt="Zoom of the stability phase diagram onto the phenomenologically relevant window at 0.25 GeV resolution, with the PDG 2022 one- and two-sigma regions and constant-action contours."
         width={1600}
-        height={1297}
+        height={1280}
         label="Fig. 2"
-        caption="Close-up around the physical point: the absolute-stability boundary (green/yellow) runs just below (125.1, 173.1) GeV, which is why the vacuum-stability problem is so sensitive to precision. Figure from the SMVac repository."
+        caption="The phenomenologically relevant window at 0.25 GeV resolution with the PDG 2022 one- and two-sigma region and constant-action contours. Figure from SMVac-Research."
       />
     </section>
 
@@ -167,22 +180,31 @@ const softwareSchema = {
         <h2 id="avsi-heading" style="margin-top: 0;"><span class="secno">§ 05</span> Analytical vs. RG-improved</h2>
         <p>
           The RG-improved action can be benchmarked against the strict analytical conformal limit
-          <Math tex={'S_{\\rm approx} = 8\\pi^2 / (3|\\lambda_{\\min}|)'} />. Deep in the metastable
-          region the two agree to about <strong>0.01%</strong>, since the conformal limit holds when
-          the coupling is large and slowly varying. Near the metastability boundary, however, they
-          disagree at the <strong>tens-of-percent</strong> level (e.g. 32.1% at
-          <Math tex={'(M_h, M_t) = (134.75, 176.5)\\,\\mathrm{GeV}'} />), and the disagreement
-          misclassifies points right at the boundary: precisely the scientifically interesting
-          strip of the phase diagram.
+          <Math tex={'S_{\\rm approx} = 8\\pi^2 / (3|\\lambda_{\\min}|)'} />. The comparison is
+          between two approximations, not a correctness statement. Deep in the metastable region
+          the two agree; near the stability boundary the RG improvement is substantial: the
+          fractional difference
+          <Math tex={'(S_{\\rm exact} - S_{\\rm approx})/S_{\\rm approx}'} /> grows from
+          essentially zero at <Math tex={'(115, 180)\\,\\mathrm{GeV}'} /> to about
+          <strong>+30%</strong> at <Math tex={'(134.75, 176.5)\\,\\mathrm{GeV}'} />, and the two
+          estimators classify points differently right at the boundary.
         </p>
       </div>
       <Figure
-        src="/figures/smvac-analytical-vs-rgimproved.png"
-        alt="Overlay of the stability classification from the analytical conformal approximation and the RG-improved calculation. Blue marks the region of disagreement, concentrated in a band along the metastability boundary and at low Higgs masses."
+        src="/figures/fig-classification-difference.png"
+        alt="Classification difference map over the full Higgs-top plane: where the strict conformal estimate and the RG-improved evaluation assign different stability classes. Differences concentrate along the classification boundaries."
         width={1600}
-        height={1303}
+        height={1384}
         label="Fig. 3"
-        caption="Where the strict analytical approximation (constant-coupling conformal limit) misclassifies the vacuum relative to the RG-improved calculation (blue): concentrated along the metastability boundary. Figure from the SMVac repository."
+        caption="Classification difference map: where the strict conformal estimate and the RG-improved evaluation disagree over the full plane. Differences concentrate along the classification boundaries. Figure from SMVac-Research."
+      />
+      <Figure
+        src="/figures/fig-action-fractional-difference.png"
+        alt="Fractional difference between the RG-improved and strict conformal actions over the metastable region, growing to about thirty percent near the stability boundary and vanishing deep in the metastable region."
+        width={1600}
+        height={1176}
+        label="Fig. 4"
+        caption="Fractional difference (S_exact - S_approx)/S_approx over the metastable region: the RG improvement changes the action by about 30% near the stability boundary and is negligible deep in the metastable region. Figure from SMVac-Research."
       />
     </section>
 
@@ -190,20 +212,26 @@ const softwareSchema = {
       <h2 id="validation-heading"><span class="secno">§ 06</span> Validation</h2>
       <ul>
         <li>
-          <strong>Analytical limit.</strong> The numerical machinery reproduces
-          <Math tex={'S_{\\rm approx} = 8\\pi^2/(3|\\lambda_{\\min}|)'} /> in the deep-metastability
-          regime to about <Math tex={'0.01\\%'} /> (verified against the repository's reference data).
+          <strong>Literature boundary.</strong> The computed absolute-stability boundary sits at
+          <Math tex={'M_h^{\\rm crit} = 129.2\\,\\mathrm{GeV}'} /> for
+          <Math tex={'M_t = 173.1\\,\\mathrm{GeV}'} />, within
+          <Math tex={'0.6\\,\\mathrm{GeV}'} /> of the published NNLO value of Buttazzo et al.
+          (2013); the comparison is enforced as a band check in the test suite.
         </li>
         <li>
-          <strong>Literature boundary.</strong> The computed stability boundary at
-          <Math tex={'M_h \\approx 125\\,\\mathrm{GeV}'} /> lies at
-          <Math tex={'M_t \\approx 171\\text{–}173\\,\\mathrm{GeV}'} />, consistent with the NNLO
-          analysis of Buttazzo et al. (2013).
+          <strong>Test suite.</strong> Eleven tests span unit checks of the numerics and matching,
+          physics tests against analytic limits and the literature boundary, and regression tests
+          against frozen reference tables (<code>reference/v1.1/</code>).
         </li>
         <li>
-          <strong>Reference data.</strong> The repository ships benchmark outputs
-          (<code>reference/v1.0/</code>) for the RGE, potential, bounce action, and phase scans,
-          alongside CI that checks compilation.
+          <strong>Resolution convergence.</strong> Committed datasets at
+          <Math tex={'0.5'} />, <Math tex={'0.1'} />, and <Math tex={'0.05\\,\\mathrm{GeV}'} />
+          come with a convergence-check script; every classification pixel corresponds to an
+          actually evaluated grid point, with no interpolation.
+        </li>
+        <li>
+          <strong>Reproducibility.</strong> Datasets, figures, and reference tables are all
+          regenerable from the committed scripts; nothing depends on machine-specific state.
         </li>
       </ul>
     </section>
@@ -212,27 +240,38 @@ const softwareSchema = {
       <h2 id="limitations-heading"><span class="secno">§ 07</span> Limitations</h2>
       <p>Stated plainly, because they bound what the results mean:</p>
       <div class="callout">
+        <p style="margin: 0 0 0.5rem;">
+          The consolidated list in the repository separates what
+          <em>affects classification</em> from what <em>affects rates only</em>; the
+          absolute-stability boundary is the robust output either way. The most important items:
+        </p>
         <ul>
           <li>
-            <strong>No exact bounce solver.</strong> SMVac does not integrate the Euclidean equation
-            of motion <Math tex={"\\phi'' + \\tfrac{3}{r}\\phi' = dV/d\\phi"} />. The kinetic term is
-            evaluated in the constant-&lambda; conformal limit; only the potential term is fully
-            numerical. The result is an RG-improved <em>semi-analytical</em> action, not an exact
-            bounce solution.
+            <strong>No bounce-equation solve (affects rates only).</strong> The conformal profile is
+            a variational ansatz with only its scale optimized, so actions are <em>upper bounds</em>
+            on the true bounce action: decay rates are underestimated and lifetimes
+            overestimated. Only the qualitative topology of the phase diagram and the stability
+            boundary should be taken over from this code.
           </li>
           <li>
-            <strong>One-loop potential.</strong> The effective potential includes one-loop
-            Coleman–Weinberg corrections over the tree-level running; the RG flow itself is
-            three-loop.
+            <strong>High-field potential (affects interpretation).</strong> The tree-level mass term
+            is dropped, so the false vacuum sits at the origin rather than at the electroweak
+            vacuum; the action describes tunneling from the origin as a proxy.
           </li>
           <li>
-            <strong>Fixed-step integration.</strong> The production RGE integrator uses a fixed RK4
-            step; an adaptive stepper exists in the codebase but is not used in the main pipeline.
+            <strong>Assumed regularization.</strong> The Planck-suppressed
+            <Math tex={'\\phi^6'} /> term is hard-coded with coefficient
+            <Math tex={'c_6 = 1'} />; no literature provenance has been established for it.
           </li>
           <li>
-            <strong>Research software.</strong> Sweep parameters are hardcoded in the Python
-            wrappers and the top-level solver has no formal build system (the modularized
-            <code>SMVacuumDecay/</code> library adds CMake-oriented structure and tests).
+            <strong>Prefactor approximation (affects rates only).</strong> The decay-rate prefactor
+            uses the <Math tex={'\\lambda'} /> zero-crossing scale; its radius dependence is
+            neglected (cf. Andreassen, Frost &amp; Schwartz 2018).
+          </li>
+          <li>
+            <strong>Retained 4-loop term.</strong> A 4-loop <Math tex={'g_3'} /> beta-function term
+            with an untraceable coefficient is kept as-is; its measured impact is about
+            <Math tex={'0.1\\%'} />.
           </li>
         </ul>
       </div>
@@ -241,26 +280,30 @@ const softwareSchema = {
     <section class="section prose" id="code" aria-labelledby="code-heading">
       <h2 id="code-heading"><span class="secno">§ 08</span> Code</h2>
       <p>
-        The full source, documentation, reference data, and reproducibility notes are on GitHub.
-        The main solvers compile directly with a C++17 compiler and OpenMP:
+        The current research codebase, SMVac-Research (v2.0.0), is a CMake C++17 project: a
+        library (RGE, effective potential, bounce, numerics), command-line apps for single-point
+        benchmarks and phase-diagram scans, an eleven-test suite, committed example datasets, and
+        scripts that regenerate every figure from the committed data with no interpolation. The
+        original working repository remains preserved unchanged as the provenance record; every
+        physics function's migration is documented in the repository.
       </p>
       <pre class="codeblock"><code>git clone https://github.com/namangoyal31/SMVac.git
 cd SMVac
-g++ -std=c++17 -O3 -fopenmp apps/solver_numerical.cpp -o apps/generate_phase_diagram.exe
-python scripts/run_numerical.py          # (M_h, M_t) sweep → data/
-python scripts/plot_numerical_contours.py # data/ → figures/</code></pre>
+cmake -S . -B build && cmake --build build
+ctest --test-dir build --output-on-failure
+./build/benchmark_point 125.1 173.1</code></pre>
       <p style="margin-top: 1.2rem;">
         If you use SMVac, please cite it via the repository's
-        <a href="https://github.com/namangoyal31/SMVac/blob/main/CITATION.cff">CITATION.cff</a>.
+        <a href="https://github.com/namangoyal31/SMVac/blob/main/CITATION.cff" target="_blank" rel="noopener noreferrer">CITATION.cff</a>.
       </p>
     </section>
 
     <section class="section prose" id="future" aria-labelledby="future-heading">
       <h2 id="future-heading"><span class="secno">§ 09</span> Future work</h2>
       <p>
-        Planned, as recorded in the repository: full numerical bounce solutions through
-        boundary-value methods (shooting or relaxation), a formal CMake build, a proper C++ testing
-        framework for the quadrature tolerances, and configurable sweep parameters.
+        The documented limitations mark the natural next steps: lifting the variational bound with
+        a full bounce-equation solve, a decay-rate prefactor that retains the radius dependence,
+        and a literature-provenance check of the regularization coefficient.
       </p>
     </section>
   </div>

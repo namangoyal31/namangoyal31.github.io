@@ -58,7 +58,7 @@ const description =
           {p.links && p.links.length > 0 && (
             <div class="pub-links">
               {p.links.map((l) => (
-                <a class="chip" href={l.href}>{l.label}</a>
+                <a class="chip" href={l.href} target={l.href.startsWith("http") ? "_blank" : undefined} rel={l.href.startsWith("http") ? "noopener noreferrer" : undefined}>{l.label}</a>
               ))}
             </div>
           )}

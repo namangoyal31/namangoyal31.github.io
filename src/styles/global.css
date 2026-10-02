@@ -17,7 +17,7 @@
   --hairline: #22242a;
   --hairline-strong: #37393f;
   --code-bg: #12151b;
-  --figure-bg: #f6f4ef; /* scientific plates keep a light ground, like book plates */
+  --figure-bg: #12141a; /* figure container follows the theme; the image itself is untouched */
   --mark: rgba(242, 201, 76, 0.18);
   --accent-contrast: #0b0c0f;
   color-scheme: dark;
@@ -479,9 +479,8 @@ main,
   );
 }
 
-/* theme toggle icon: sun (dark), moon (light), half-circle (auto) */
-.icon-moon,
-.icon-auto {
+/* theme toggle icon: sun in dark mode, moon in light mode */
+.icon-moon {
   display: none;
 }
 
@@ -490,15 +489,6 @@ main,
 }
 
 [data-theme='light'] .icon-moon {
-  display: block;
-}
-
-[data-theme-mode='auto'] .icon-sun,
-[data-theme-mode='auto'] .icon-moon {
-  display: none;
-}
-
-[data-theme-mode='auto'] .icon-auto {
   display: block;
 }
 
@@ -954,13 +944,13 @@ main,
 .figure-panel figcaption {
   font-family: 'JetBrains Mono Variable', monospace;
   font-size: 0.78rem;
-  color: #4c4c47;
+  color: var(--muted);
   line-height: 1.6;
   padding: 0.75rem 0.35rem 0.1rem;
 }
 
 .figure-panel figcaption .fig-label {
-  color: #8a6d1f;
+  color: var(--accent);
   font-weight: 600;
 }
 

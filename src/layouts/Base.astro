@@ -45,18 +45,13 @@ const isCurrent = (href: string) => currentPath === normalize(href);
     <link rel="sitemap" href="/sitemap-index.xml" />
     <meta name="generator" content={Astro.generator} />
     <script is:inline>
-      // Theme before first paint. Modes: dark (default), light, auto
-      // (follow prefers-color-scheme). Only an effective-light result adds
-      // the data-theme attribute; dark needs no attribute.
-      (function () {
-        var mode = 'dark';
-        try { mode = localStorage.getItem('theme') || 'dark'; } catch (e) {}
-        var light = mode === 'light' ||
-          (mode === 'auto' && window.matchMedia('(prefers-color-scheme: light)').matches);
-        var root = document.documentElement;
-        root.setAttribute('data-theme-mode', mode);
-        if (light) root.setAttribute('data-theme', 'light');
-      })();
+      // Theme before first paint. Two states only: dark (the default, no
+      // attribute needed) and light (an explicitly saved choice).
+      try {
+        if (localStorage.getItem('theme') === 'light') {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      } catch (e) {}
     </script>
     <script is:inline>document.documentElement.classList.add('js');</script>
 
@@ -108,10 +103,6 @@ const isCurrent = (href: string) => currentPath === normalize(href);
             <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M20.2 14.2A8.3 8.3 0 0 1 9.8 3.8a8.3 8.3 0 1 0 10.4 10.4Z"></path>
             </svg>
-            <svg class="icon-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <circle cx="12" cy="12" r="8.5"></circle>
-              <path d="M12 3.5a8.5 8.5 0 0 1 0 17Z" fill="currentColor" stroke="none"></path>
-            </svg>
           </button>
           <button class="icon-btn nav-toggle" id="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
@@ -154,10 +145,10 @@ const isCurrent = (href: string) => currentPath === normalize(href);
           <div>
             <h4>Elsewhere</h4>
             <ul>
-              <li><a href={site.github} rel="me">GitHub · {site.githubUser}</a></li>
-              <li><a href="https://arxiv.org/abs/2602.20261">arXiv</a></li>
+              <li><a href={site.github} rel="me noopener noreferrer" target="_blank">GitHub · {site.githubUser}</a></li>
+              <li><a href="https://arxiv.org/abs/2602.20261" target="_blank" rel="noopener noreferrer">arXiv</a></li>
               {profiles.map((p) => (
-                <li><a href={p.url} rel="me">{p.label}</a></li>
+                <li><a href={p.url} rel="me noopener noreferrer" target="_blank">{p.label}</a></li>
               ))}
             </ul>
           </div>
@@ -218,31 +209,17 @@ const isCurrent = (href: string) => currentPath === normalize(href);
         document.body.classList.toggle('show-grid');
       });
 
-      // Theme toggle cycles dark -> light -> auto (system). data-theme-mode
-      // records the chosen mode; data-theme is set only when light is
-      // effective, so the canvas and CSS react to one attribute as before.
+      // Theme toggle: two states only, dark (default) and light. The
+      // choice persists; a fresh visit without a saved preference is dark.
       const themeToggle = document.getElementById('theme-toggle');
-      const mq = window.matchMedia('(prefers-color-scheme: light)');
-      const applyTheme = (mode: string) => {
-        const light = mode === 'light' || (mode === 'auto' && mq.matches);
-        const root = document.documentElement;
-        root.setAttribute('data-theme-mode', mode);
-        if (light) root.setAttribute('data-theme', 'light');
-        else root.removeAttribute('data-theme');
-        themeToggle?.setAttribute('aria-label', 'Theme: ' + mode + '. Click to change.');
-      };
       themeToggle?.addEventListener('click', () => {
-        const cur = document.documentElement.getAttribute('data-theme-mode') ?? 'dark';
-        const next = cur === 'dark' ? 'light' : cur === 'light' ? 'auto' : 'dark';
-        applyTheme(next);
-        try { localStorage.setItem('theme', next); } catch (e) {}
+        const light = document.documentElement.getAttribute('data-theme') === 'light';
+        if (light) document.documentElement.removeAttribute('data-theme');
+        else document.documentElement.setAttribute('data-theme', 'light');
+        try {
+          localStorage.setItem('theme', light ? 'dark' : 'light');
+        } catch (e) {}
       });
-      const onSchemeChange = () => {
-        let mode = 'dark';
-        try { mode = localStorage.getItem('theme') || 'dark'; } catch (e) {}
-        if (mode === 'auto') applyTheme('auto');
-      };
-      if (mq.addEventListener) mq.addEventListener('change', onSchemeChange);
 
       // Printing: expand collapsed sections (e.g. coursework) for the paper.
       window.addEventListener('beforeprint', () => {
