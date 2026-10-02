@@ -238,13 +238,13 @@ const isCurrent = (href: string) => currentPath === normalize(href);
       });
 
       // Cursor-proximity illumination: the analytic plane brightens very
-      // slightly around the pointer. Lerp in rAF (self-stopping); skipped
-      // for touch devices and reduced motion.
+      // slightly around the pointer. Driven by actual pointermove events
+      // (mouse/pen only - touch keeps the static pool), with a slow lerp in
+      // a self-stopping rAF loop. Skipped entirely for reduced motion.
       const glow = document.querySelector('.atmosphere-glow');
-      const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
       const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (glow && finePointer && !calm) {
-        let tx = innerWidth * 0.72, ty = innerHeight * 0.38;
+      if (glow && !calm) {
+        let tx = innerWidth * 0.5, ty = innerHeight * 0.5;
         let x = tx, y = ty, raf = 0, running = false;
         const step = () => {
           x += (tx - x) * 0.045;
@@ -259,11 +259,16 @@ const isCurrent = (href: string) => currentPath === normalize(href);
             raf = requestAnimationFrame(step);
           }
         };
-        window.addEventListener('pointermove', (e) => {
+        const onMove = (e) => {
+          if (e.pointerType === 'touch') return;
           tx = e.clientX;
           ty = e.clientY;
           kick();
-        }, { passive: true });
+        };
+        window.addEventListener('pointermove', onMove, { passive: true });
+        // mousemove fallback: some embedded/automation contexts synthesize
+        // mouse events without pointer events
+        window.addEventListener('mousemove', onMove, { passive: true });
         kick();
       }
     </script>

@@ -288,7 +288,7 @@ hr {
     rgba(234, 232, 225, 0.018) 45%,
     transparent 72%
   );
-  transform: translate3d(72vw, 38vh, 0);
+  transform: translate3d(50vw, 50vh, 0);
   z-index: 1;
   will-change: transform;
 }
