@@ -288,12 +288,12 @@ hr {
   margin-top: -1200px;
   background: radial-gradient(
     circle at center,
-    rgba(var(--accent-rgb), 0.085) 0%,
-    rgba(var(--accent-rgb), 0.06) 24%,
-    rgba(var(--accent-rgb), 0.034) 44%,
-    rgba(var(--accent-rgb), 0.016) 62%,
-    rgba(var(--accent-rgb), 0.006) 80%,
-    rgba(var(--accent-rgb), 0) 100%
+    rgba(var(--accent-rgb), 0.0425) 0%,
+   rgba(var(--accent-rgb), 0.03) 24%,
+   rgba(var(--accent-rgb), 0.017) 44%,
+   rgba(var(--accent-rgb), 0.008) 62%,
+   rgba(var(--accent-rgb), 0.003) 80%,
+   rgba(var(--accent-rgb), 0) 100%
   );
   transform: translate3d(50vw, 50vh, 0);
   z-index: 1;
