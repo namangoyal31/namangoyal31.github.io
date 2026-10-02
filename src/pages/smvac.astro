@@ -37,7 +37,7 @@ const softwareSchema = {
     </header>
 
     <section class="section prose" id="overview" aria-labelledby="overview">
-      <h2 id="overview" style="margin-top: 1rem;"><span class="secno">§ 01</span> Overview</h2>
+      <h2 id="overview" style="margin-top: 1rem;"><span class="secno">01</span> Overview</h2>
       <p>
         The Standard Model of particle physics appears, from its measured parameters, to live on a
         knife's edge. At field values far beyond any collider, the effective Higgs potential turns
@@ -62,7 +62,7 @@ const softwareSchema = {
     </section>
 
     <section class="section prose" id="problem" aria-labelledby="problem-heading">
-      <h2 id="problem-heading"><span class="secno">§ 02</span> The problem</h2>
+      <h2 id="problem-heading"><span class="secno">02</span> The problem</h2>
       <p>
         Why the <Math tex={'(M_h, M_t)'} /> plane? The top quark drives <Math tex={'\\lambda'} /> down
         through the RG flow, the Higgs mass pushes it up; the stability verdict is therefore a curve
@@ -81,7 +81,7 @@ const softwareSchema = {
     </section>
 
     <section class="section prose" id="method" aria-labelledby="method-heading">
-      <h2 id="method-heading"><span class="secno">§ 03</span> Method</h2>
+      <h2 id="method-heading"><span class="secno">03</span> Method</h2>
       <p>The computational pipeline, as implemented in the repository:</p>
       <ol class="pipeline">
         <li>Input <Math tex={'(M_h, M_t)'} /> and <Math tex={'\\alpha_s(M_Z)'} /></li>
@@ -138,7 +138,7 @@ const softwareSchema = {
 
     <section class="section" id="results" aria-labelledby="results-heading">
       <div class="prose">
-        <h2 id="results-heading" style="margin-top: 0;"><span class="secno">§ 04</span> Results</h2>
+        <h2 id="results-heading" style="margin-top: 0;"><span class="secno">04</span> Results</h2>
         <p>
           Production datasets are evaluated point by point with no interpolation: the full
           <Math tex={'(M_h, M_t)'} /> plane at <Math tex={'0.5\\,\\mathrm{GeV}'} /> resolution
@@ -177,7 +177,7 @@ const softwareSchema = {
 
     <section class="section" id="analytical-vs-rg-improved" aria-labelledby="avsi-heading">
       <div class="prose">
-        <h2 id="avsi-heading" style="margin-top: 0;"><span class="secno">§ 05</span> Analytical vs. RG-improved</h2>
+        <h2 id="avsi-heading" style="margin-top: 0;"><span class="secno">05</span> Analytical vs. RG-improved</h2>
         <p>
           The RG-improved action can be benchmarked against the strict analytical conformal limit
           <Math tex={'S_{\\rm approx} = 8\\pi^2 / (3|\\lambda_{\\min}|)'} />. The comparison is
@@ -209,7 +209,7 @@ const softwareSchema = {
     </section>
 
     <section class="section prose" id="validation" aria-labelledby="validation-heading">
-      <h2 id="validation-heading"><span class="secno">§ 06</span> Validation</h2>
+      <h2 id="validation-heading"><span class="secno">06</span> Validation</h2>
       <ul>
         <li>
           <strong>Literature boundary.</strong> The computed absolute-stability boundary sits at
@@ -237,7 +237,7 @@ const softwareSchema = {
     </section>
 
     <section class="section prose" id="limitations" aria-labelledby="limitations-heading">
-      <h2 id="limitations-heading"><span class="secno">§ 07</span> Limitations</h2>
+      <h2 id="limitations-heading"><span class="secno">07</span> Limitations</h2>
       <p>Stated plainly, because they bound what the results mean:</p>
       <div class="callout">
         <p style="margin: 0 0 0.5rem;">
@@ -278,7 +278,7 @@ const softwareSchema = {
     </section>
 
     <section class="section prose" id="code" aria-labelledby="code-heading">
-      <h2 id="code-heading"><span class="secno">§ 08</span> Code</h2>
+      <h2 id="code-heading"><span class="secno">08</span> Code</h2>
       <p>
         The current research codebase, SMVac-Research (v2.0.0), is a CMake C++17 project: a
         library (RGE, effective potential, bounce, numerics), command-line apps for single-point
@@ -299,7 +299,7 @@ ctest --test-dir build --output-on-failure
     </section>
 
     <section class="section prose" id="future" aria-labelledby="future-heading">
-      <h2 id="future-heading"><span class="secno">§ 09</span> Future work</h2>
+      <h2 id="future-heading"><span class="secno">09</span> Future work</h2>
       <p>
         The documented limitations mark the natural next steps: lifting the variational bound with
         a full bounce-equation solve, a decay-rate prefactor that retains the radius dependence,
