@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import Figure from '../components/Figure.astro';
 import Math from '../components/Math.astro';
-import { site } from '../data/site';
+import { site, personNode } from '../data/site';
 
 const softwareSchema = {
   '@context': 'https://schema.org',
@@ -11,7 +11,7 @@ const softwareSchema = {
   description:
     'A modular C++/Python framework for precision studies of electroweak vacuum stability in the Standard Model: NNLO matching, 3-loop RG evolution, the one-loop Coleman–Weinberg effective potential, and semiclassical vacuum decay via an RG-improved Fubini–Lipatov calculation.',
   codeRepository: site.smvac,
-  author: { '@type': 'Person', name: site.name, url: site.url },
+  author: personNode,
   programmingLanguage: ['C++', 'Python'],
   dateModified: '2026-07-18',
 };

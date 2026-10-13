@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import Divider from '../components/Divider.astro';
 import Timeline from '../components/Timeline.astro';
 import PubCard from '../components/PubCard.astro';
-import { site } from '../data/site';
+import { site, personSchema } from '../data/site';
 import { projects } from '../data/projects';
 import { publications } from '../data/publications';
 import { timeline } from '../data/timeline';
@@ -13,19 +13,6 @@ const current = projects.filter((p) => p.status === 'current');
 const selected = projects.filter((p) => !p.experimental && p.status !== 'current');
 const pub = publications[0];
 
-const personSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'Person',
-  name: site.name,
-  url: site.url,
-  email: `mailto:${site.email}`,
-  affiliation: {
-    '@type': 'CollegeOrUniversity',
-    name: 'Indian Institute of Science',
-  },
-  jobTitle: 'Undergraduate researcher in theoretical physics',
-  sameAs: [site.github, 'https://arxiv.org/abs/2602.20261'],
-};
 ---
 <Base
   title={site.name}

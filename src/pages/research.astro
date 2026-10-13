@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Timeline from '../components/Timeline.astro';
-import { site } from '../data/site';
+import { personNode } from '../data/site';
 import { projects } from '../data/projects';
 import { timeline } from '../data/timeline';
 import { renderRich } from '../lib/rich';
@@ -19,7 +19,7 @@ const description =
     {
       '@context': 'https://schema.org',
       '@type': 'ProfilePage',
-      mainEntity: { '@type': 'Person', name: site.name, url: site.url },
+      mainEntity: personNode,
     },
   ]}
 

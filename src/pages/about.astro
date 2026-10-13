@@ -1,16 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import { site } from '../data/site';
-
-const personSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'Person',
-  name: site.name,
-  url: site.url,
-  email: `mailto:${site.email}`,
-  affiliation: { '@type': 'CollegeOrUniversity', name: 'Indian Institute of Science' },
-  sameAs: [site.github],
-};
+import { site, personSchema } from '../data/site';
 ---
 <Base title="About" description="About Naman Goyal, B.S. (Research) physics undergraduate at IISc Bengaluru working in theoretical high-energy physics and mathematical physics." jsonLd={[personSchema]}
   ogImage="/og/about.png">
