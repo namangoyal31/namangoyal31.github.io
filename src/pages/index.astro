@@ -5,18 +5,19 @@ import Timeline from '../components/Timeline.astro';
 import PubCard from '../components/PubCard.astro';
 import { site, personSchema } from '../data/site';
 import { projects } from '../data/projects';
-import { publications } from '../data/publications';
+import { publications, journalRef } from '../data/publications';
 import { timeline } from '../data/timeline';
 import { renderRich } from '../lib/rich';
 
 const current = projects.filter((p) => p.status === 'current');
 const selected = projects.filter((p) => !p.experimental && p.status !== 'current');
-const pub = publications[0];
-
+const featured = publications[0];
+const pubFor = (id?: string) => publications.find((p) => p.id === id);
+const firstSentence = (text: string) => text.split(/(?<=\.)\s+(?=[A-Z])/)[0];
 ---
 <Base
   title={site.name}
-  description="Naman Goyal, B.S. (Research) physics undergraduate at IISc Bengaluru. Theoretical high-energy physics and mathematical physics: scattering amplitudes and the S-matrix bootstrap, electroweak vacuum stability, and effective descriptions of gravitation."
+  description="Naman Goyal, B.S. (Research) physics undergraduate at IISc Bengaluru. Theoretical high-energy physics and mathematical physics: scattering amplitudes and the S-matrix bootstrap, electroweak vacuum stability, and pseudo-Newtonian tests of general relativity (Eur. Phys. J. C, 2026)."
   jsonLd={[personSchema]}
   ogImage="/og/home.png"
 >
@@ -38,15 +39,24 @@ const pub = publications[0];
           amplitudes are pinned down by analyticity, crossing symmetry, unitarity, and Regge
           behavior.
         </p>
-        <div class="cta-row reveal" style="--reveal-delay: 280ms">
+        <dl class="hero-record reveal" style="--reveal-delay: 280ms">
+          <div>
+            <dt>published</dt>
+            <dd>
+              <a href={`#${featured.id}`}>{journalRef(featured)}</a>
+              <span class="hero-record-title">{featured.title}</span>
+            </dd>
+          </div>
+          <div>
+            <dt>now</dt>
+            <dd>S-matrix bootstrap at TIFR</dd>
+          </div>
+        </dl>
+        <div class="cta-row reveal" style="--reveal-delay: 350ms">
           <a class="btn btn-solid" href="/research/">Research</a>
+          <a class="btn btn-ghost" href="/publications/">Publications</a>
           <a class="btn btn-ghost" href={site.cvPath} target="_blank" rel="noopener noreferrer">CV (PDF)</a>
-          <a class="btn btn-ghost" href={site.github} rel="me noopener noreferrer" target="_blank">GitHub</a>
         </div>
-        <p class="now-line reveal" style="--reveal-delay: 350ms">
-          <strong>now</strong> · S-matrix bootstrap at TIFR · preprint on classical tests of GR,
-          <a href="https://arxiv.org/abs/2602.20261" target="_blank" rel="noopener noreferrer">arXiv:2602.20261</a>
-        </p>
       </div>
     </div>
   </section>
@@ -59,17 +69,32 @@ const pub = publications[0];
     }
   </script>
 
-  <section class="section" aria-labelledby="current-heading">
+  <section class="section" aria-labelledby="publication-heading">
     <div class="container">
       <div class="section-head reveal">
         <span class="secno">01</span>
+        <h2 id="publication-heading">Publication</h2>
+        <span style="flex:1"></span>
+        <a class="smallcaps" href="/publications/">publications →</a>
+      </div>
+      <div class="reveal" style="--reveal-delay: 120ms">
+        <PubCard pub={featured} />
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-tight" aria-labelledby="current-heading">
+    <div class="container">
+      <Divider poles={[0.3, 0.7]} />
+      <div class="section-head reveal">
+        <span class="secno">02</span>
         <h2 id="current-heading">Current research</h2>
       </div>
       <ul class="row-list reveal" style="--reveal-delay: 120ms">
         {
-          current.map((p) => (
+          current.map((p, i) => (
             <li>
-              <span class="row-no">01</span>
+              <span class="row-no">{String(i + 1).padStart(2, '0')}</span>
               <div>
                 <p class="meta">
                   <span class="status-dot current" aria-hidden="true"></span>
@@ -77,7 +102,7 @@ const pub = publications[0];
                 </p>
                 <p class="row-title"><a href={`/research/#${p.id}`}>{p.title}</a></p>
                 <p class="row-excerpt" set:html={renderRich(p.summary)} />
-                <span class="row-link"><a href={`/research/#${p.id}`}>read more →</a></span>
+                <span class="row-link"><a href={`/research/#${p.id}`}>read more<span class="visually-hidden"> on {p.shortTitle ?? p.title}</span> →</a></span>
               </div>
             </li>
           ))
@@ -90,26 +115,30 @@ const pub = publications[0];
     <div class="container">
       <Divider poles={[0.22, 0.5, 0.78]} />
       <div class="section-head reveal">
-        <span class="secno">02</span>
+        <span class="secno">03</span>
         <h2 id="selected-heading">Selected research</h2>
         <span style="flex:1"></span>
         <a class="smallcaps" href="/research/">all research →</a>
       </div>
       <ul class="row-list reveal" style="--reveal-delay: 120ms">
         {
-          selected.map((p, i) => (
-            <li>
-              <span class="row-no">{String(i + 1).padStart(2, '0')}</span>
-              <div>
-                <p class="row-meta meta">
-                  {p.period} · {p.mentors} · {p.place}
-                </p>
-                <p class="row-title"><a href={`/research/#${p.id}`}>{p.shortTitle ?? p.title}</a></p>
-                <p class="row-excerpt" set:html={renderRich(p.summary.split('.')[0] + '.')} />
-                <span class="row-link"><a href={`/research/#${p.id}`}>read more →</a></span>
-              </div>
-            </li>
-          ))
+          selected.map((p, i) => {
+            const pub = pubFor(p.publication);
+            return (
+              <li>
+                <span class="row-no">{String(i + 1).padStart(2, '0')}</span>
+                <div>
+                  <p class="row-meta meta">
+                    {p.period} · {p.mentors} · {p.place}
+                    {pub && <span class="row-pub"> · published in {journalRef(pub)}</span>}
+                  </p>
+                  <p class="row-title"><a href={`/research/#${p.id}`}>{p.shortTitle ?? p.title}</a></p>
+                  <p class="row-excerpt" set:html={renderRich(firstSentence(p.summary))} />
+                  <span class="row-link"><a href={`/research/#${p.id}`}>read more<span class="visually-hidden"> on {p.shortTitle ?? p.title}</span> →</a></span>
+                </div>
+              </li>
+            );
+          })
         }
       </ul>
     </div>
@@ -119,28 +148,13 @@ const pub = publications[0];
     <div class="container">
       <Divider poles={[0.18, 0.38, 0.6, 0.84]} />
       <div class="section-head reveal">
-        <span class="secno">03</span>
+        <span class="secno">04</span>
         <h2 id="timeline-heading">Chronology</h2>
         <span style="flex:1"></span>
         <a class="smallcaps" href="/research/#chronology">full timeline →</a>
       </div>
       <div class="reveal" style="--reveal-delay: 120ms">
-        <Timeline items={[...timeline].reverse().slice(0, 5).reverse()} />
-      </div>
-    </div>
-  </section>
-
-  <section class="section section-tight" aria-labelledby="pub-heading">
-    <div class="container">
-      <Divider poles={[0.3, 0.7]} />
-      <div class="section-head reveal">
-        <span class="secno">04</span>
-        <h2 id="pub-heading">Publication</h2>
-        <span style="flex:1"></span>
-        <a class="smallcaps" href="/publications/">publications →</a>
-      </div>
-      <div class="reveal" style="--reveal-delay: 120ms">
-        <PubCard pub={pub} />
+        <Timeline items={timeline.slice(-5)} />
       </div>
     </div>
   </section>

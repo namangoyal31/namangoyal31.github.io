@@ -1,33 +1,34 @@
 ---
 import Base from '../layouts/Base.astro';
 import { site } from '../data/site';
+import { publications, journalRef } from '../data/publications';
 
 const research = [
   {
     when: 'May 2026 – Present',
     title: 'Scattering Amplitudes and S-Matrix Bootstrap',
-    where: 'Prof. Rick Sandepan Gupta (TIFR) · TIFR, Mumbai',
+    where: 'Prof. Rick Sandeepan Gupta (TIFR) · TIFR, Mumbai',
     note: 'Uniqueness of dual-resonance amplitudes from analyticity, crossing, unitarity, and Regge behavior; positivity constraints.',
     href: '/research/#s-matrix-bootstrap',
   },
   {
     when: 'May 2024 – May 2026',
     title: 'Higgs Vacuum Stability and the Cosmological Hierarchy Problem [SMVac]',
-    where: 'Prof. Rick Sandepan Gupta (TIFR) · TIFR, Mumbai',
-    note: 'C++ framework: NNLO matching, 3-loop RG evolution, Coleman–Weinberg potential, RG-improved Fubini–Lipatov decay; Higgs–top mass-plane phase diagrams; Higgs as stochastic spectator during slow-roll inflation.',
+    where: 'Prof. Rick Sandeepan Gupta (TIFR) · TIFR, Mumbai',
+    note: 'C++ framework: NNLO matching, 3-loop RG evolution, RG-improved Coleman–Weinberg potential, Fubini–Lipatov trial-profile decay action; Higgs–top mass-plane phase diagrams; Higgs as stochastic spectator during slow-roll inflation.',
     href: '/smvac/',
   },
   {
     when: 'Jan 2024 – May 2026',
     title: 'Tests of General Relativity in Pseudo-Newtonian Framework',
     where: 'Prof. Banibrata Mukhopadhyay (IISc) · IISc, Bengaluru',
-    note: 'Analytical precession/redshift/lensing in pseudo-Newtonian potentials vs Schwarzschild GR; Python framework for orbital observables. Published as arXiv:2602.20261.',
-    href: '/publications/',
+    note: 'Analytical precession/redshift/lensing in pseudo-Newtonian potentials vs Schwarzschild GR; Python framework for orbital observables. Published in Eur. Phys. J. C 86, 1280 (2026).',
+    href: '/publications/#pseudo-newtonian-gr',
   },
   {
     when: 'May 2025 – Jun 2025',
     title: 'Independent Reading: Lorentz Representations and Little Group Formalism',
-    where: 'Prof. Rick Sandepan Gupta (TIFR) · TIFR, Mumbai',
+    where: 'Prof. Rick Sandeepan Gupta (TIFR) · TIFR, Mumbai',
     note: 'Poincaré representations; continuous spin representations (Schuster–Toro).',
     href: '/research/#little-group',
   },
@@ -54,7 +55,7 @@ const programs = [
 ];
 
 const awards = [
-  { when: '2026', title: 'PLANCKS 2024 (International Physics Competition)', note: 'Represented India at the IAPS PLANCKS finals (Dublin), 11th-place global finish; re-selected for 2025.' },
+  { when: '2024', title: 'PLANCKS 2024 (International Physics Competition)', note: 'Represented India at the IAPS PLANCKS finals (Dublin), 11th-place global finish; re-selected for 2025.' },
   { when: '2024', title: 'NIUS Physics Scholar (Batch 21.1)', note: 'Selected by HBCSE–TIFR; national program admitting ~70 undergraduates annually.' },
   { when: '2023–24', title: "Indian Physics Tournament (IPT)", note: 'IISc team, National Runner-up in 2023 and 2024.' },
   { when: '2023', title: 'JEE 2023', note: 'AIR 33 in JEE Advanced (~180,000 candidates); AIR 281 in JEE Main (~1.1 million candidates).' },
@@ -73,7 +74,7 @@ const awards = [
         <a class="btn btn-solid" href={site.cvPath} target="_blank" rel="noopener noreferrer">Download PDF</a>
       </div>
       <p class="meta" style="margin-top: 1rem;">
-        A summary is below; the PDF is the authoritative, complete record.
+        A summary is below; the PDF has the complete record.
       </p>
     </header>
 
@@ -95,15 +96,41 @@ const awards = [
 
     <section class="cv-section" aria-labelledby="cv-pub">
       <h2 id="cv-pub">Publications</h2>
-      <div class="cv-entry">
-        <span class="when">2026</span>
-        <div class="what">
-          <span class="title">
-            N. Goyal, B. Mukhopadhyay, A. K. Meena. “Tests of general relativity in pseudo-Newtonian approach.”
-          </span>
-          <div class="where"><a href="https://arxiv.org/abs/2602.20261" target="_blank" rel="noopener noreferrer">arXiv:2602.20261</a> (preprint)</div>
-        </div>
-      </div>
+      {
+        publications.map((pub) => (
+          <div class="cv-entry">
+            <span class="when">{pub.year}</span>
+            <div class="what">
+              <span class="title">
+                <a href={`/publications/#${pub.id}`}>{pub.title}</a>
+              </span>
+              <p>
+                {pub.authors.map((a, i) => (
+                  <>
+                    {i > 0 && (i === pub.authors.length - 1 ? ' and ' : ', ')}
+                    {a.me ? <strong>{a.name}</strong> : a.name}
+                  </>
+                ))}
+              </p>
+              <div class="where">
+                {journalRef(pub)}
+                {pub.doi && (
+                  <>
+                    {' · '}
+                    <a href={`https://doi.org/${pub.doi}`} target="_blank" rel="noopener noreferrer">doi:{pub.doi}</a>
+                  </>
+                )}
+                {pub.journal && pub.arxiv && (
+                  <>
+                    {' · '}
+                    <a href={`https://arxiv.org/abs/${pub.arxiv}`} target="_blank" rel="noopener noreferrer">arXiv:{pub.arxiv}</a>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        ))
+      }
     </section>
 
     <section class="cv-section" aria-labelledby="cv-edu">

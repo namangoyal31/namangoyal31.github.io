@@ -55,8 +55,9 @@ Deployment is automatic: `git push` to `main` triggers the GitHub Actions workfl
 
 ## Content accuracy
 
-All scientific claims are sourced from the CV, the paper (arXiv:2602.20261), and the
-SMVac repository itself. SMVac is described as an RG-improved Fubini–Lipatov
-(semi-analytical) framework: the repository does not solve the full spatial bounce
-equation, and the site says so explicitly. Figures are unmodified outputs of the SMVac
+All scientific claims are sourced from the CV, the published paper (Eur. Phys. J. C 86,
+1280 (2026); arXiv:2602.20261), and the SMVac-Research repository itself. SMVac is
+described as a semi-analytical estimator: the action is evaluated on a Fubini–Lipatov
+trial profile, the bounce equation is not solved, and the site says so explicitly,
+following the repository's `RESULTS.md`. Figures are unmodified outputs of the SMVac
 pipeline, shown with their original labels and axes.

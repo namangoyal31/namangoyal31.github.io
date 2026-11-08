@@ -1,90 +1,157 @@
 ---
 import type { Publication } from '../data/publications';
-import { site } from '../data/site';
+import { journalRef, formatDate } from '../data/publications';
 import { renderRich } from '../lib/rich';
 
 interface Props {
   pub: Publication;
-  /** Show the full abstract (publications page) vs summary (home teaser). */
+  /** Full record with abstract, overview and BibTeX (publications page). */
   full?: boolean;
+  /** Heading level of the title; the homepage nests it under an h2. */
+  headingLevel?: 'h2' | 'h3';
 }
 
-const { pub, full = false } = Astro.props;
-const absUrl = pub.arxiv ? `https://arxiv.org/abs/${pub.arxiv}` : undefined;
-const pdfUrl = pub.arxiv ? `https://arxiv.org/pdf/${pub.arxiv}` : undefined;
+const { pub, full = false, headingLevel = 'h3' } = Astro.props;
+const Heading = headingLevel;
+const Label = headingLevel === 'h2' ? 'h3' : 'h4';
 
-const bibtex = `@article{goyal2026pseudoNewtonian,
-  title   = {Tests of general relativity in pseudo-Newtonian approach},
-  author  = {Goyal, Naman and Mukhopadhyay, Banibrata and Meena, Ashish Kumar},
-  journal = {arXiv e-prints},
-  eprint  = {${pub.arxiv}},
-  archivePrefix = {arXiv},
-  primaryClass  = {${pub.arxivCategory}},
-  year    = {${pub.year}}
-}`;
+const doiUrl = pub.doi ? `https://doi.org/${pub.doi}` : undefined;
+const arxivUrl = pub.arxiv ? `https://arxiv.org/abs/${pub.arxiv}` : undefined;
+const titleUrl = doiUrl ?? arxivUrl;
+const pdfUrl = pub.journal?.pdf ?? (pub.arxiv ? `https://arxiv.org/pdf/${pub.arxiv}` : undefined);
+const ext = { target: '_blank', rel: 'noopener noreferrer' };
+
+const surnameFirst = (name: string) => {
+  const parts = name.split(' ');
+  return `${parts.at(-1)}, ${parts.slice(0, -1).join(' ')}`;
+};
+
+const bibFields: [string, string | undefined][] = [
+  ['author', pub.authors.map((a) => surnameFirst(a.name)).join(' and ')],
+  ['title', pub.title],
+  ['journal', pub.journal?.abbrev ?? 'arXiv e-prints'],
+  ['volume', pub.journal?.volume],
+  ['number', pub.journal?.issue],
+  ['pages', pub.journal?.article],
+  ['year', String(pub.year)],
+  ['doi', pub.doi],
+  ['eprint', pub.arxiv],
+  ['archivePrefix', pub.arxiv && 'arXiv'],
+  ['primaryClass', pub.arxivCategory],
+];
+const present = bibFields.filter(([, v]) => v) as [string, string][];
+const pad = Math.max(...present.map(([k]) => k.length));
+const bibtex = `@article{${pub.bibkey},\n${present
+  .map(([k, v]) => `  ${k.padEnd(pad)} = {${v}}`)
+  .join(',\n')}\n}`;
+
+const record: { term: string; value: string; href?: string }[] = [
+  ...(pub.journal
+    ? [
+        { term: 'Journal', value: pub.journal.name },
+        {
+          term: 'Reference',
+          value: full
+            ? `Vol. ${pub.journal.volume}, no. ${pub.journal.issue}, article ${pub.journal.article} (${pub.year})`
+            : journalRef(pub),
+        },
+      ]
+    : [{ term: 'Status', value: 'Preprint' }]),
+  ...(pub.doi && doiUrl ? [{ term: 'DOI', value: pub.doi, href: doiUrl }] : []),
+  ...(full && pub.received ? [{ term: 'Received', value: formatDate(pub.received) }] : []),
+  ...(full && pub.accepted ? [{ term: 'Accepted', value: formatDate(pub.accepted) }] : []),
+  ...(pub.published ? [{ term: 'Published', value: formatDate(pub.published) }] : []),
+  ...(full && pub.license ? [{ term: 'Access', value: `Open access · ${pub.license.name}`, href: pub.license.url }] : []),
+  ...(pub.arxiv && arxivUrl
+    ? [
+        {
+          term: 'Preprint',
+          value: `arXiv:${pub.arxiv} [${pub.arxivCategory}]${full && pub.submitted ? `, ${formatDate(pub.submitted)}` : ''}`,
+          href: arxivUrl,
+        },
+      ]
+    : []),
+];
 ---
-<article class="pub-card" id={pub.id}>
-  <p class="meta">
-    <span class="status-dot published" aria-hidden="true"></span>
-    {pub.status === 'preprint' ? 'Preprint' : pub.venue ?? 'Published'} · {pub.year}
-  </p>
-  <h3>
-    {absUrl ? <a href={absUrl} target="_blank" rel="noopener noreferrer">{pub.title}</a> : pub.title}
-  </h3>
-  <p class="authors meta">
+<article class:list={['pub-entry', full ? 'pub-full' : 'pub-featured']} id={pub.id}>
+  <div class="pub-main">
+    <p class="pub-kind meta">
+      <span class="status-dot published" aria-hidden="true"></span>
+      {pub.journal ? `Journal article · ${journalRef(pub)}` : `Preprint · ${pub.year}`}
+    </p>
+    <Heading class="pub-title">
+      {titleUrl ? <a href={titleUrl} {...ext}>{pub.title}</a> : pub.title}
+    </Heading>
+    <p class="pub-authors">
+      {
+        pub.authors.map((a, i) => (
+          <>
+            {i > 0 && (i === pub.authors.length - 1 ? ' and ' : ', ')}
+            {a.me ? <strong>{a.name}</strong> : a.name}
+          </>
+        ))
+      }
+    </p>
+    {full && pub.affiliation && <p class="pub-affiliation meta">{pub.affiliation}</p>}
+
     {
-      pub.authors.map((a, i) => (
+      full ? (
         <>
-          {i > 0 && ', '}
-          {a.me ? <strong>{a.name}</strong> : a.name}
+          <Label class="pub-label">Abstract</Label>
+          <p class="pub-abstract">{pub.abstract}</p>
         </>
-      ))
+      ) : (
+        <p class="pub-summary">{pub.summary}</p>
+      )
     }
-  </p>
-  <p class="meta">{pub.area}</p>
-  {
-    full ? (
-      <>
-        <p class="pub-abstract">{pub.abstract}</p>
-        {pub.description && (
-          <div class="prose" style="margin-top: 1.4rem;">
+
+    <div class="pub-links">
+      {doiUrl && <a class="btn btn-solid" href={doiUrl} {...ext}>Read the paper</a>}
+      {arxivUrl && <a class="chip" href={arxivUrl} {...ext}>arXiv:{pub.arxiv}</a>}
+      {pdfUrl && <a class="chip" href={pdfUrl} {...ext}>PDF{pub.journal?.pdf && pub.license ? ' · open access' : ''}</a>}
+      {!full && <a class="chip" href={`/publications/#${pub.id}`}>Abstract and BibTeX</a>}
+      {full && <button class="chip copy-btn" type="button" data-copy={`bibtex-${pub.id}`}>Copy BibTeX</button>}
+    </div>
+
+    {
+      full && (
+        <>
+          <details class="bibtex">
+            <summary>Show BibTeX</summary>
+            <pre id={`bibtex-${pub.id}`}>{bibtex}</pre>
+          </details>
+          <Label class="pub-label">Overview</Label>
+          <div class="prose pub-overview">
             {pub.description.map((para) => <p set:html={renderRich(para)} />)}
           </div>
-        )}
-      </>
-    ) : (
-      <p class="pub-abstract">{pub.summary}</p>
-    )
-  }
-  {
-    absUrl && (
-      <div class="pub-links">
-        <a class="chip" href={absUrl} target="_blank" rel="noopener noreferrer">arXiv:{pub.arxiv} · abstract</a>
-        {pdfUrl && <a class="chip" href={pdfUrl} target="_blank" rel="noopener noreferrer">PDF</a>}
-      </div>
-    )
-  }
-  {
-    full && (
-      <details class="bibtex">
-        <summary>BibTeX</summary>
-        <pre id={`bibtex-${pub.id}`}>{bibtex}</pre>
-      </details>
-      <button class="copy-btn" type="button" data-copy={`bibtex-${pub.id}`}>Copy BibTeX</button>
-    )
-  }
+        </>
+      )
+    }
+  </div>
+
+  <dl class="pub-record">
+    {
+      record.map((r) => (
+        <div>
+          <dt>{r.term}</dt>
+          <dd>{r.href ? <a href={r.href} {...ext}>{r.value}</a> : r.value}</dd>
+        </div>
+      ))
+    }
+  </dl>
 </article>
 
 <script>
-  document.querySelectorAll('.copy-btn').forEach((btn) => {
+  document.querySelectorAll<HTMLButtonElement>('.copy-btn').forEach((btn) => {
     btn.addEventListener('click', async () => {
-      const pre = document.getElementById(btn.getAttribute('data-copy') ?? '');
+      const pre = document.getElementById(btn.dataset.copy ?? '');
       if (!pre) return;
+      const label = btn.textContent;
       let ok = false;
       try {
         await navigator.clipboard.writeText(pre.textContent ?? '');
         ok = true;
-      } catch (e) {
+      } catch {
         // clipboard API unavailable (permissions / older engines): fall
         // back to the classic selected-text copy
         const ta = document.createElement('textarea');
@@ -93,12 +160,16 @@ const bibtex = `@article{goyal2026pseudoNewtonian,
         ta.style.opacity = '0';
         document.body.appendChild(ta);
         ta.select();
-        try { ok = document.execCommand('copy'); } catch (e2) { ok = false; }
+        try {
+          ok = document.execCommand('copy');
+        } catch {
+          ok = false;
+        }
         ta.remove();
       }
       btn.textContent = ok ? 'Copied' : 'Select and copy manually';
       setTimeout(() => {
-        btn.textContent = 'Copy BibTeX';
+        btn.textContent = label;
       }, 1600);
     });
   });

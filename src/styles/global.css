@@ -1,7 +1,8 @@
 /* ============================================================
    Naman Goyal research site. "Living preprint" identity
    Near-black ground, one warm yellow accent used deliberately,
-   serif display + monospace marginalia. Dark only.
+   serif display + monospace marginalia. Dark by default, with a
+   light paper variant behind the theme toggle.
    ============================================================ */
 
 :root {
@@ -10,7 +11,7 @@
   --bg-soft: #0f1114;
   --ink: #eae8e1;
   --muted: #a3a29a;
-  --faint: #6f6f69;
+  --faint: #7f7e77;
   --accent: #f2c94c;
   --accent-strong: #ffd76a;
   --accent-wash: rgba(242, 201, 76, 0.1);
@@ -33,7 +34,7 @@
   --bg-soft: #f0ede3;
   --ink: #20242c;
   --muted: #5b5f6a;
-  --faint: #8b8b84;
+  --faint: #70706a;
   --accent: #c9a227;
   --accent-strong: #a9861c;
   --accent-wash: rgba(201, 162, 39, 0.13);
@@ -56,8 +57,11 @@
 [data-theme='light'] .timeline .t-date,
 [data-theme='light'] .row-link a,
 [data-theme='light'] .fig-caption .fig-label,
-[data-theme='light'] .footer-grid h4,
-[data-theme='light'] .now-line strong,
+[data-theme='light'] .footer-heading,
+[data-theme='light'] .hero-record dt,
+[data-theme='light'] .row-pub,
+[data-theme='light'] .toc-no,
+[data-theme='light'] .findings dt,
 [data-theme='light'] .cv-entry .what .where,
 [data-theme='light'] .nav-links a[aria-current='true'] {
   color: var(--ink);
@@ -181,6 +185,18 @@ hr {
 .skip-link:focus {
   left: 0.75rem;
   top: 0.75rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* ---------- layout ---------- */
@@ -487,21 +503,10 @@ main,
   display: block;
 }
 
-/* copy-to-clipboard chip under the BibTeX block */
-.copy-btn {
-  font-family: 'JetBrains Mono Variable', monospace;
-  font-size: 0.76rem;
-  padding: 0.42rem 0.8rem;
-  border: 1px solid var(--hairline-strong);
-  border-radius: 3px;
+/* copy-to-clipboard: a chip rendered as a button */
+button.chip {
   background: transparent;
-  color: var(--ink);
   cursor: pointer;
-}
-
-.copy-btn:hover {
-  border-color: var(--accent);
-  color: var(--accent);
 }
 
 /* ---------- header / nav ---------- */
@@ -643,7 +648,7 @@ main,
 
 .hero {
   position: relative;
-  padding-block: clamp(4rem, 10vw, 7.5rem) clamp(3rem, 7vw, 5.5rem);
+  padding-block: clamp(3.5rem, 8vw, 6rem) clamp(3rem, 6vw, 4.5rem);
   overflow: hidden;
   border-bottom: 1px solid var(--hairline);
 }
@@ -726,16 +731,55 @@ main,
   color: var(--accent);
 }
 
-.now-line {
-  margin-top: 2rem;
+/* front matter under the hero: what is published, what is current */
+.hero-record {
+  margin: 0 0 2.1rem;
+  display: grid;
+  gap: 0.4rem;
   font-family: 'JetBrains Mono Variable', monospace;
   font-size: 0.78rem;
   color: var(--muted);
 }
 
-.now-line strong {
+.hero-record div {
+  display: grid;
+  grid-template-columns: 5.6rem 1fr;
+  gap: 0 0.9rem;
+}
+
+.hero-record dt {
   color: var(--accent);
-  font-weight: 500;
+}
+
+.hero-record dd {
+  margin: 0;
+}
+
+.hero-record-title {
+  font-family: 'Source Serif 4 Variable', Georgia, serif;
+  font-style: italic;
+  font-size: 0.95rem;
+}
+
+.hero-record-title::before {
+  content: ' · ';
+  font-family: 'JetBrains Mono Variable', monospace;
+  font-style: normal;
+  font-size: 0.78rem;
+}
+
+@media (max-width: 520px) {
+  .hero-record div {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-record-title {
+    display: block;
+  }
+
+  .hero-record-title::before {
+    content: none;
+  }
 }
 
 /* ---------- editorial research rows (home) ---------- */
@@ -794,6 +838,10 @@ main,
   color: var(--muted);
   font-size: 0.97rem;
   max-width: 44rem;
+}
+
+.row-pub {
+  color: var(--accent);
 }
 
 .row-link {
@@ -1014,23 +1062,72 @@ main,
   font-size: 0.95rem;
 }
 
-/* ---------- publication card ---------- */
+/* ---------- publication entry: the paper, with its record in the margin ---------- */
 
-.pub-card {
+.pub-entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 15.5rem;
+  gap: 1.6rem 2.75rem;
+}
+
+.pub-featured {
   background: var(--bg-raised);
   border: 1px solid var(--hairline);
+  border-top: 2px solid var(--accent);
   border-radius: 4px;
-  padding: clamp(1.2rem, 3vw, 2rem);
+  padding: clamp(1.25rem, 3vw, 2.1rem);
 }
 
-.pub-card h3 {
-  margin: 0 0 0.35rem;
-  font-size: 1.3rem;
-  line-height: 1.3;
+.pub-full {
+  padding-top: 0.6rem;
 }
 
-.pub-card .authors {
-  margin-bottom: 0.3rem;
+.pub-kind {
+  margin: 0 0 0.75rem;
+}
+
+.pub-title {
+  font-size: clamp(1.35rem, 2.4vw, 1.7rem);
+  line-height: 1.25;
+  margin: 0 0 0.65rem;
+}
+
+.pub-title a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.pub-title a:hover {
+  color: var(--accent-strong);
+}
+
+.pub-authors {
+  margin: 0;
+  color: var(--muted);
+}
+
+.pub-authors strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.pub-affiliation {
+  margin: 0.2rem 0 0;
+}
+
+.pub-summary {
+  margin: 1.1rem 0 0;
+  max-width: 42rem;
+}
+
+.pub-label {
+  font-family: 'JetBrains Mono Variable', monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 2rem 0 0.7rem;
 }
 
 .pub-abstract {
@@ -1038,14 +1135,58 @@ main,
   font-size: 0.97rem;
   border-left: 2px solid var(--accent);
   padding-left: 1rem;
-  margin: 1.1rem 0;
+  margin: 0;
+  max-width: 46rem;
 }
 
 .pub-links {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 0.6rem;
-  margin-top: 1rem;
+  margin-top: 1.4rem;
+}
+
+.pub-record {
+  margin: 0;
+  align-self: start;
+  display: grid;
+  gap: 0.9rem;
+  padding-left: 1.3rem;
+  border-left: 1px solid var(--hairline-strong);
+  font-family: 'JetBrains Mono Variable', monospace;
+  font-size: 0.76rem;
+  line-height: 1.55;
+}
+
+.pub-record dt {
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.pub-record dd {
+  margin: 0.1rem 0 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 860px) {
+  .pub-entry {
+    grid-template-columns: 1fr;
+  }
+
+  .pub-record {
+    grid-row: 2;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    padding: 1.1rem 0 0;
+    border-left: none;
+    border-top: 1px solid var(--hairline);
+  }
+
+  .pub-full .pub-record {
+    grid-row: auto;
+  }
 }
 
 .chip {
@@ -1315,7 +1456,7 @@ details.coursework ul {
   }
 }
 
-.footer-grid h4 {
+.footer-heading {
   font-family: 'JetBrains Mono Variable', monospace;
   font-size: 0.72rem;
   font-weight: 500;
@@ -1362,6 +1503,155 @@ details.coursework ul {
   font-family: 'JetBrains Mono Variable', monospace;
   font-size: 0.74rem;
   color: var(--faint);
+}
+
+/* ---------- research page: contents, areas, projects ---------- */
+
+.toc {
+  max-width: 46rem;
+  margin: 1.4rem 0 0.6rem;
+  padding: 1.2rem 0 1.3rem;
+  border-top: 1px solid var(--hairline-strong);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.toc-heading,
+.area-heading {
+  font-family: 'JetBrains Mono Variable', monospace;
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.toc-heading {
+  margin: 0 0 0.8rem;
+}
+
+.toc ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.toc li {
+  display: grid;
+  grid-template-columns: 2.4rem minmax(0, 1fr) auto;
+  column-gap: 0.7rem;
+  align-items: baseline;
+  padding: 0.2rem 0;
+}
+
+.toc li > ol {
+  grid-column: 2 / -1;
+  margin: 0.15rem 0 0.35rem;
+}
+
+.toc li > ol > li {
+  grid-template-columns: 2.4rem minmax(0, 1fr) auto;
+  margin-left: -3.1rem;
+}
+
+.toc a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.toc > ol > li > a {
+  font-weight: 600;
+}
+
+.toc a:hover {
+  color: var(--accent-strong);
+  text-decoration: underline;
+}
+
+.toc-no {
+  font-family: 'JetBrains Mono Variable', monospace;
+  font-size: 0.76rem;
+  color: var(--accent);
+}
+
+.toc-status {
+  font-family: 'JetBrains Mono Variable', monospace;
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-align: right;
+}
+
+@media (max-width: 640px) {
+  .toc li,
+  .toc li > ol > li {
+    grid-template-columns: 2.4rem minmax(0, 1fr);
+  }
+
+  .toc-status {
+    grid-column: 2;
+    text-align: left;
+  }
+}
+
+.area {
+  padding-top: 3rem;
+}
+
+.area-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 1.1rem;
+  margin: 0;
+}
+
+.project.section {
+  padding-block: 1.6rem 2.6rem;
+}
+
+.project .section-head {
+  flex-wrap: wrap;
+}
+
+.project .section-head h3 {
+  font-size: clamp(1.4rem, 2.6vw, 1.75rem);
+  margin: 0;
+}
+
+.project-pub {
+  margin-top: -0.6rem;
+}
+
+/* SMVac: what the results do and do not establish */
+.findings {
+  margin: 1.8rem 0 0.4rem;
+  border-top: 1px solid var(--hairline-strong);
+}
+
+.findings div {
+  display: grid;
+  grid-template-columns: 9.5rem 1fr;
+  gap: 0.2rem 1.4rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.findings dt {
+  font-family: 'JetBrains Mono Variable', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  padding-top: 0.3rem;
+}
+
+.findings dd {
+  margin: 0;
+  font-size: 0.97rem;
+}
+
+@media (max-width: 640px) {
+  .findings div {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ---------- page header (inner pages) ---------- */
@@ -1415,7 +1705,7 @@ details.coursework ul {
     color: #444 !important;
   }
 
-  .cv-entry, .section-head, .timeline li, .row-list li, .pub-card, .card {
+  .cv-entry, .section-head, .timeline li, .row-list li, .pub-entry, .pub-record, .card {
     border-color: #ddd !important;
   }
 

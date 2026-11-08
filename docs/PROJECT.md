@@ -21,7 +21,7 @@ Naman-Goyal-Website/
 │   │   ├── Math.astro        server-side KaTeX rendering (inline / block)
 │   │   ├── Figure.astro      white panel + caption for scientific figures
 │   │   ├── Timeline.astro    chronology list
-│   │   └── PubCard.astro     publication card (compact / full modes)
+│   │   └── PubCard.astro     publication entry, record in the margin (featured / full)
 │   ├── data/                 structured content (edit these, not the pages)
 │   │   ├── site.ts           identity, links, canonical URL, profiles
 │   │   ├── publications.ts   publication records
@@ -55,8 +55,8 @@ on the next build.
 - **KaTeX at build time.** `remark-math` + `rehype-katex` (see `astro.config.mjs`) run
   in the markdown pipeline, and the `Math.astro` component calls KaTeX directly for
   template math. No math library ships to the browser; only KaTeX fonts/CSS.
-- **Fonts.** Source Serif 4 (text), Inter (UI labels), JetBrains Mono (code), all
-  self-hosted via Fontsource imports in `Base.astro`.
+- **Fonts.** Source Serif 4 (text and display) and JetBrains Mono (labels, metadata,
+  code), self-hosted via Fontsource imports in `Base.astro`.
 - **Theming.** Dark is the default identity (`:root` tokens: near-black ground,
   yellow accent). `[data-theme='light']` overrides the same tokens with a warm
   paper variant (ochre accent); the toggle in the navigation switches and

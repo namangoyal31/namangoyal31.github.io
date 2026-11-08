@@ -9,10 +9,13 @@ export const site = {
   email: 'namangoyal@iisc.ac.in',
   githubUser: 'namangoyal31',
   github: 'https://github.com/namangoyal31',
-  smvac: 'https://github.com/namangoyal31/SMVac',
+  /** Current research codebase. */
+  smvac: 'https://github.com/namangoyal31/SMVac-Research',
+  /** Original working repository, kept unchanged as the provenance record. */
+  smvacOriginal: 'https://github.com/namangoyal31/SMVac',
   url: 'https://namangoyal31.github.io',
   cvPath: '/cv/Naman_Goyal_CV.pdf',
-  lastUpdated: 'October 2026',
+  lastUpdated: 'November 2026',
 };
 
 /**
@@ -26,7 +29,11 @@ export const personNode = {
   name: site.name,
   url: `${site.url}/`,
   email: `mailto:${site.email}`,
-  affiliation: { '@type': 'CollegeOrUniversity', name: 'Indian Institute of Science' },
+  affiliation: {
+    '@type': 'CollegeOrUniversity',
+    name: 'Indian Institute of Science',
+    url: 'https://iisc.ac.in',
+  },
   jobTitle: 'Undergraduate researcher in theoretical physics',
   knowsAbout: [
     'Theoretical high-energy physics',
@@ -37,7 +44,7 @@ export const personNode = {
     'Electroweak vacuum stability',
     'Pseudo-Newtonian tests of general relativity',
   ],
-  sameAs: [site.github, 'https://arxiv.org/abs/2602.20261'],
+  sameAs: [site.github],
 };
 
 export const personSchema = { '@context': 'https://schema.org', ...personNode };
