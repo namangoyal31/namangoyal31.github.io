@@ -2,18 +2,39 @@
  * Publications, ordered newest first.
  *
  * To add a paper: append an entry here. It automatically appears on the
- * Publications page and in the homepage teaser. Keep `abstract` verbatim
- * from the arXiv page.
+ * Publications page; the first entry is the one featured on the homepage.
+ * Journal metadata comes from the publisher's record; keep `abstract`
+ * verbatim from the journal (or arXiv, for a preprint).
  */
 export interface Publication {
   id: string;
+  bibkey: string;
   title: string;
   authors: { name: string; me?: boolean }[];
+  affiliation?: string;
   status: 'preprint' | 'published';
   year: number;
-  venue?: string;
+  journal?: {
+    name: string;
+    abbrev: string;
+    volume: string;
+    issue: string;
+    article: string;
+    issn: string;
+    publisher: string;
+    url: string;
+    /** Publisher PDF; set only when it is openly available. */
+    pdf?: string;
+  };
+  doi?: string;
+  /** ISO dates from the publisher's article history. */
+  received?: string;
+  accepted?: string;
+  published?: string;
+  license?: { name: string; url: string };
   arxiv?: string;
   arxivCategory?: string;
+  /** ISO date of arXiv v1. */
   submitted?: string;
   area: string;
   abstract: string;
@@ -23,20 +44,56 @@ export interface Publication {
   description: string[];
 }
 
+/** e.g. "Eur. Phys. J. C 86, 1280 (2026)"; preprints fall back to the arXiv ID. */
+export function journalRef(pub: Publication): string {
+  if (pub.journal) {
+    const j = pub.journal;
+    return `${j.abbrev} ${j.volume}, ${j.article} (${pub.year})`;
+  }
+  return pub.arxiv ? `arXiv:${pub.arxiv} [${pub.arxivCategory}]` : String(pub.year);
+}
+
+export function formatDate(iso: string): string {
+  return new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+}
+
 export const publications: Publication[] = [
   {
     id: 'pseudo-newtonian-gr',
+    bibkey: 'goyal2026pseudoNewtonian',
     title: 'Tests of general relativity in pseudo-Newtonian approach',
     authors: [
       { name: 'Naman Goyal', me: true },
       { name: 'Banibrata Mukhopadhyay' },
       { name: 'Ashish Kumar Meena' },
     ],
-    status: 'preprint',
+    affiliation: 'Department of Physics, Indian Institute of Science, Bengaluru',
+    status: 'published',
     year: 2026,
+    journal: {
+      name: 'The European Physical Journal C',
+      abbrev: 'Eur. Phys. J. C',
+      volume: '86',
+      issue: '11',
+      article: '1280',
+      issn: '1434-6052',
+      publisher: 'Springer',
+      url: 'https://link.springer.com/article/10.1140/epjc/s10052-026-16547-6',
+      pdf: 'https://link.springer.com/content/pdf/10.1140/epjc/s10052-026-16547-6.pdf',
+    },
+    doi: '10.1140/epjc/s10052-026-16547-6',
+    received: '2026-04-06',
+    accepted: '2026-10-11',
+    published: '2026-11-06',
+    license: { name: 'CC BY 4.0', url: 'https://creativecommons.org/licenses/by/4.0/' },
     arxiv: '2602.20261',
     arxivCategory: 'gr-qc',
-    submitted: '23 February 2026',
+    submitted: '2026-02-23',
     area: 'Classical tests of GR · effective descriptions of gravity',
     abstract:
       'We investigate the extent to which pseudo-Newtonian gravitational potentials can reproduce classic tests of general relativity without resorting to full general relativistic formalisms. This is useful for the researchers seeking intuitive insight into relativistic gravity. Focusing on the perihelion precession of Mercury, gravitational redshift, and gravitational light bending, we derive analytical expressions for orbital precession and demonstrate that, with suitable physically acceptable parameters, pseudo-Newtonian approaches can accurately reproduce the observed perihelion advance and gravitational redshift. However, we confirm that no single potential consistently captures all relativistic effects. In particular, while certain parameters yield agreement with general relativity for planetary motion and redshift, they fail to reproduce gravitational lensing over a broad range of impact parameters. Our results highlight both the usefulness and limitations of pseudo-Newtonian methods in modeling gravitational phenomena. Although the pseudo-Newtonian approach cannot serve as universal substitutes for general relativity, especially in strong-field regimes, it provides valuable semi-analytical insight and pedagogical simplicity. Our results indicate the usefulness of the pseudo-Newtonian approach to uncover more complicated phenomena involved with strong field gravity in possibly modification to general relativity.',
@@ -45,7 +102,7 @@ export const publications: Publication[] = [
     description: [
       'General relativity is non-linear, and exact solutions become difficult as soon as the spacetime departs from spherical symmetry. Pseudo-Newtonian potentials offer a way out: keep Newtonian dynamics, but replace the gravitational potential so that selected relativistic effects reappear. This machinery is widely used for accretion flows around compact objects, where it is accurate enough that its errors are often smaller than observational uncertainties. The paper asks a systematic question: how far does this substitute go when pushed against the three classic tests of GR?',
       'Working in units of the gravitational radius $r_g = GM/c^2$, we derive the orbit equation for general potentials and solve it analytically for the Paczyński–Wiita potential and for an amended Artemova–Björnsson–Novikov (ABN) potential. The parameter $\\beta$ is fixed to the spin in the original proposal; here it is treated as free, with $\\beta = 2$ recovering Paczyński–Wiita and $\\beta = 0$ Newtonian gravity. The precession per orbit follows from the relativistic correction to the oscillator frequency of the orbit.',
-      'For Mercury, the Paczyński–Wiita potential yields $\\Delta\\theta \\approx 27.54$ arcseconds per century, about a factor of $1.5$ below the exact GR value of $43.03$, while the amended ABN potential with $\\beta = 3.125$ reproduces the GR precession exactly. For gravitational redshift, evaluated by integrating the potential gradient, the situation inverts: $\\beta = 3.125$ deviates strongly from GR, while $\\beta = 0.5$ matches it. The same parameter cannot serve both effects.',
+      'For Mercury, the Paczyński–Wiita potential yields $\\Delta\\theta \\approx 27.54$ arcseconds per century, about a factor of $1.5$ below the GR prediction, while the amended ABN potential with $\\beta = 3.125$ reproduces the GR precession exactly. For gravitational redshift, evaluated by integrating the potential gradient, the situation inverts: $\\beta = 3.125$ deviates strongly from GR, while $\\beta = 0.5$ matches it. The same parameter cannot serve both effects.',
       'Light bending is where the approach fails outright. Integrating the null-geodesic equation $d^2\\alpha/d\\theta^2 + \\alpha = 3\\alpha^2$ for Schwarzschild and the pseudo-Newtonian orbit equation numerically (RK45 via SciPy), we find that $\\beta = 2$ under-predicts the deflection and $\\beta \\approx 3$ fails as well. Matching GR in the weak-field regime would require an unphysical $\\beta \\gg 1000$, with a different $\\beta$ at each impact parameter. Around rotating black holes, the Mukhopadhyay potential correctly reproduces the photon-sphere location and the qualitative prograde/retrograde splitting of Kerr deflections, but its weak-field limit falls to the Newtonian $2/R$ rather than the GR $4/R$.',
       'The conclusion is a precise boundary on the method. Pseudo-Newtonian potentials reproduce individual relativistic effects in suitable regimes, and the paper identifies those regimes, but no single potential consistently captures perihelion precession, redshift, and lensing simultaneously. The approach remains valuable for semi-analytical insight and pedagogy, not as a universal substitute for GR.',
     ],

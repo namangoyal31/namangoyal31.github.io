@@ -1,6 +1,5 @@
 ---
 import '@fontsource-variable/source-serif-4';
-import '@fontsource-variable/inter';
 import '@fontsource-variable/jetbrains-mono';
 import 'katex/dist/katex.min.css';
 import '../styles/global.css';
@@ -23,8 +22,8 @@ const pageTitle = title === site.name ? `${site.name} · Theoretical Physics` : 
 
 const navLinks = [
   { href: '/research/', label: 'Research' },
-  { href: '/smvac/', label: 'SMVac' },
   { href: '/publications/', label: 'Publications' },
+  { href: '/smvac/', label: 'SMVac' },
   { href: '/cv/', label: 'CV' },
   { href: '/about/', label: 'About' },
 ];
@@ -121,7 +120,7 @@ const isCurrent = (href: string) => currentPath === normalize(href);
       <div class="container">
         <div class="footer-grid">
           <div>
-            <h4>{site.name}</h4>
+            <h2 class="footer-heading">{site.name}</h2>
             <p>
               {site.role}, {site.institution}.<br />
               Theoretical high-energy physics and mathematical physics.
@@ -131,7 +130,7 @@ const isCurrent = (href: string) => currentPath === normalize(href);
             </p>
           </div>
           <div>
-            <h4>Navigate</h4>
+            <h2 class="footer-heading">Navigate</h2>
             <ul>
               {
                 navLinks.map((link) => (
@@ -143,7 +142,7 @@ const isCurrent = (href: string) => currentPath === normalize(href);
             </ul>
           </div>
           <div>
-            <h4>Elsewhere</h4>
+            <h2 class="footer-heading">Elsewhere</h2>
             <ul>
               <li><a href={site.github} rel="me noopener noreferrer" target="_blank">GitHub · {site.githubUser}</a></li>
               <li><a href="https://arxiv.org/abs/2602.20261" target="_blank" rel="noopener noreferrer">arXiv</a></li>
@@ -241,7 +240,7 @@ const isCurrent = (href: string) => currentPath === normalize(href);
       // slightly around the pointer. Driven by actual pointermove events
       // (mouse/pen only - touch keeps the static pool), with a slow lerp in
       // a self-stopping rAF loop. Skipped entirely for reduced motion.
-      const glow = document.querySelector('.atmosphere-glow');
+      const glow = document.querySelector<HTMLElement>('.atmosphere-glow');
       const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (glow && !calm) {
         let tx = innerWidth * 0.5, ty = innerHeight * 0.5;
@@ -259,8 +258,8 @@ const isCurrent = (href: string) => currentPath === normalize(href);
             raf = requestAnimationFrame(step);
           }
         };
-        const onMove = (e) => {
-          if (e.pointerType === 'touch') return;
+        const onMove = (e: PointerEvent | MouseEvent) => {
+          if ('pointerType' in e && e.pointerType === 'touch') return;
           tx = e.clientX;
           ty = e.clientY;
           kick();

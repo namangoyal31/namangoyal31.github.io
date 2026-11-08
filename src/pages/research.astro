@@ -2,15 +2,24 @@
 import Base from '../layouts/Base.astro';
 import Timeline from '../components/Timeline.astro';
 import { personNode } from '../data/site';
-import { projects } from '../data/projects';
+import { areas, projects } from '../data/projects';
+import { publications, journalRef } from '../data/publications';
 import { timeline } from '../data/timeline';
 import { renderRich } from '../lib/rich';
 
-const theoretical = projects.filter((p) => !p.experimental);
+const grouped = areas.map((area) => ({
+  ...area,
+  projects: projects.filter((p) => p.area === area.id && !p.experimental),
+}));
 const experimental = projects.filter((p) => p.experimental);
+const chronologyNo = grouped.length + 1;
+const experimentalNo = grouped.length + 2;
+const pubFor = (id?: string) => publications.find((p) => p.id === id);
+const external = (href: string) =>
+  href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {};
 
 const description =
-  'Research of Naman Goyal: scattering amplitudes and the S-matrix bootstrap (current), electroweak vacuum stability and the SMVac framework, pseudo-Newtonian tests of general relativity, and the representation theory of the Poincaré group.';
+  'Research of Naman Goyal: scattering amplitudes and the S-matrix bootstrap (current), pseudo-Newtonian tests of general relativity (Eur. Phys. J. C, 2026), electroweak vacuum stability and the SMVac framework, and the representation theory of the Poincaré group.';
 ---
 <Base
   title="Research"
@@ -37,41 +46,91 @@ const description =
       </p>
     </header>
 
+    <nav class="toc" aria-labelledby="toc-heading">
+      <h2 id="toc-heading" class="toc-heading">Contents</h2>
+      <ol>
+        {
+          grouped.map((area, ai) => (
+            <li>
+              <span class="toc-no">{ai + 1}</span>
+              <a href={`#${area.id}`}>{area.title}</a>
+              <ol>
+                {area.projects.map((p, pi) => {
+                  const pub = pubFor(p.publication);
+                  return (
+                    <li>
+                      <span class="toc-no">{ai + 1}.{pi + 1}</span>
+                      <a href={`#${p.id}`}>{p.shortTitle ?? p.title}</a>
+                      <span class="toc-status">
+                        {p.status === 'current' ? 'ongoing' : pub ? journalRef(pub) : 'completed'}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ol>
+            </li>
+          ))
+        }
+        <li><span class="toc-no">{chronologyNo}</span><a href="#chronology">Chronology</a></li>
+        <li><span class="toc-no">{experimentalNo}</span><a href="#experimental">Experimental work</a></li>
+      </ol>
+    </nav>
+
     {
-      theoretical.map((p, i) => (
-        <section class="section" id={p.id} aria-labelledby={`${p.id}-heading`}>
-          <div class="section-head">
-            <span class="secno">{String(i + 1).padStart(2, '0')}</span>
-            <h2 id={`${p.id}-heading`}>{p.title}</h2>
-            <p class="meta" style="margin: 0;">
-              <span class:list={['status-dot', p.status === 'current' && 'current']} aria-hidden="true" />
-              {p.status === 'current' ? 'Ongoing' : 'Completed'} · {p.period}
-            </p>
-          </div>
-          <p class="meta">
-            {p.mentors && <span>{p.mentors}</span>}
-            {p.place && <span>{p.mentors ? ' · ' : ''}{p.place}</span>}
-          </p>
-          <div class="prose" style="margin-top: 1rem;">
-            {p.body.map((para) => <p set:html={renderRich(para)} />)}
-          </div>
-          {p.links && p.links.length > 0 && (
-            <div class="pub-links">
-              {p.links.map((l) => (
-                <a class="chip" href={l.href} target={l.href.startsWith("http") ? "_blank" : undefined} rel={l.href.startsWith("http") ? "noopener noreferrer" : undefined}>{l.label}</a>
-              ))}
-            </div>
-          )}
-          <div class="tag-row" style="margin-top: 1.1rem;">
-            {p.tags.map((t) => <span class="tag">{t}</span>)}
-          </div>
+      grouped.map((area, ai) => (
+        <section class="area" id={area.id} aria-labelledby={`${area.id}-heading`}>
+          <h2 class="area-heading" id={`${area.id}-heading`}>
+            <span class="secno">{ai + 1}</span>
+            {area.title}
+          </h2>
+          {area.projects.map((p, pi) => {
+            const pub = pubFor(p.publication);
+            return (
+              <section class="section project" id={p.id} aria-labelledby={`${p.id}-heading`}>
+                <div class="section-head">
+                  <span class="secno">{ai + 1}.{pi + 1}</span>
+                  <h3 id={`${p.id}-heading`}>{p.title}</h3>
+                  <p class="meta" style="margin: 0;">
+                    <span class:list={['status-dot', p.status === 'current' && 'current']} aria-hidden="true" />
+                    {p.status === 'current' ? 'Ongoing' : 'Completed'} · {p.period}
+                  </p>
+                </div>
+                <p class="meta">
+                  {p.mentors && <span>{p.mentors}</span>}
+                  {p.place && <span>{p.mentors ? ' · ' : ''}{p.place}</span>}
+                </p>
+                {pub && pub.doi && (
+                  <p class="project-pub meta">
+                    <span class="status-dot published" aria-hidden="true" />
+                    Published in{' '}
+                    <a href={`https://doi.org/${pub.doi}`} target="_blank" rel="noopener noreferrer">
+                      {journalRef(pub)}
+                    </a>
+                  </p>
+                )}
+                <div class="prose" style="margin-top: 1rem;">
+                  {p.body.map((para) => <p set:html={renderRich(para)} />)}
+                </div>
+                {p.links && p.links.length > 0 && (
+                  <div class="pub-links">
+                    {p.links.map((l) => (
+                      <a class="chip" href={l.href} {...external(l.href)}>{l.label}</a>
+                    ))}
+                  </div>
+                )}
+                <div class="tag-row" style="margin-top: 1.1rem;">
+                  {p.tags.map((t) => <span class="tag">{t}</span>)}
+                </div>
+              </section>
+            );
+          })}
         </section>
       ))
     }
 
     <section class="section" id="chronology" aria-labelledby="chronology-heading">
       <div class="section-head">
-        <span class="secno">05</span>
+        <span class="secno">{chronologyNo}</span>
         <h2 id="chronology-heading">Chronology</h2>
       </div>
       <div class="prose">
@@ -85,7 +144,7 @@ const description =
 
     <section class="section" id="experimental" aria-labelledby="experimental-heading">
       <div class="section-head">
-        <span class="secno">06</span>
+        <span class="secno">{experimentalNo}</span>
         <h2 id="experimental-heading">Experimental work</h2>
       </div>
       <div class="callout" style="margin-bottom: 1.6rem;">

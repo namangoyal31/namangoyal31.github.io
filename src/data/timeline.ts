@@ -22,7 +22,7 @@ export const timeline: TimelineItem[] = [
   {
     date: 'May 2024',
     title: 'Higgs Vacuum Stability and the Cosmological Hierarchy Problem',
-    note: 'Research begins at TIFR with Prof. Rick Sandepan Gupta; the SMVac framework grows out of this project.',
+    note: 'Research begins at TIFR with Prof. Rick Sandeepan Gupta; the SMVac framework grows out of this project.',
     href: '/research/#smvac',
     happened: true,
   },
@@ -59,9 +59,16 @@ export const timeline: TimelineItem[] = [
     happened: true,
   },
   {
+    date: 'Nov 2026',
+    title: 'Published: Eur. Phys. J. C 86, 1280 (2026)',
+    note: '"Tests of general relativity in pseudo-Newtonian approach", open access in The European Physical Journal C.',
+    href: '/publications/#pseudo-newtonian-gr',
+    happened: true,
+  },
+  {
     date: 'May 2026 – Present',
     title: 'Scattering Amplitudes and S-Matrix Bootstrap',
-    note: 'Current research at TIFR with Prof. Rick Sandepan Gupta.',
+    note: 'Current research at TIFR with Prof. Rick Sandeepan Gupta.',
     href: '/research/#s-matrix-bootstrap',
     happened: false,
   },

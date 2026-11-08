@@ -2,59 +2,101 @@
 import Base from '../layouts/Base.astro';
 import Divider from '../components/Divider.astro';
 import PubCard from '../components/PubCard.astro';
-import { site } from '../data/site';
+import { site, personNode } from '../data/site';
 import { publications } from '../data/publications';
 
-const pub = publications[0];
+const articles = publications.filter((p) => p.status === 'published');
+const preprints = publications.filter((p) => p.status === 'preprint');
 
-const articleSchema = {
+const articleSchema = publications.map((pub) => ({
   '@context': 'https://schema.org',
   '@type': 'ScholarlyArticle',
   headline: pub.title,
-  author: pub.authors.map((a) => ({ '@type': 'Person', name: a.name })),
-  datePublished: pub.year,
-  identifier: pub.arxiv ? `arXiv:${pub.arxiv}` : undefined,
-  url: pub.arxiv ? `https://arxiv.org/abs/${pub.arxiv}` : site.url,
-  isAccessibleForFree: true,
-};
+  name: pub.title,
+  abstract: pub.abstract,
+  author: pub.authors.map((a) =>
+    a.me
+      ? personNode
+      : { '@type': 'Person', name: a.name, affiliation: { '@type': 'CollegeOrUniversity', name: 'Indian Institute of Science' } }
+  ),
+  datePublished: pub.published ?? pub.submitted,
+  ...(pub.journal && {
+    isPartOf: {
+      '@type': 'PublicationIssue',
+      issueNumber: pub.journal.issue,
+      isPartOf: {
+        '@type': 'PublicationVolume',
+        volumeNumber: pub.journal.volume,
+        isPartOf: { '@type': 'Periodical', name: pub.journal.name, issn: pub.journal.issn },
+      },
+    },
+    pagination: pub.journal.article,
+    publisher: { '@type': 'Organization', name: pub.journal.publisher },
+    url: pub.journal.url,
+  }),
+  ...(pub.doi && {
+    identifier: { '@type': 'PropertyValue', propertyID: 'DOI', value: pub.doi },
+    sameAs: [`https://doi.org/${pub.doi}`, ...(pub.arxiv ? [`https://arxiv.org/abs/${pub.arxiv}`] : [])],
+  }),
+  ...(pub.license && { license: pub.license.url, isAccessibleForFree: true }),
+}));
 ---
-<Base title="Publications" description="Publications and preprints of Naman Goyal: tests of general relativity in pseudo-Newtonian approach (arXiv:2602.20261), plus research code." jsonLd={[articleSchema]}
-  ogImage="/og/publications.png">
+<Base
+  title="Publications"
+  description="Publications of Naman Goyal: Tests of general relativity in pseudo-Newtonian approach, Eur. Phys. J. C 86, 1280 (2026), with B. Mukhopadhyay and A. K. Meena. Abstract, links, and BibTeX."
+  jsonLd={articleSchema}
+  ogImage="/og/publications.png"
+>
   <div class="container">
     <header class="page-head">
       <p class="eyebrow">Publications</p>
       <h1>Publications</h1>
       <p class="lede prose" style="margin-top: 1.2rem;">
-        A short, honest list: one preprint so far, from the pseudo-Newtonian gravity project.
-        Research software (SMVac) and project descriptions live under
-        <a href="/research/">Research</a>.
+        Peer-reviewed work and preprints, newest first. Research software (SMVac) is listed
+        below; ongoing projects are described under <a href="/research/">Research</a>.
       </p>
     </header>
 
-    <section class="section" aria-labelledby="preprints-heading">
-      <div class="section-head reveal">
-        <span class="secno">01</span>
-        <h2 id="preprints-heading">Preprints</h2>
-      </div>
-      <Divider poles={[0.3, 0.7]} />
-      {publications.map((p) => <PubCard pub={p} full />)}
-    </section>
+    {
+      articles.length > 0 && (
+        <section class="section" aria-labelledby="articles-heading">
+          <Divider poles={[0.3, 0.7]} />
+          <div class="section-head">
+            <span class="secno">01</span>
+            <h2 id="articles-heading">Journal articles</h2>
+          </div>
+          {articles.map((p) => <PubCard pub={p} full />)}
+        </section>
+      )
+    }
+
+    {
+      preprints.length > 0 && (
+        <section class="section" aria-labelledby="preprints-heading">
+          <div class="section-head">
+            <span class="secno">{articles.length > 0 ? '02' : '01'}</span>
+            <h2 id="preprints-heading">Preprints</h2>
+          </div>
+          {preprints.map((p) => <PubCard pub={p} full />)}
+        </section>
+      )
+    }
 
     <section class="section section-tight" aria-labelledby="software-heading">
-      <div class="section-head reveal">
-        <span class="secno">02</span>
-        <h2 id="software-heading" style="font-size: 1.3rem;">Research software</h2>
+      <div class="section-head">
+        <span class="secno">{String(Number(articles.length > 0) + Number(preprints.length > 0) + 1).padStart(2, '0')}</span>
+        <h2 id="software-heading">Research software</h2>
       </div>
       <article class="card" style="max-width: 46rem;">
         <p class="meta">
           <span class="status-dot published" aria-hidden="true"></span>
-          Research code · 2026
+          Research code · C++17 / Python · 2026
         </p>
-        <h3 style="margin-top: 0;"><a href={site.smvac} target="_blank" rel="noopener noreferrer">SMVac: Precision Computation of Electroweak Vacuum Stability in the Standard Model</a></h3>
+        <h3 style="margin-top: 0;"><a href={site.smvac} target="_blank" rel="noopener noreferrer">SMVac: a numerical study of electroweak vacuum stability in the Standard Model</a></h3>
         <p>
-          A modular C++/Python framework: 3-loop SM RG evolution, NNLO matching, the one-loop
-          Coleman–Weinberg potential, and semiclassical vacuum decay via an RG-improved
-          Fubini–Lipatov calculation, with phase diagrams in the Higgs–top mass plane.
+          NNLO matching, three-loop SM RG evolution, and a semi-analytical estimate of the vacuum
+          decay action on a Fubini–Lipatov trial profile, with stability phase diagrams in the
+          Higgs–top mass plane. The absolute-stability boundary is the robust output.
         </p>
         <span class="card-link"><a href="/smvac/">Project page →</a></span>
       </article>
