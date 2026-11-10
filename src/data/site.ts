@@ -9,10 +9,8 @@ export const site = {
   email: 'namangoyal@iisc.ac.in',
   githubUser: 'namangoyal31',
   github: 'https://github.com/namangoyal31',
-  /** Current research codebase. */
-  smvac: 'https://github.com/namangoyal31/SMVac-Research',
-  /** Original working repository, kept unchanged as the provenance record. */
-  smvacOriginal: 'https://github.com/namangoyal31/SMVac',
+  /** SMVac research codebase (version 2; the original implementation is kept in its legacy/ directory). */
+  smvac: 'https://github.com/namangoyal31/SMVac',
   url: 'https://namangoyal31.github.io',
   cvPath: '/cv/Naman_Goyal_CV.pdf',
   lastUpdated: 'November 2026',

@@ -53,11 +53,10 @@ After any homepage edit, check desktop (1440px) and mobile (390px) widths with
   order and the section numbers 1, 1.1, ...); a project's `publication` field links it
   to an entry in `src/data/publications.ts`.
 - The SMVac page is a single hand-written page, `src/pages/smvac.astro`, structured like
-  a short paper (Overview, Problem, Method, Results, Conformal estimate vs. trial
-  profile, Validation, Limitations, Code, Future work). Math uses the
-  `<Math tex="..." />` component; figures use `<Figure ... />`. Numbers, claims and
-  limitations follow `RESULTS.md` and `docs/limitations.md` in SMVac-Research; update the
-  page whenever those change.
+  a short paper (Overview, Problem, Method, Results, Analytical approximations, Validation,
+  Limitations, Code). Math uses the `<Math tex="..." />` component;
+  figures use `<Figure ... />`. Numbers, claims and limitations follow the SMVac
+  repository's `README.md` and `results/*.json`; update the page whenever those change.
 
 ## Adding research notes
 

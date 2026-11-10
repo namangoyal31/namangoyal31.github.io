@@ -1,10 +1,10 @@
 # Content map
 
 All research content is sourced from three places: the CV, the published paper
-(Eur. Phys. J. C 86, 1280 (2026); arXiv:2602.20261), and the SMVac-Research repository.
+(Eur. Phys. J. C 86, 1280 (2026); arXiv:2602.20261), and the SMVac repository.
 When you update any of those, update the matching file below. Keep the abstract verbatim
 (the journal and arXiv abstracts are identical), and keep SMVac claims consistent with
-the repository's `RESULTS.md` and `docs/limitations.md`.
+the repository's `README.md` (§§10–11), `figures/README.md` and `results/*.json`.
 
 ## Homepage
 
@@ -29,11 +29,13 @@ the repository's `RESULTS.md` and `docs/limitations.md`.
 ## SMVac page
 
 `src/pages/smvac.astro`, hand-written. Sections in order: Overview (with the
-established / estimated / not established summary), Problem, Method (pipeline list +
-equations), Results (Figures 1–2), Conformal estimate vs. trial profile (Figures 3–4),
-Validation, Limitations, Code, Future work. Figures in `public/figures/` are unmodified
-copies of `figures/01_*.png`, `02_*`, `05_*` and `06_*` from SMVac-Research; captions
-are set where each `<Figure>` is used.
+computed / tested / not computed summary), Problem, Method (pipeline list + equations),
+Results (Figures 1–2), Analytical approximations vs. the numerical bounce (Figures 3–4),
+Validation, Limitations, Code. Figures in `public/figures/` are
+unmodified copies of `phase_diagram_full_contours.png`,
+`phase_diagram_closeup_contours.png`, `analytic_error_scaling.png` and
+`near_critical.png` from SMVac's `figures/`; captions follow that directory's
+`README.md` and are set where each `<Figure>` is used.
 
 ## Publications
 
@@ -64,7 +66,7 @@ are set where each `<Figure>` is used.
 ## Images and assets
 
 - `public/figures/`: scientific figures, served as-is. Keep original axes/labels;
-  copy them from SMVac-Research rather than editing the PNGs.
+  copy them from SMVac rather than editing the PNGs.
 - `public/og/`: per-page 1200×630 social cards (home, research, smvac,
   publications, cv, about), generated from `scripts/og-cards.html`:
   serve the repo root, open the page with `?card=<name>` at a 1200×630

@@ -9,16 +9,17 @@ const softwareSchema = {
   '@type': 'SoftwareSourceCode',
   name: 'SMVac',
   description:
-    'A modular C++ framework for studies of electroweak vacuum stability in the Standard Model: NNLO matching, 3-loop RG evolution, the RG-improved one-loop effective potential, and a semi-analytical estimate of the vacuum decay action on a Fubini–Lipatov trial profile.',
+    'A reproducible computational investigation of the tree-level O(4) bounce action of the RG-improved Standard Model potential: a validated numerical reference (Chebyshev spectral collocation) used to test established analytical approximations, with phase diagrams of the Higgs–top mass plane.',
   codeRepository: site.smvac,
   author: personNode,
   programmingLanguage: ['C++', 'Python'],
-  dateModified: '2026-10-02',
+  version: '2.0.0-dev',
+  dateModified: '2026-11-11',
 };
 ---
 <Base
   title="SMVac · electroweak vacuum stability"
-  description="SMVac: a C++ framework for studies of electroweak vacuum stability in the Standard Model. 3-loop RG evolution, NNLO matching, the RG-improved one-loop effective potential, and a semi-analytical Fubini–Lipatov trial-profile estimate of the decay action, with phase diagrams in the (Mh, Mt) plane."
+  description="SMVac solves the tree-level bounce of the RG-improved Standard Model potential numerically, with a validated uncertainty, and uses it to test the analytical approximations to the vacuum decay action, with phase diagrams in the (Mh, Mt) plane."
   jsonLd={[softwareSchema]}
 
   ogImage="/og/smvac.png">
@@ -27,12 +28,13 @@ const softwareSchema = {
       <p class="eyebrow">Research software · C++ / Python</p>
       <h1>SMVac</h1>
       <p class="lede" style="max-width: 42rem;">
-        A numerical study of electroweak vacuum stability in the Standard Model.
+        A numerical study of electroweak vacuum stability in the Standard Model: the analytical
+        approximations to the bounce action, tested against a validated numerical solution.
       </p>
       <p class="meta">
-        <strong style="color: var(--ink); font-weight: 600;">Naman Goyal</strong> · May 2024 – May 2026 ·
-        Mentored by Prof. Rick Sandeepan Gupta (TIFR) ·
-        <a href={site.smvac} target="_blank" rel="noopener noreferrer">github.com/namangoyal31/SMVac-Research</a>
+        <strong style="color: var(--ink); font-weight: 600;">Naman Goyal</strong> · May 2024 – May 2026,
+        mentored by Prof. Rick Sandeepan Gupta (TIFR) · Version 2, November 2026 ·
+        <a href={site.smvac} target="_blank" rel="noopener noreferrer">github.com/namangoyal31/SMVac</a>
       </p>
     </header>
 
@@ -42,46 +44,55 @@ const softwareSchema = {
         The Standard Model of particle physics appears, from its measured parameters, to live on a
         knife's edge. At field values far beyond any collider, the effective Higgs potential turns
         over: the quartic coupling <Math tex={'\\lambda(\\mu)'} />, run up in energy, becomes negative
-        at scales of order <Math tex={'10^{10}\\,\\mathrm{GeV}'} />. The electroweak vacuum in which
-        we live is then not the absolute minimum of the theory but a <em>metastable</em> one,
-        destined in principle to decay by quantum tunneling. Whether that decay can ever matter is
-        controlled by the semiclassical bounce action <Math tex={'S'} />: the vacuum survives
-        cosmological timescales provided <Math tex={'S'} /> is large enough. The measured Higgs and
-        top masses place our universe uncomfortably close to the boundary where this guarantee fails.
+        at scales of order <Math tex={'10^{10}\\text{–}10^{11}\\,\\mathrm{GeV}'} />. The electroweak
+        vacuum in which we live is then not the absolute minimum of the theory but a
+        <em>metastable</em> one, destined in principle to decay by quantum tunneling. Whether that
+        decay can ever matter is controlled by the semiclassical bounce action <Math tex={'S'} />:
+        the vacuum survives cosmological timescales provided <Math tex={'S'} /> is large enough. The
+        measured Higgs and top masses place the Standard Model close to the boundary between
+        absolute stability and metastability.
       </p>
       <p>
-        SMVac is the computational framework I developed to study this problem quantitatively. It
-        combines precision renormalization group evolution with the semiclassical
-        Fubini–Lipatov (conformal) ansatz: rather than assuming a constant quartic coupling, the
-        code evaluates the Euclidean action on the conformal field profile with the full running,
-        one-loop effective potential, and minimizes it over the profile scale. The bounce equation
-        itself is never integrated, so the result is a <strong>trial-profile action
-        estimate</strong>, not the bounce action; the most robust output is the stability boundary,
-        which does not depend on the ansatz.
+        SMVac solves the tree-level O(4) bounce of the RG-improved potential
+        <Math tex={'V = \\lambda_P(\\phi)\\,\\phi^4/4'} /> numerically, with a validated uncertainty,
+        and uses that solution as a benchmark for the closed-form approximations in the literature:
+        across the <Math tex={'(M_h, M_t)'} /> plane and along lines approaching the
+        absolute-stability boundary. It studies the tree-level action only. It does not reproduce or
+        improve the complete calculation of Buttazzo et al. (2013), which uses the one-loop action,
+        a two-loop <Math tex={'\\lambda_{\\rm eff}'} /> and the field anomalous dimension.
+      </p>
+      <p>
+        Version 2 replaces the original implementation. An audit showed that the quantity the
+        original code reported, an “RG-improved Fubini–Lipatov action”, is a first-order
+        perturbative estimate about the Fubini–Lipatov instanton that is unbounded below, and that
+        its reported deviations from the Fubini–Lipatov formula came from an undocumented
+        <Math tex={'\\phi^6/M_{\\rm Pl}^2'} /> term and from Planck-scale artefacts. Earlier
+        versions of this page described that construction. The original code and data are
+        preserved unchanged in the repository for traceability.
       </p>
 
       <dl class="findings">
         <div>
-          <dt>Established</dt>
+          <dt>Computed</dt>
           <dd>
-            The absolute-stability boundary:
-            <Math tex={'M_h^{\\rm crit} = 129.05\\,\\mathrm{GeV}'} /> at
-            <Math tex={'M_t = 173.1\\,\\mathrm{GeV}'} />, independent of the trial profile.
+            The tree-level bounce action over the <Math tex={'(M_h, M_t)'} /> plane, with a
+            numerical uncertainty of <Math tex={'10^{-12}'} /> or better at standard-tier points.
           </dd>
         </div>
         <div>
-          <dt>Estimated</dt>
+          <dt>Tested</dt>
           <dd>
-            The decay action at the benchmark point,
-            <Math tex={'S_{\\rm trial} = 2168.7'} /> against a threshold of
-            <Math tex={'484'} />: metastable, with a lifetime far beyond the age of the universe.
+            The closed forms. <Math tex={'S_{\\rm FL} = 8\\pi^2/(3|\\lambda_{\\min}|)'} /> is a
+            rigorous lower bound, low by 0.03–0.17% where <Math tex={'S < 5000'} /> and by up to
+            34–50% near the stability boundary. Espinosa's first-order formula stays within 1.54% at
+            all 21,626 standard-tier points of the controlled scans.
           </dd>
         </div>
         <div>
-          <dt>Not established</dt>
+          <dt>Not computed</dt>
           <dd>
-            How the trial-profile action relates to the exact bounce action. No inequality between
-            them is shown, and no independent bounce computation was performed.
+            The one-loop decay rate. All statements hold within the tree-level RG-improved scheme;
+            they are not corrections to published lifetimes.
           </dd>
         </div>
       </dl>
@@ -92,81 +103,135 @@ const softwareSchema = {
       <p>
         Why the <Math tex={'(M_h, M_t)'} /> plane? The top quark drives <Math tex={'\\lambda'} /> down
         through the RG flow, the Higgs mass pushes it up; the stability verdict is therefore a curve
-        in the Higgs–top mass plane, and the experimental point
-        <Math tex={'(M_h, M_t) \\approx (125.1, 173.1)\\,\\mathrm{GeV}'} /> sits close to it.
-        Classic analyses (Buttazzo et al. 2013) mapped this boundary with multi-loop precision.
+        in the Higgs–top mass plane, and the measured point,
+        <Math tex={'M_h = 125.13 \\pm 0.11\\,\\mathrm{GeV}'} /> and
+        <Math tex={'M_t = 172.60 \\pm 0.27\\,\\mathrm{GeV}'} /> (PDG 2026), sits close to it. Classic
+        analyses (Buttazzo et al. 2013) mapped this boundary with multi-loop precision.
       </p>
       <p>
-        The standard analytical shortcut evaluates the decay rate in the strict Fubini–Lipatov
-        limit, where the potential is assumed purely quartic,
-        <Math tex={'V \\approx \\tfrac{1}{4}\\lambda\\,\\phi^4'} /> with <em>constant</em>
-        <Math tex={'\\lambda < 0'} /> at high scales. Near the metastability boundary the running
-        of the couplings is exactly what this shortcut ignores. SMVac asks whether that matters:
-        how far the action evaluated with the running potential departs from the strict conformal
-        estimate, and what drives the difference.
+        The standard estimate of the vacuum lifetime uses the action of the scale-invariant
+        Fubini–Lipatov instanton, <Math tex={'S_{\\rm FL} = 8\\pi^2/(3|\\lambda_{\\min}|)'} />,
+        evaluated at the minimum of the running coupling (Buttazzo et al. 2013, eq. 81). This is
+        exact only for a constant coupling. The running of <Math tex={'\\lambda'} /> breaks scale
+        invariance, and near the stability boundary the potential develops a second, nearly
+        degenerate minimum below <Math tex={'M_{\\rm Pl}'} />. The leading correction from the
+        running was derived by Espinosa (2020). SMVac measures numerically how large the error of
+        the leading formula is and where it matters, how well Espinosa's correction and other
+        closed forms capture it, and where all of them fail.
       </p>
     </section>
 
     <section class="section prose" id="method" aria-labelledby="method-heading">
       <h2 id="method-heading"><span class="secno">03</span> Method</h2>
-      <p>The computational pipeline, as implemented in the repository:</p>
+      <p>The problem, as defined and implemented in the repository:</p>
       <ol class="pipeline">
         <li>Input <Math tex={'(M_h, M_t)'} /> and <Math tex={'\\alpha_s(M_Z)'} /></li>
-        <li>NNLO matching at the top scale <Math tex={'M_t'} /> (Buttazzo et al. 2013, linearized)</li>
-        <li>3-loop RG evolution to the Planck scale (RK4)</li>
-        <li>Locate <Math tex={'\\lambda_{\\min}'} /> and the instability scale <Math tex={'\\mu_{\\rm inst}'} /></li>
-        <li>Trial-profile action over the Fubini–Lipatov conformal profile</li>
-        <li>Optimize the profile scale <Math tex={'R'} /> (Golden Section Search)</li>
-        <li>Classify via the Coleman criterion <Math tex={'\\Gamma/V \\sim t_U^{-4}'} /></li>
+        <li>NNLO matching at <Math tex={'\\mu = M_t'} /> (Buttazzo et al. 2013, linear fits)</li>
+        <li>3-loop RG evolution (4-loop QCD) to <Math tex={'M_{\\rm Pl}'} />, frozen above</li>
+        <li>RG-improved quartic <Math tex={'\\lambda_P(\\phi)'} /> at <Math tex={'\\mu = \\phi'} /></li>
+        <li>Tree-level O(4) bounce, solved numerically</li>
+        <li>Decay probability <Math tex={'\\wp'} /> in our past light cone</li>
+        <li>Classify: stable, metastable (<Math tex={'\\wp < 1'} />), unstable</li>
         <li>Repeat over an <Math tex={'(M_h, M_t)'} /> grid → phase diagram</li>
       </ol>
 
       <h3>Effective potential</h3>
       <p>
-        The tree-level potential is improved by the running coupling, with one-loop
-        Coleman–Weinberg corrections from the top, <Math tex={'W'} />, and <Math tex={'Z'} /> fields,
-        in the high-field approximation where the false vacuum sits at the origin:
+        The potential is the tree-level form with the running quartic evaluated at
+        <Math tex={'\\mu = \\phi'} />, in one of two prescriptions: the one-loop Coleman–Weinberg
+        <Math tex={'\\lambda_{\\rm eff}'} /> (<code>cw1</code>) or the
+        <Math tex={'\\overline{\\rm MS}'} /> coupling <Math tex={'\\lambda'} /> (<code>tree</code>):
       </p>
       <Math
         block
-        tex={'V_{\\rm eff}(\\phi) \\;\\approx\\; \\tfrac{1}{4}\\,\\lambda_{\\rm eff}(\\mu)\\,\\phi^{4} \\;+\\; \\Delta V_{\\rm 1\\text{-}loop}(\\phi), \\qquad \\mu \\sim \\phi.'}
+        tex={'V(\\phi) \\;=\\; \\tfrac{1}{4}\\,\\lambda_P(\\phi)\\,\\phi^{4}, \\qquad \\lambda_P \\in \\bigl\\{\\lambda_{\\rm eff}^{\\,\\rm 1\\text{-}loop},\\ \\lambda_{\\overline{\\rm MS}}\\bigr\\}, \\qquad \\mu = \\phi.'}
       />
       <p>
-        At large field values the potential is regularized by a Planck-suppressed
-        <Math tex={'\\phi^6/M_{\\rm Pl}^2'} /> operator whose coefficient is an assumption,
-        <Math tex={'c_6 = 1'} /> by default; nothing in the code predicts it.
+        Non-SM operators such as <Math tex={'\\phi^6/M_{\\rm Pl}^2'} /> are not part of the problem:
+        they exist only as an explicit, flagged option and never enter Standard Model results.
       </p>
 
       <h3>Renormalization group evolution</h3>
       <p>
-        The couplings <Math tex={'(g_1, g_2, g_3, y_t, \\lambda)'} />, with
-        <Math tex={'y_b, y_\\tau'} /> subleading, are evolved with their three-loop beta functions
-        by fixed-step RK4 integration in <Math tex={'t = 2\\ln\\mu'} />, from the matching scale
-        <Math tex={'M_t'} /> to the Planck scale:
+        The couplings at <Math tex={'\\mu = M_t'} /> come from the NNLO fits of Buttazzo et al.
+        (2013), eqs. 55–60. The gauge couplings, <Math tex={'y_t'} /> and <Math tex={'\\lambda'} />
+        run at three loops, <Math tex={'y_b'} /> and <Math tex={'y_\\tau'} /> at two, with four-loop
+        QCD, integrated by classical RK4 in <Math tex={'t = \\ln\\mu^2'} /> up to
+        <Math tex={'M_{\\rm Pl} = 1.22 \\times 10^{19}\\,\\mathrm{GeV}'} />, above which the couplings
+        are frozen. An independent Python implementation (DOP853) cross-checks the running.
       </p>
       <Math block tex={'\\frac{d g_i}{d \\ln \\mu} \\;=\\; \\beta_{g_i}^{\\rm (3\\text{-}loop)}.'} />
 
-      <h3>Semiclassical decay action</h3>
+      <h3>Bounce equation and decay probability</h3>
       <p>
-        SMVac retains the analytical Fubini–Lipatov field profile,
-        <Math tex={"\\phi_{\\rm FL}(r) = \\sqrt{2/|\\lambda_R|}\\; 2R^{2}/(r^{2}+R^{2})"} />, but
-        evaluates the Euclidean action along it with the running potential: the kinetic term is
-        closed-form in the conformal limit, while the potential term is integrated numerically over
-        the full <Math tex={'V_{\\rm eff}'} /> (composite Simpson's rule, <Math tex={'N = 2048'} />
-        points), and the profile radius <Math tex={'R'} /> is optimized by Golden Section Search to
-        tolerance <Math tex={'10^{-13}'} />:
+        With <Math tex={'\\tau = \\ln r'} />, <Math tex={'f = r\\phi'} /> and
+        <Math tex={'x = \\ln\\phi'} />, the O(4) bounce equation
+        <Math tex={"\\phi'' + 3\\phi'/r = V'(\\phi)"} /> becomes
       </p>
       <Math
         block
-        tex={'S \\;=\\; \\underbrace{\\frac{16\\pi^{2}}{3\\,|\\lambda_R|}}_{\\rm closed\\ form} \\;+\\; \\underbrace{2\\pi^{2}\\!\\int_0^{\\infty}\\! dr\\; r^{3}\\,\\bigl[V_{\\rm eff}(\\phi_{\\rm FL}) - V_{\\rm eff}(0)\\bigr]}_{\\rm numerical}, \\qquad \\frac{\\Gamma}{V} \\sim A\\,e^{-S}.'}
+        tex={"f'' = f + f^{3}\\,G(x), \\qquad G = \\lambda + \\tfrac{1}{4}\\,\\frac{d\\lambda}{dx}, \\qquad x = \\ln f - \\tau,"}
       />
       <p>
-        A point of the plane is classified <em>stable</em> if <Math tex={'\\lambda'} /> never turns
-        negative, <em>unstable</em> if <Math tex={'S'} /> falls below the universe-age threshold
-        <Math tex={'S_{\\rm th} \\approx 4\\ln(t_U\\,\\mu_{\\rm inst})'} /> with
-        <Math tex={'t_U = 10\\,\\mathrm{Gyr}'} />, and <em>metastable</em> otherwise. A
-        perturbativity guard flags regions where couplings exceed <Math tex={'4\\pi'} />, and points
-        where the ansatz breaks down carry an explicit flag instead of a physical verdict.
+        with <Math tex={'f \\sim e^{\\pm\\tau}'} /> at the two ends. Every solution satisfies two exact
+        identities, Derrick's and the dilatation identity, which are monitored at every point:
+      </p>
+      <Math
+        block
+        tex={"S = 2\\pi^{2}\\!\\int\\! d\\tau\\,\\Bigl[\\tfrac{1}{2}(f'-f)^{2} + \\tfrac{1}{4}\\lambda f^{4}\\Bigr] = T + V, \\qquad T + 2V = 0, \\qquad \\int \\frac{d\\lambda}{dx}\\, f^{4}\\, d\\tau = 0."}
+      />
+      <p>
+        The reference solver was chosen by comparing five methods: the legacy construction,
+        shooting in two formulations, adaptive collocation, and Chebyshev spectral collocation. It
+        is Chebyshev–Lobatto collocation on <Math tex={'[\\tau_c - 15, \\tau_c + 15]'} /> with Robin
+        conditions <Math tex={"f' = \\pm f"} /> and damped Newton iteration, solved at 256 and 384
+        nodes and refined if the identities do not hold to <Math tex={'10^{-9}'} />. The uncertainty
+        is the change between the two resolutions plus the identity residuals. Where collocation
+        fails, two independent shooting solvers re-solve the point, and a result is accepted only
+        if they agree to <Math tex={'10^{-8}'} />.
+      </p>
+      <p>
+        The decay probability in our past light cone follows Buttazzo et al. (2013), eqs. 80–82,
+        with the bounce scale set by the bounce radius <Math tex={'R'} />:
+      </p>
+      <Math block tex={'\\wp \\;=\\; 0.15\\,\\frac{\\Lambda_B^{4}}{H_0^{4}}\\,e^{-S}, \\qquad \\Lambda_B = 1/R.'} />
+      <p>
+        A point is <em>stable</em> if <Math tex={'\\min\\lambda_P \\ge 0'} />, <em>metastable</em> if
+        <Math tex={'\\wp < 1'} />, and <em>unstable</em> otherwise.
+      </p>
+
+      <h3>Analytical approximations under test</h3>
+      <p>
+        The parameter <Math tex={"q = |\\lambda_{\\min}|/\\lambda''_{\\min}"} />, with
+        <Math tex={"\\lambda'' = d^2\\lambda/d(\\ln\\phi)^2"} /> at the minimum, measures the departure
+        from scale invariance: large <Math tex={'q'} /> is the thick-wall regime, small
+        <Math tex={'q'} /> the thin-wall regime near the absolute-stability boundary.
+      </p>
+      <ul>
+        <li>
+          <Math tex={'S_{\\rm FL} = 8\\pi^2/(3|\\lambda_{\\min}|)'} /> (Fubini; Lipatov; Buttazzo et al.
+          eq. 81): a rigorous lower bound on every finite-action bounce, by the method of Wipf (1985).
+        </li>
+        <li>
+          <Math tex={'S_{\\rm E1} = S_{\\rm FL}\\,(1 + \\tfrac{13}{72q})'} /> (Espinosa 2020, eq. 3.21):
+          first order in <Math tex={'1/q'} />, an approximation and not a bound;
+          <Math tex={'S_{\\rm E2}'} /> adds the second-order term (Espinosa eq. 6.5).
+        </li>
+        <li>
+          <Math tex={'S_{\\rm curv} = S_{\\rm FL}/(1 - \\tfrac{13}{72q})'} />: the resummed first-order
+          form, which diverges at <Math tex={'q = 13/72'} />.
+        </li>
+        <li>
+          <Math tex={'S_{\\rm CGM}'} />: a variational upper estimate over the Fubini–Lipatov trial
+          shape, rigorous only if the Coleman–Glaser–Martin infimum is attained;
+          <Math tex={'S_{\\rm CGM2}'} /> uses a two-parameter trial family.
+        </li>
+      </ul>
+      <p>
+        These analytical results are prior work, not SMVac results: the lower-bound method is due to
+        Wipf (1985), the thick-wall expansion, including the coefficient <Math tex={'13/72'} /> and
+        the second-order term, to Espinosa (2020), and earlier numerical solutions of the same
+        tree-level problem exist at the central SM point (Di Luzio, Isidori &amp; Ridolfi 2016).
       </p>
     </section>
 
@@ -174,79 +239,110 @@ const softwareSchema = {
       <div class="prose">
         <h2 id="results-heading" style="margin-top: 0;"><span class="secno">04</span> Results</h2>
         <p>
-          Production datasets are evaluated point by point with no interpolation: the full
-          <Math tex={'(M_h, M_t)'} /> plane at <Math tex={'0.5\\,\\mathrm{GeV}'} /> resolution
-          (501 × 501 points), the phenomenologically relevant window at
-          <Math tex={'0.1\\,\\mathrm{GeV}'} />, and a boundary strip at
-          <Math tex={'0.05\\,\\mathrm{GeV}'} />.
+          Two scans map the plane with the numerical bounce (prescription <code>cw1</code>): the full
+          <Math tex={'[0, 250]^2\\,\\mathrm{GeV}'} /> plane on a <Math tex={'0.5\\,\\mathrm{GeV}'} />
+          grid (250,500 points) and a close-up
+          <Math tex={'[110, 140] \\times [160, 185]\\,\\mathrm{GeV}'} /> on a
+          <Math tex={'0.05\\,\\mathrm{GeV}'} /> grid (301,101 points). Collocation failures are
+          re-solved by shooting or, where the bound alone decides, classified by the rigorous action
+          bound; 10 of 5,187 remain unresolved. Controlled statements are restricted to
+          <Math tex={'[120, 130] \\times [166, 182]\\,\\mathrm{GeV}'} />, where the NNLO matching fits
+          apply; elsewhere the matching is extrapolated, so those areas illustrate the model and are
+          not physical predictions.
         </p>
         <p>
-          The absolute-stability boundary sits at
-          <Math tex={'M_h^{\\rm crit} = 129.05\\,\\mathrm{GeV}'} /> for
-          <Math tex={'M_t = 173.1\\,\\mathrm{GeV}'} />. At the benchmark point
-          <Math tex={'(125.1, 173.1)\\,\\mathrm{GeV}'} /> the vacuum is <em>metastable</em>:
-          <Math tex={'\\lambda_{\\rm eff}'} /> crosses zero at
-          <Math tex={'\\mu_1 \\simeq 7.6 \\times 10^{10}\\,\\mathrm{GeV}'} /> and the optimized
-          trial-profile action is <Math tex={'S_{\\rm trial} = 2168.7'} /> against a threshold of
-          <Math tex={'484'} />, consistent with the literature consensus that the SM lifetime
-          exceeds the age of the universe.
+          At <Math tex={'M_h = 125.2\\,\\mathrm{GeV}'} /> the absolute-stability boundary
+          <Math tex={'\\lambda_{\\min} = 0'} /> lies at <Math tex={'M_t = 171.144\\,\\mathrm{GeV}'} />
+          and the metastability boundary <Math tex={'\\wp = 1'} /> at
+          <Math tex={'M_t = 178.604\\,\\mathrm{GeV}'} />. The PDG 2026 masses lie entirely in the
+          metastable region: all 229 close-up grid points inside their joint
+          <Math tex={'2\\sigma'} /> region are metastable, with <Math tex={'S = 1915\\text{–}5003'} />,
+          and at the central values <Math tex={'S = 2778'} />, <Math tex={'\\wp = 10^{-971}'} />, with
+          the instability scale at <Math tex={'\\Lambda_I = 10^{11.5}\\,\\mathrm{GeV}'} />. These are
+          statements of the tree-level scheme, without the uncertainty of
+          <Math tex={'\\alpha_s'} />, and they do not change the established picture of a metastable
+          Standard Model vacuum.
         </p>
       </div>
       <Figure
-        src="/figures/01_full_phase_diagram.png"
-        alt="Phase diagram of the Standard Model vacuum across the Higgs-top mass plane from 0 to 250 GeV. Green marks absolute stability, yellow metastability, red instability, and black the non-perturbative region; thin contours show constant action, and the star marks the benchmark point (125.1, 173.1) GeV inside the metastable band, close to the stability boundary."
-        width={2220}
-        height={1920}
+        src="/figures/phase_diagram_full_contours.png"
+        alt="Phase diagram of the electroweak vacuum over the Higgs–top mass plane from 0 to 250 GeV, from the numerical bounce. Green marks stability, yellow metastability, red instability, dark grey the non-perturbative region and light grey the Planck-scale dominated region without a finite bounce. Blue contours of constant action run through the metastable and unstable regions, and an inset magnifies the PDG 2026 point with its 1σ and 2σ regions, inside the metastable band just above the stability boundary."
+        width={2147}
+        height={1501}
         label="Fig. 1"
-        caption="Classification of the SM vacuum over the full (M_h, M_t) plane (trial-profile estimator, 0.5 GeV grid). Solid line: the λ_min = 0 stability boundary; the star marks (125.1, 173.1) GeV. Dots along the boundary are ansatz-breakdown points, a documented artifact of the fixed trial profile, not physical instabilities. The NNLO matching is linearized around (125.15, 173.34) GeV, so regions far from that window are extrapolations of the fit, not SM predictions. Figure from SMVac-Research."
+        caption="The electroweak vacuum over the (M_h, M_t) plane from the numerical bounce (prescription cw1, 0.5 GeV grid), with contours of constant tree-level action S, the boundaries λ_min = 0 and ℘ = 1, and the PDG 2026 masses with their joint 1σ and 2σ regions (inset: 0.05 GeV grid). Outside the controlled region [120, 130] × [166, 182] GeV the matching is extrapolated, so those areas illustrate the model and are not physical predictions. Figure from SMVac."
       />
       <Figure
-        src="/figures/02_phenomenological_zoom.png"
-        alt="Zoom of the stability phase diagram onto the window from 112 to 138 GeV in Higgs mass and 155 to 185 GeV in top mass, at 0.1 GeV resolution, with the PDG 2022 region around the experimental point and constant-action contours."
-        width={2100}
-        height={1680}
+        src="/figures/phase_diagram_closeup_contours.png"
+        alt="Close-up of the phase diagram for Higgs masses from 110 to 140 GeV and top masses from 160 to 185 GeV on a 0.05 GeV grid: a yellow metastable band between the red unstable region above and the green stable region below, contours of constant action from S = 300 to 20,000, a light grey Planck-scale dominated wedge at large Higgs mass, and the PDG 2026 point with its 1σ and 2σ ellipses inside the metastable band."
+        width={2162}
+        height={1471}
         label="Fig. 2"
-        caption="The phenomenologically relevant window at 0.1 GeV resolution, with the PDG 2022 region and constant-action contours. Figure from SMVac-Research."
+        caption="Close-up [110, 140] × [160, 185] GeV on a 0.05 GeV grid, with contours of constant S. It gives the same class as the full plane at all 3,111 shared grid points. Of the 4,433 collocation failures, the shooting fallback decides 4,417 and the action bound 7; nine isolated cells on the edge of the Planck-scale dominated region remain unresolved. Figure from SMVac."
       />
     </section>
 
-    <!-- Former anchor of the next section; kept so existing links still land on it. -->
+    <!-- Former anchors of the next section; kept so existing links still land on it. -->
     <span id="analytical-vs-rg-improved" aria-hidden="true"></span>
-    <section class="section" id="conformal-vs-trial" aria-labelledby="cvt-heading">
+    <span id="conformal-vs-trial" aria-hidden="true"></span>
+    <section class="section" id="approximations" aria-labelledby="approx-heading">
       <div class="prose">
-        <h2 id="cvt-heading" style="margin-top: 0;"><span class="secno">05</span> Conformal estimate vs. trial profile</h2>
+        <h2 id="approx-heading" style="margin-top: 0;"><span class="secno">05</span> Analytical approximations vs. the numerical bounce</h2>
         <p>
-          The trial-profile action can be compared with the strict conformal estimate
-          <Math tex={'S_{\\rm conformal} = 8\\pi^2 / (3|\\lambda_{\\min}|)'} />. The comparison is
-          between two approximations, not a correctness statement. With the Planck operator
-          switched off (<Math tex={'c_6 = 0'} />), the two agree to about <Math tex={'1\\%'} /> or
-          better everywhere tested: <Math tex={'-0.08\\%'} /> at the benchmark point and
-          <Math tex={'-0.9\\%'} /> at <Math tex={'(134.75, 176.5)\\,\\mathrm{GeV}'} /> near the
-          boundary. Inside this trial family, RG improvement barely moves the action.
+          The leading formula <Math tex={'S_{\\rm FL}'} /> is a rigorous lower bound and holds at every
+          scan point. Where <Math tex={'S < 5000'} />, the bulk of the metastable and unstable region,
+          it underestimates the action by <Math tex={'3 \\times 10^{-4}'} /> to
+          <Math tex={'1.7 \\times 10^{-3}'} />, following the first-order law of Espinosa (2020),
+          <Math tex={'(S - S_{\\rm FL})/S_{\\rm FL} \\to 13/(72q)'} />, as the wall thickens. It
+          degrades toward the absolute-stability boundary, to at most 34% (<code>cw1</code>) and 50%
+          (<code>tree</code>), where <Math tex={'|\\lambda_{\\min}| \\to 0'} />, a second minimum
+          becomes nearly degenerate and the bounce becomes thin-walled.
         </p>
         <p>
-          The assumed <Math tex={'c_6 = 1'} /> operator raises the action by up to
-          <Math tex={'+33\\%'} /> near the boundary, and that is what drives the classification
-          differences there. An earlier version of this analysis attributed the near-boundary
-          difference of about <Math tex={'30\\%'} /> to RG improvement; the
-          <Math tex={'c_6 = 0'} /> comparison shows that attribution was incorrect.
+          Among the closed forms, the first-order formula <Math tex={'S_{\\rm E1}'} /> is the most
+          accurate near criticality: its maximum error over all 21,626 standard-tier points of the
+          controlled scans is 1.54%, with median <Math tex={'9 \\times 10^{-6}'} />. For
+          <Math tex={'q \\lesssim 1'} /> this lies outside its formal domain, so the accuracy is
+          empirical; it degrades to −15% at <Math tex={'q = 0.044'} /> on a Standard Model line
+          approaching the boundary. The variational estimate <Math tex={'S_{\\rm CGM}'} /> has the
+          smallest typical error in the bulk (median <Math tex={'2 \\times 10^{-7}'} />), but it and
+          the resummed <Math tex={'S_{\\rm curv}'} /> diverge near <Math tex={'q = 13/72'} />, and a
+          two-parameter trial family moves the divergence to <Math tex={'q = 3/32'} /> without
+          removing it. No estimate is uniformly best.
+        </p>
+        <p>
+          The divergence has an elementary explanation. For <Math tex={'\\lambda'} /> quadratic in
+          <Math tex={'\\ln\\phi'} />, a trial of fixed shape <Math tex={'g'} /> gives a finite estimate
+          if and only if <Math tex={'q > \\tfrac{1}{2}\\,\\mathrm{Var}(\\ln g)'} />, which equals
+          <Math tex={'13/72'} /> for the Fubini–Lipatov shape. The exact bounce escapes the condition
+          by forming a flat core and a thin wall with a much weaker tail. The repository states this
+          as an elementary lemma and claims no novelty for it.
+        </p>
+        <p>
+          For the decay criterion these errors barely matter. Near the metastability boundary
+          (<Math tex={'450 < S < 650'} />) the error of <Math tex={'S_{\\rm FL}'} /> is 0.14–0.25
+          units of action, which moves the <Math tex={'\\wp = 1'} /> boundary by
+          <Math tex={'0.0025\\,\\mathrm{GeV}'} /> in <Math tex={'M_t'} />. The ambiguities of RG
+          improvement move it much further: by <Math tex={'0.094\\,\\mathrm{GeV}'} /> through the
+          identification of the bounce scale, and by <Math tex={'0.12\\,\\mathrm{GeV}'} /> between
+          <code>cw1</code> and <code>tree</code>.
         </p>
       </div>
       <Figure
-        src="/figures/05_conformal_vs_rg_difference.png"
-        alt="Classification difference map over the full Higgs-top plane. Most of the plane is grey, where the strict conformal estimate and the trial-profile evaluation agree; thin blue and orange bands along the classification boundaries mark points classified more or less stable by the trial-profile evaluation, and black marks breakdown or out-of-validity points."
-        width={2220}
-        height={1920}
+        src="/figures/analytic_error_scaling.png"
+        alt="Log–log plot of the relative deviation of four analytical estimates from the numerical bounce action against the conformal-breaking parameter q, for the controlled-scan points. The Fubini–Lipatov bound follows the dashed thick-wall law 13/(72q), from about 0.5 at small q down to 3 × 10⁻⁴ at large q; the first-order, resummed and variational estimates lie orders of magnitude lower at large q and rise steeply at small q. Stars mark parabolic-model benchmarks."
+        width={1232}
+        height={916}
         label="Fig. 3"
-        caption="Classification difference map: where the strict conformal estimate and the trial-profile evaluation disagree over the full plane. Differences concentrate along the classification boundaries and are driven mainly by the assumed c6 = 1 Planck operator and by ansatz breakdown. Figure from SMVac-Research."
+        caption="Error of the analytical estimates against the conformal-breaking parameter q, for the standard-tier points of both controlled scans (circles cw1, squares tree): S_FL, S_E1 (first order, Espinosa 2020), S_curv and S_CGM. Dashed: the thick-wall law 13/(72q) for S_FL (Espinosa 2020). Stars: parabolic-model benchmarks. The dips in the S_E1 and S_curv errors are sign changes of S_est − S_num; neither is a bound. Figure from SMVac."
       />
       <Figure
-        src="/figures/06_action_fractional_difference.png"
-        alt="Two heatmaps of the fractional difference between the trial-profile and conformal actions over the phenomenological window. Left, with c6 = 0, the map is uniformly near zero. Right, with c6 = 1, the difference grows to about +30 percent along the stability boundary."
-        width={3480}
-        height={1410}
+        src="/figures/near_critical.png"
+        alt="Three panels on the approach to the absolute-stability boundary. (a) The excess of the numerical action over the Fubini–Lipatov bound against q: the parabolic model and four Standard Model lines fall on one curve. (b) Relative errors of five closed-form estimates against q: only the first-order formula stays within a few per cent down to q near 0.1, while the variational estimates diverge at q = 13/72 and q = 3/32. (c) The bounce action along the Standard Model lines against the distance δ from the critical top mass, rising from about 10³ to 10⁸."
+        width={2647}
+        height={923}
         label="Fig. 4"
-        caption="Fractional difference (S_trial − S_conformal)/S_conformal over the phenomenological window, without (c6 = 0, left) and with (c6 = 1, right) the assumed Planck operator. At c6 = 0 the two actions agree to within about 1%; the large near-boundary differences at c6 = 1 come from the assumed operator, not from RG running. Figure from SMVac-Research."
+        caption="Approach to the absolute-stability boundary. (a) S_num/S_FL − 1 against q for the parabolic model, the four SM lines and all controlled-scan points: the SM follows the one-parameter model curve to 2–3%. (b) Relative errors of S_FL, S_E1, S_curv, S_CGM and S_CGM2; only S_E1 stays finite and within a few per cent down to q ≈ 0.1, an accuracy that is empirical. Vertical lines mark the finiteness thresholds q = 13/72 and q = 3/32. (c) Action along the SM lines against δ = M_t − M_t^crit, with S_FL dashed. Figure from SMVac."
       />
     </section>
 
@@ -254,28 +350,41 @@ const softwareSchema = {
       <h2 id="validation-heading"><span class="secno">06</span> Validation</h2>
       <ul>
         <li>
-          <strong>Literature consistency.</strong> The computed boundary,
-          <Math tex={'M_h^{\\rm crit} = 129.05\\,\\mathrm{GeV}'} /> at
-          <Math tex={'M_t = 173.1\\,\\mathrm{GeV}'} />, sits within the theory uncertainty of the
-          NNLO value <Math tex={'129.4 \\pm 1.0\\,\\mathrm{GeV}'} /> of Degrassi et al. (2012) at the
-          same inputs. This is a consistency check, not a precision validation: the code omits the
-          two-loop effective potential and three-loop QCD threshold pieces of that analysis and
-          linearizes the matching.
+          <strong>RG running.</strong> The couplings at <Math tex={'M_{\\rm Pl}'} /> reproduce Buttazzo
+          et al. (2013), eq. 61, to its quoted precision, and the C++ (RK4) and Python (DOP853)
+          implementations agree to <Math tex={'10^{-10}'} /> in <Math tex={'\\lambda(M_{\\rm Pl})'} />.
         </li>
         <li>
-          <strong>Test suite.</strong> Eleven tests span unit checks of the numerics and matching,
-          physics tests against analytic limits and the literature boundary, and regression tests
-          against frozen reference tables (<code>reference/v1.1/</code>).
+          <strong>β-functions.</strong> A literature-independent loop-order power-counting test,
+          which also catches the transcription errors of the original code.
         </li>
         <li>
-          <strong>Resolution convergence.</strong> Committed datasets at
-          <Math tex={'0.5'} />, <Math tex={'0.1'} />, and <Math tex={'0.05\\,\\mathrm{GeV}'} />
-          come with a convergence-check script; every classification pixel corresponds to an
-          actually evaluated grid point, with no interpolation.
+          <strong>Bounce solver.</strong> It reproduces the Fubini–Lipatov action for constant
+          <Math tex={'\\lambda'} /> to <Math tex={'10^{-10}'} /> and agrees with the independent
+          shooting solvers to <Math tex={'\\lesssim 10^{-11}'} /> on thick-wall, thin-wall and SM
+          benchmarks. Checks that do not rely on that agreement: exponential self-convergence,
+          long-double re-solution, domain size, quadrature-rule independence, perturbations of the
+          potential coefficients, and the exact identities.
         </li>
         <li>
-          <strong>Reproducibility.</strong> Datasets, figures, and reference tables are all
-          regenerable from the committed scripts; nothing depends on machine-specific state.
+          <strong>Uncertainty.</strong> About <Math tex={'10^{-14}'} /> relative at generic points and
+          <Math tex={'10^{-12}'} /> near criticality, with a per-point estimate below
+          <Math tex={'1.1 \\times 10^{-9}'} /> in the standard tier. Numerical, approximation,
+          parametric, theoretical and Planck-model uncertainties are kept separate.
+        </li>
+        <li>
+          <strong>Bounds.</strong> No solved point violates
+          <Math tex={'S_{\\rm FL} \\le S_{\\rm num} \\le S_{\\rm CGM}'} />.
+        </li>
+        <li>
+          <strong>Tests and reproducibility.</strong> Seven C++ test suites (CTest) and Python tests.
+          A seeded, stratified sample of 233 stored results, recomputed from a clean build, matched
+          the stored values.
+        </li>
+        <li>
+          <strong>Review.</strong> The repository records the audit of the original implementation,
+          the comparison of numerical methods, a validation report and a referee-style scientific
+          review, with the corrections that followed them.
         </li>
       </ul>
     </section>
@@ -285,37 +394,39 @@ const softwareSchema = {
       <p>Stated plainly, because they bound what the results mean:</p>
       <div class="callout">
         <p style="margin: 0 0 0.5rem;">
-          The full list is in the repository's <code>docs/limitations.md</code>; the
-          absolute-stability boundary is the robust output throughout. The most important items:
+          The full list is in the repository's README; the most important items:
         </p>
         <ul>
           <li>
-            <strong>No bounce-equation solve.</strong> The action is evaluated on a restricted
-            trial-profile family and minimized over its scale. The bounce is a saddle point of the
-            action, not a minimum over general field configurations, so the trial-profile action
-            can lie above or below the true bounce action; its accuracy is unknown.
+            <strong>Tree-level action only.</strong> The one-loop fluctuation determinant is not
+            computed. Its effect on the decay exponent, and the prescription dependence it would
+            cancel, are larger than the approximation errors quantified here.
           </li>
           <li>
-            <strong>High-field potential.</strong> The tree-level mass term is dropped, so the false
-            vacuum sits at the origin rather than at the electroweak vacuum; the action describes
-            tunneling from the origin as a proxy.
+            <strong>Not a full lifetime calculation.</strong> Statements about the errors of the
+            literature formula are internal to the tree-level RG-improved scheme. They are not
+            corrections to published lifetimes (Buttazzo et al. 2013; Chigusa, Moroi &amp; Shoji 2017;
+            Andreassen, Frost &amp; Schwartz 2018).
           </li>
           <li>
-            <strong>Assumed Planck operator.</strong> The coefficient of the
-            <Math tex={'\\phi^6'} /> term is set to <Math tex={'c_6 = 1'} /> by assumption, and it
-            dominates the near-boundary action. With negative <Math tex={'c_6'} /> the trial action
-            becomes unbounded below along the profile family.
+            <strong>Local matching inputs.</strong> The linear NNLO fits restrict controlled statements
+            to <Math tex={'[120, 130] \\times [166, 182]\\,\\mathrm{GeV}'} />; the rest of the plane is
+            an extrapolation.
           </li>
           <li>
-            <strong>Prefactor scale.</strong> The decay-rate prefactor uses the zero-crossing scale
-            <Math tex={'\\mu_1'} /> instead of <Math tex={'1/R_*'} />, worth about
-            <Math tex={'+47'} /> in <Math tex={'S_{\\rm th}'} /> at the benchmark point; the gauge
-            dependence of <Math tex={'\\mu_1'} /> is not assessed.
+            <strong>Simplified <Math tex={'\\lambda_{\\rm eff}'} />.</strong> No two-loop terms and no
+            field anomalous dimension, so absolute-stability boundaries differ slightly from Buttazzo
+            et al. (2013), eq. 64.
           </li>
           <li>
-            <strong>Matching and running.</strong> The NNLO matching is linearized, with
-            <Math tex={'\\alpha_s'} />, <Math tex={'M_W'} />, and <Math tex={'M_b'} /> held fixed,
-            and the four-loop <Math tex={'g_3'} /> running is incomplete.
+            <strong>Planck scale.</strong> Bounces that reach <Math tex={'\\phi \\gtrsim M_{\\rm Pl}'} />,
+            and the points with no finite bounce, depend on the arbitrary freezing of the couplings
+            above <Math tex={'M_{\\rm Pl}'} />; they are flagged. Gravitational corrections are not
+            included.
+          </li>
+          <li>
+            <strong>Deep thin wall.</strong> For <Math tex={'q \\lesssim 0.05'} /> the solvers do not
+            converge, and only the rigorous lower bound is available.
           </li>
         </ul>
       </div>
@@ -324,33 +435,23 @@ const softwareSchema = {
     <section class="section prose" id="code" aria-labelledby="code-heading">
       <h2 id="code-heading"><span class="secno">08</span> Code</h2>
       <p>
-        The current research codebase,
-        <a href={site.smvac} target="_blank" rel="noopener noreferrer">SMVac-Research</a>, is a
-        CMake C++17 project: a library (RGE, effective potential, bounce, numerics), command-line
-        apps for single-point benchmarks and phase-diagram scans, an eleven-test suite, committed
-        example datasets, and scripts that regenerate every figure from the committed data with no
-        interpolation. The original working repository,
-        <a href={site.smvacOriginal} target="_blank" rel="noopener noreferrer">SMVac</a>, remains
-        preserved unchanged as the provenance record.
+        <a href={site.smvac} target="_blank" rel="noopener noreferrer">SMVac</a> (version 2.0.0-dev) is
+        a CMake C++14 library (matching, β-functions, RG evolution, potential, bounce, decay and
+        stability, with Chebyshev, Brent and quadrature numerics) with command-line apps for a single
+        point (JSON report) and for grid scans (CSV with a metadata header), seven C++ test suites,
+        and an independent Python reference implementation with its own tests. Scans are
+        config-driven and parallel, and every figure is regenerated from data. The original
+        implementation is preserved unchanged in <code>legacy/</code>.
       </p>
-      <pre class="codeblock"><code>git clone https://github.com/namangoyal31/SMVac-Research.git
-cd SMVac-Research
-cmake -S . -B build && cmake --build build
+      <pre class="codeblock"><code>git clone https://github.com/namangoyal31/SMVac.git
+cd SMVac
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build
 ctest --test-dir build --output-on-failure
-./build/benchmark_point 125.1 173.1</code></pre>
+./build/smvac_point 125.15 173.34</code></pre>
       <p style="margin-top: 1.2rem;">
         If you use SMVac, please cite it via the repository's
         <a href={`${site.smvac}/blob/main/CITATION.cff`} target="_blank" rel="noopener noreferrer">CITATION.cff</a>.
-      </p>
-    </section>
-
-    <section class="section prose" id="future" aria-labelledby="future-heading">
-      <h2 id="future-heading"><span class="secno">09</span> Future work</h2>
-      <p>
-        The documented limitations mark the natural next steps: a full bounce-equation solve, which
-        would also settle how the trial-profile estimate relates to the true action; a decay-rate
-        prefactor that retains the radius dependence; and a provenance check of the Planck-operator
-        coefficient.
       </p>
     </section>
   </div>
